@@ -1,0 +1,134 @@
+/*
+ * Copyright (C) 2022 jkertz
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.jkertz.jgitswing.tabs.graph;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import javax.swing.SwingUtilities;
+import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
+import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tabs.common.IJGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import com.jkertz.jgitswing.widgets.graph.JGSgraphPane;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.revplot.PlotWalk;
+
+/**
+ *
+ * @author jkertz
+ */
+public final class JGSgraphController extends JGScommonController implements IJGSgraphPanel, IJGScommonController {
+
+    private JGSgraphPanel panel;
+
+    public JGSgraphController(JGSrepositoryModel jGSrepositoryModel) {
+        super("Graph", jGSrepositoryModel);
+        panel = new JGSgraphPanel(this);
+        setPanel(panel);
+    }
+
+    @Override
+    public void updateWidgets(IJGScallbackRefresh refresh) {
+        updateGraphTable(10, refresh);
+    }
+
+    @Override
+    public void onGitRefChanged() {
+        //caused by commit
+        logger.getLogger().fine("onGitRefChanged");
+        refresh();
+    }
+
+    private void updateGraphTable(Integer amount, IJGScallbackRefresh refresh) {
+        showProgressBar("updateWidgets");
+        // jGSrepositoryModel async thread
+        new Thread(() -> {
+            try {
+                String branchName = jGSrepositoryModel.getBranchName();
+                if (branchName != null && !branchName.isEmpty()) {
+                    PlotWalk plotWalk = jGSrepositoryModel.getPlotWalk(branchName);
+                    fillGraphPane(plotWalk, amount, refresh);
+                } else {
+                    logger.getLogger().log(Level.SEVERE, "updateGraphTable", "no branch");
+                    showErrorDialog("updateGraphTable", "no branch");
+                }
+            } catch (Exception ex) {
+                logger.getLogger().log(Level.SEVERE, "updateGraphTable", ex);
+//                showErrorDialog("updateWidgets", "updateWidgets ERROR:\n" + ex.getMessage());
+                refresh.finish();
+            }
+        }).start();
+    }
+
+    private void fillGraphPane(PlotWalk plotWalk, Integer amount, IJGScallbackRefresh refresh) throws Exception {
+        SwingUtilities.invokeLater(() -> {
+            JGSgraphPane graphPane = panel.getGraphPane();
+            graphPane.getCommitList().clear();
+            graphPane.getCommitList().source(plotWalk);
+            try {
+                graphPane.getCommitList().fillTo(amount);
+            } catch (IncorrectObjectTypeException ex) {
+                logger.getLogger().log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                logger.getLogger().log(Level.SEVERE, null, ex);
+            }
+            refresh.finish();
+        });
+    }
+
+//    @Override
+//    public void onIJGSbcRefsChanged() {
+//        logger.getLogger().fine("onIJGSbcRefsChanged");
+//        refresh();
+//    }
+    @Override
+    public void onGraphPanelClickedShowAll() {
+        updateGraphTable(Integer.MAX_VALUE, () -> {
+            hideProgressBar();
+        });
+    }
+
+    @Override
+    public void onGraphPanelClickedShow100() {
+        updateGraphTable(100, () -> {
+            hideProgressBar();
+        });
+    }
+
+    @Override
+    public void deconstruct() {
+        String className = this.getClass().getName();
+        System.out.println(className + " deconstruct");
+        panel = null;
+//        bc.removeReceiver(this);
+        super.deconstruct();
+
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            // Cleanup operations
+            String className = this.getClass().getName();
+            System.out.println(className + " finalize");
+
+        } finally {
+            super.finalize();
+        }
+    }
+
+}
