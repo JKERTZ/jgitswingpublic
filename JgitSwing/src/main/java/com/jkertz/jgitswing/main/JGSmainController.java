@@ -224,13 +224,11 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
 //                saveRepositoryPath(jGSrepositoryModel);
 //                saveRemoteCredentials(username, password);
                 String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
-                settings.setUserAndPassword(path, username, password);
+                settings.setUserAndPassword(path, username, password, uri);
                 hideProgressBar();
-
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
-
         } else {
             hideProgressBar();
         }

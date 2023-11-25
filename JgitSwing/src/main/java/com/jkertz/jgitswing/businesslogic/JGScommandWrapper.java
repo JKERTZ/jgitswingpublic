@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.businesslogic;
 
+import com.jkertz.jgitswing.model.JGStag;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,13 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.jkertz.jgitswing.model.JGStag;
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.RemoteRemoveCommand;
+import org.eclipse.jgit.api.RemoteSetUrlCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -59,6 +61,8 @@ import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevTag;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
@@ -928,6 +932,60 @@ public class JGScommandWrapper {
                 .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
                 .call();
         return pushResult;
+    }
+
+    /**
+     *
+     * @param git
+     * @param name
+     * @param uri
+     * @return
+     * @throws GitAPIException
+     */
+    protected RemoteConfig remoteAdd(Git git, String name, URIish uri) throws GitAPIException {
+        RemoteConfig call = git.remoteAdd().setName(name).setUri(uri).call();
+        return call;
+    }
+
+    /**
+     *
+     * @param git
+     * @return
+     * @throws GitAPIException
+     */
+    protected List<RemoteConfig> remoteList(Git git) throws GitAPIException {
+        List<RemoteConfig> call = git.remoteList().call();
+        return call;
+    }
+
+    /**
+     *
+     * @param git
+     * @param remoteName
+     * @return
+     * @throws GitAPIException
+     */
+    protected RemoteConfig remoteRemove(Git git, String remoteName) throws GitAPIException {
+        RemoteRemoveCommand remoteRemove = git.remoteRemove();
+        remoteRemove.setRemoteName(remoteName);
+        RemoteConfig call = remoteRemove.call();
+        return call;
+    }
+
+    /**
+     *
+     * @param git
+     * @param remoteName
+     * @param remoteUri
+     * @return
+     * @throws GitAPIException
+     */
+    protected RemoteConfig remoteSetUrl(Git git, String remoteName, URIish remoteUri) throws GitAPIException {
+        RemoteSetUrlCommand remoteSetUrl = git.remoteSetUrl();
+        remoteSetUrl.setRemoteUri(remoteUri);
+        remoteSetUrl.setRemoteName(remoteName);
+        RemoteConfig call = remoteSetUrl.call();
+        return call;
     }
 
 }

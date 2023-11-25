@@ -16,20 +16,9 @@
  */
 package com.jkertz.jgitswing.tabs.repository;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import javax.swing.AbstractAction;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
+import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
 import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
@@ -44,6 +33,18 @@ import com.jkertz.jgitswing.tabs.ignored.JGSignoredController;
 import com.jkertz.jgitswing.tabs.staging.JGSstagingController;
 import com.jkertz.jgitswing.tabs.stagingtree.JGSstagingTreeController;
 import com.jkertz.jgitswing.tabs.tags.JGStagsController;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTabbedPane;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -470,8 +471,10 @@ public final class JGSrepositoryController extends JGScommonController implement
 //    }
     private Map<String, String> getUserPasswordParameters() {
         String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+
         String username = JGSsettings.getINSTANCE().getUsername(path);
         String password = JGSsettings.getINSTANCE().getPassword(path);
+        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("Username", username);
         parameters.put("Password", password);
@@ -499,6 +502,17 @@ public final class JGSrepositoryController extends JGScommonController implement
 //        }
 //        panel.getLabelThreads().setToolTipText(namesToolTips);
 //    }
+    /**
+     *
+     * @param usernameInput
+     * @param passwordInput
+     * @param uriInput
+     */
+    private void saveRemoteCredentials(String usernameInput, String passwordInput, String uriInput) {
+        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+        JGSsettings.getINSTANCE().setUserAndPassword(path, usernameInput, passwordInput, uriInput);
+    }
+
     /**
      *
      * @param usernameInput

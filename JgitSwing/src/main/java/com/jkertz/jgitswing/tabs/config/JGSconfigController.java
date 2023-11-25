@@ -16,9 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.config;
 
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackString;
@@ -26,6 +23,9 @@ import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -52,6 +52,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
     @Override
     public void onConfigPanelClickedEditConfig() {
         showProgressBar("onConfigPanelClickedEditConfig");
+        getConfigInfo();
 //        getConfigInfo(() -> {
 //            hideProgressBar();
 //        });
