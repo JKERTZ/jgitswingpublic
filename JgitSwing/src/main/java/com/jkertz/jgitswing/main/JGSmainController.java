@@ -18,8 +18,10 @@ package com.jkertz.jgitswing.main;
 
 import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.dialogs.JGScloneRepositoryDialog;
+import com.jkertz.jgitswing.dialogs.JGSeditSettingsDialog;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.model.JGSsetting;
 import com.jkertz.jgitswing.settings.IJGSsettings;
 import com.jkertz.jgitswing.settings.JGSsettings;
 import com.jkertz.jgitswing.tabs.common.IJGSsubTabController;
@@ -276,6 +278,21 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     public void onCloseTab(String tabTitle) {
         logger.getLogger().fine("onCloseTab " + tabTitle);
         removeSubTab(tabTitle);
+    }
+
+    @Override
+    public void onEditSettingsClicked() {
+        logger.getLogger().fine("onEditSettingsClicked");
+        JGSsetting oldSetting = JGSsettings.getINSTANCE().getSetting();
+
+        JFrame frame = panel.getjFrame();
+        JGSeditSettingsDialog jGSeditSettingsDialog = new JGSeditSettingsDialog(oldSetting);
+        boolean dialogResultOK = jGSeditSettingsDialog.show(frame);
+        if (dialogResultOK) {
+            //save settings
+            JGSsetting newSetting = jGSeditSettingsDialog.getSetting();
+            JGSsettings.getINSTANCE().setSetting(newSetting);
+        }
     }
 
     private void removeSubTab(String tabTitle) {

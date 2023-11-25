@@ -16,6 +16,9 @@
  */
 package com.jkertz.jgitswing.main;
 
+import com.jkertz.jgitswing.dialogs.JGSopenRepositoryFileChooser;
+import com.jkertz.jgitswing.dialogs.JgitSwingToast;
+import com.jkertz.jgitswing.settings.JGSsettings;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.LayoutManager;
@@ -42,9 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import com.jkertz.jgitswing.dialogs.JGSopenRepositoryFileChooser;
-import com.jkertz.jgitswing.dialogs.JgitSwingToast;
-import com.jkertz.jgitswing.settings.JGSsettings;
 
 /**
  *
@@ -225,6 +225,9 @@ public class JGSmainView {
         jMenuRepository.add(getMenuItemInitRepository());
         jMenuRepository.add(getMenuItemInitBareRepository());
         jMenuRepository.add(getMenuItemCloneRepository());
+        jMenuRepository.add(new JSeparator());
+        jMenuRepository.add(getMenuItemEditSettings());
+
     }
 
     private void updateThemesMenu() {
@@ -285,6 +288,14 @@ public class JGSmainView {
         return newItem;
     }
 
+    private JMenuItem getMenuItemEditSettings() {
+        JMenuItem newItem = new JMenuItem();
+        newItem.setText("Edit Settings");
+        newItem.setToolTipText("Edit Settings");
+        newItem.addActionListener(getActionListenerEditSettings());
+        return newItem;
+    }
+
     private JMenuItem getMenuItemTheme(String theme) {
         JMenuItem newItem = new JMenuItem();
         newItem.setText(theme);
@@ -331,6 +342,13 @@ public class JGSmainView {
     private ActionListener getActionListenerCloneRepository() {
         ActionListener actionListener = (ActionEvent e) -> {
             receiver.onCloneRepositoryClicked();
+        };
+        return actionListener;
+    }
+
+    private ActionListener getActionListenerEditSettings() {
+        ActionListener actionListener = (ActionEvent e) -> {
+            receiver.onEditSettingsClicked();
         };
         return actionListener;
     }

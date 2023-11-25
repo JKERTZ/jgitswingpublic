@@ -82,6 +82,15 @@ public class JGSsettings {
         receivers.add(receiver);
     }
 
+    public JGSsetting getSetting() {
+        return setting;
+    }
+
+    public void setSetting(JGSsetting setting) {
+        this.setting = setting;
+        save();
+    }
+
     public void loadRecentRepositories() {
         notifyRecentRepositoryChanged();
     }
