@@ -5,6 +5,12 @@
     <artifactId>JgitSwing</artifactId>
     <version>1.0-20231125</version>
     <packaging>jar</packaging>
+    <organization>
+        <name>JKERTZ</name>   
+    </organization>
+    <inceptionYear>2023</inceptionYear>
+    <description>Free Jgit client with Swing UI</description>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -34,5 +40,112 @@
         </dependency>
     </dependencies>
     
+    <profiles>
+        <profile>
+            <id>production</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>${fully.qualified.main.class}</mainClass>
+                                        </manifest>
+                                    </archive>
+                                    <descriptorRefs>
+                                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                                    </descriptorRefs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>          
+        </profile>
+        <profile>
+            <id>windows</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>${fully.qualified.main.class}</mainClass>
+                                        </manifest>
+                                    </archive>
+                                    <descriptorRefs>
+                                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                                    </descriptorRefs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- LAUNCH4J -->
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <version>2.4.1</version>           
+                        <executions>
+                            <execution>
+                                <id>l4j-gui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <jar>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
+                                    <outfile>${project.build.directory}/${project.artifactId}-${project.version}.exe</outfile>
+                                    <downloadUrl>https://openjdk.org/</downloadUrl>
+                                    <classPath>
+                                        <mainClass>${exec.mainClass}</mainClass>
+                                        <!--<mainClass>com.jkertz.jgitswing.JgitSwing</mainClass>-->
+                                        <!--<preCp>anything</preCp>-->
+                                    </classPath>
+                                    <jre>
+                                        <path>%JAVA_HOME%;%PATH%</path>
+                                        <minVersion>17.0</minVersion>
+                                        <requiresJdk>false</requiresJdk>
+                                        <requires64Bit>true</requires64Bit>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>1.0.0.0</fileVersion>
+                                        <txtFileVersion>${project.version}</txtFileVersion>
+                                        <fileDescription>${project.name}</fileDescription>
+                                        <copyright>JKERTZ</copyright>
+                                        <productVersion>1.0.0.0</productVersion>
+                                        <txtProductVersion>1.0.0.0</txtProductVersion>
+                                        <productName>${project.name}</productName>
+                                        <internalName>AppName</internalName>
+                                        <!--<originalFilename>JgitSwing.exe</originalFilename>-->
+                                    </versionInfo>
+ 
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
     
+                </plugins>
+            </build>         
+        </profile>
+    </profiles>
+
+        
 </project>
