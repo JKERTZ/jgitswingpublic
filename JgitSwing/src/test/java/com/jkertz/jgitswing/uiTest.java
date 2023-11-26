@@ -42,7 +42,7 @@ public class uiTest {
 
     }
 
-    public void testRightAlign() {
+    private void testRightAlign() {
         JScrollPane jScrollPane = new JScrollPane();
         JPanel contentPanel = new JPanel(new GridLayout(0, 1));
 

@@ -36,11 +36,11 @@ import org.eclipse.jgit.revwalk.RevTag;
  */
 public class TagTest {
 
-    public void hello() {
+    private void hello() {
         System.out.println("hello");
     }
 
-    public void testTagRead1() {
+    private void testTagRead1() {
         String pathString = "/home/jkertz/Develop/eclipse-git-tagpilot_20221220/eclipse-git-tagpilot/tagpilot42/";
         System.out.println("testTagRead: " + pathString);
         try {
@@ -107,7 +107,7 @@ public class TagTest {
         }
     }
 
-    public void testTagRead2() {
+    private void testTagRead2() {
         String pathString = "/home/jkertz/Develop/eclipse-git-tagpilot_20221220/eclipse-git-tagpilot/tagpilot42/";
         System.out.println("testTagRead: " + pathString);
         try {

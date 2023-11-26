@@ -26,11 +26,11 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class TreeTest {
 
-    public void hello() {
+    private void hello() {
         System.out.println("hello");
     }
 
-    public void addToTreeTest() {
+    private void addToTreeTest() {
         String test1 = "/folder1/subfolder1/node1";
         String test2 = "/folder1/subfolder2/node2";
 
@@ -41,7 +41,7 @@ public class TreeTest {
         addStringToNode(rootNode, test2);
     }
 
-    public void splitTest() {
+    private void splitTest() {
         String string1 = "hello";
         String string2 = "ufo/depp";
         String pureBranchname11 = JGSuiUtils.getINSTANCE().getPureBranchname(string1);

@@ -66,6 +66,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     private final List<IJGSsubTabController> subControllers;
 
     private JGSmainController() {
+
         logger = JGSlogger.getINSTANCE();
         utils = JGSutils.getINSTANCE();
         subControllers = new ArrayList<>();

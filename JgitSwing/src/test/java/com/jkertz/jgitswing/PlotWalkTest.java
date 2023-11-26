@@ -52,11 +52,11 @@ public class PlotWalkTest {
     //
     // @Test
     // public void hello() {}
-    public void hello() {
+    private void hello() {
         System.out.println("hello");
     }
 
-    public void testPlotWalk() {
+    private void testPlotWalk() {
         String pathString = "/home/jkertz/Develop/jgitswingexperimental/";
         System.out.println("testPlotWalk: " + pathString);
         try {
@@ -106,7 +106,7 @@ public class PlotWalkTest {
 
     }
 
-    public void testPlotWalk2() {
+    private void testPlotWalk2() {
         try {
             String pathString = "/home/jkertz/temp/cloneinitrep1/";
             System.out.println("testPlotWalk2: " + pathString);
@@ -135,7 +135,7 @@ public class PlotWalkTest {
 
     }
 
-    public void testPlotWalk3() {
+    private void testPlotWalk3() {
         try {
             String pathString = "/home/jkertz/temp/cloneinitrep1/";
             System.out.println("testPlotWalk3: " + pathString);
@@ -169,7 +169,7 @@ public class PlotWalkTest {
 
     }
 
-    public void revPlotTest1() {
+    private void revPlotTest1() {
         String pathString = "C:\\Develop\\Github\\jgitswingexperimental";
         System.out.println("revPlotTest1 " + pathString);
         File repoPathFile = Paths.get(pathString).toFile();

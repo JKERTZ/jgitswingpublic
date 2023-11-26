@@ -33,11 +33,11 @@ public class RepositoryModelTest {
 
     private final String subDirectory = "temp";
 
-    public void hello() {
+    private void hello() {
         System.out.println("hello");
     }
 
-    public void testRepositoryModelgetAllCommits() throws Exception {
+    private void testRepositoryModelgetAllCommits() throws Exception {
         String pathString = "/home/jkertz/Develop/jgitswingexperimental/";
         System.out.println("testRepositoryModelgetAllCommits: " + pathString);
         File repoPathFile = Paths.get(pathString).toFile();

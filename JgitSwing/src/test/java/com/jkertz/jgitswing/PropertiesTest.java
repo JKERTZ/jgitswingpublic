@@ -31,11 +31,11 @@ public class PropertiesTest {
     private final String propertiesFileName = "test.properties";
     private final String xmlFileName = "test.xml";
 
-    public void hello() {
+    private void hello() {
         System.out.println("hello");
     }
 
-    public void saveToProperties() throws Exception {
+    private void saveToProperties() throws Exception {
         System.out.println("saveToProperties");
         Properties prop = new Properties();
         prop.setProperty("propKey1", "propValue1");
@@ -45,7 +45,7 @@ public class PropertiesTest {
         outStream.close();
     }
 
-    public void loadFromProperties() throws Exception {
+    private void loadFromProperties() throws Exception {
         System.out.println("loadFromProperties");
         FileInputStream inStream = new FileInputStream(propertiesFileName);
         Properties prop = new Properties();
@@ -57,7 +57,7 @@ public class PropertiesTest {
         }
     }
 
-    public void saveToPropertiesXml() throws Exception {
+    private void saveToPropertiesXml() throws Exception {
         System.out.println("saveToPropertiesXml");
         Properties prop = new Properties();
         prop.setProperty("propKey1", "propValue1");
@@ -68,7 +68,7 @@ public class PropertiesTest {
         outStream.close();
     }
 
-    public void loadFromPropertiesXml() throws Exception {
+    private void loadFromPropertiesXml() throws Exception {
         System.out.println("loadFromPropertiesXml");
         FileInputStream inStream = new FileInputStream(xmlFileName);
         Properties prop = new Properties();
@@ -80,18 +80,18 @@ public class PropertiesTest {
         }
     }
 
-    public void getUserDirTest() {
+    private void getUserDirTest() {
         String currentUsersHomeDir = System.getProperty("user.home");
         String userDir = System.getProperty("user.dir");
         System.out.println("currentUsersHomeDir" + currentUsersHomeDir);
         System.out.println("userDir" + userDir);
     }
 
-    public void jGSsettingsTest() {
+    private void jGSsettingsTest() {
         JGSsettings jGSsettings = JGSsettings.getINSTANCE();
     }
 
-    public void freeObjectTest() {
+    private void freeObjectTest() {
         // Create some objects
         System.out.println("Create some objects");
         MyClass obj1 = new MyClass();
