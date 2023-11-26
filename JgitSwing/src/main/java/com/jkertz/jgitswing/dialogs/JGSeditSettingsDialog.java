@@ -22,6 +22,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -74,7 +75,7 @@ public class JGSeditSettingsDialog {
 
     private JPanel getPanel() {
         JPanel myPanel = new JPanel();
-        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
 
         myPanel.add(getThemePanel());
         myPanel.add(getRecentsPanel());
@@ -137,6 +138,7 @@ public class JGSeditSettingsDialog {
         JPanel panel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Recents");
         panel.setBorder(sectionBorder);
+//        panel.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
         Set<JGSrecent> recents = setting.getRecents();
         for (JGSrecent recent : recents) {
             panel.add(getRecentEditPanel(recent));
@@ -146,12 +148,15 @@ public class JGSeditSettingsDialog {
     }
 
     private JPanel getThemeEditPanel() {
-        JPanel nameValuePanel = new JPanel();
-        nameValuePanel.add(new JLabel("Theme"));
-        inputTheme = new JTextField();
-        inputTheme.setColumns(20);
-        nameValuePanel.add(inputTheme);
-        return nameValuePanel;
+
+        return JGSdialogUtils.getINSTANCE().getLabeledInput("Theme", inputTheme, setting.getTheme(), true);
+
+//        JPanel nameValuePanel = new JPanel();
+//        nameValuePanel.add(new JLabel("Theme"));
+//        inputTheme = new JTextField();
+//        inputTheme.setColumns(20);
+//        nameValuePanel.add(inputTheme);
+//        return nameValuePanel;
     }
 
     private JPanel getRecentEditPanel(JGSrecent recent) {
@@ -160,27 +165,56 @@ public class JGSeditSettingsDialog {
         String remotePassword = recent.getRemotePassword();
         String uri = recent.getUri();
 
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+//        JPanel panel = new JPanel(new GridLayout(0, 1));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
         TitledBorder sectionBorder = new TitledBorder(localPath);
         panel.setBorder(sectionBorder);
 
-        panel.add(getNameValuePanel("localPath", localPath, new JTextField()));
-        panel.add(getNameValuePanel("remoteUsername", remoteUsername, new JTextField()));
-        panel.add(getNameValuePanel("remotePassword", remotePassword, new JTextField()));
-        panel.add(getNameValuePanel("uri", uri, new JTextField()));
+        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("localPath", new JTextField(), localPath, false));
+        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("remoteUsername", new JTextField(), remoteUsername, false));
+        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("remotePassword", new JTextField(), remotePassword, false));
+        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("uri", new JTextField(), uri, false));
 
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//
+//        TitledBorder sectionBorder = new TitledBorder(localPath);
+//        panel.setBorder(sectionBorder);
+////        panel.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
+//        JPanel localPathPanel = getNameValuePanel("localPath", localPath, new JTextField());
+//        localPathPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+//        panel.add(localPathPanel);
+//        panel.add(getNameValuePanel("localPath", localPath, new JTextField()));
+//        panel.add(getNameValuePanel("remoteUsername", remoteUsername, new JTextField()));
+//        panel.add(getNameValuePanel("remotePassword", remotePassword, new JTextField()));
+//        panel.add(getNameValuePanel("uri", uri, new JTextField()));
         return panel;
 
     }
 
     private JPanel getNameValuePanel(String name, String value, JTextField input) {
         JPanel nameValuePanel = new JPanel();
+//        nameValuePanel.setLayout(new BoxLayout(nameValuePanel, BoxLayout.LINE_AXIS));
         nameValuePanel.add(new JLabel(name));
+//        nameValuePanel.add(Box.createHorizontalGlue());
         input = new JTextField();
         input.setColumns(20);
         input.setText(value);
         nameValuePanel.add(input);
+//        nameValuePanel.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
         return nameValuePanel;
     }
 
+    private Box getNameValueBox(String name, String value, JTextField input) {
+        Box nameValueBox = Box.createHorizontalBox();
+        nameValueBox.add(new JLabel(name));
+        input = new JTextField();
+        input.setColumns(20);
+        input.setText(value);
+        nameValueBox.add(input);
+
+        return nameValueBox;
+    }
 }

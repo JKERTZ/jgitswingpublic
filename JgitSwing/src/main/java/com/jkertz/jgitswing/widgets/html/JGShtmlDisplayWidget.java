@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.widgets.html;
 
+import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +27,6 @@ import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
 
 /**
  *
@@ -63,7 +63,7 @@ public class JGShtmlDisplayWidget extends JGScommonScrollwidget {
         try {
             jEditorPane.setPage(url);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             jEditorPane.setContentType("text/html");
             jEditorPane.setText("<html>Page not found. " + filename + "</html>");
         }

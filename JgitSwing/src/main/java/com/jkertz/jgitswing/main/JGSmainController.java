@@ -45,6 +45,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //FIXME: after pulling changes are shown in the "staged" panel
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
     //FIXME: progress bar in Toast flickering on Linux (only wayland)
+    //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
 
     //incomplete features
     //TODO: make config like pull-result

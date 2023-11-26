@@ -305,7 +305,7 @@ public class JGSsettings {
                 }
             }
         }
-        return new JGSsetting();
+        return createNewSettingsFile();
     }
 
     private void save() {

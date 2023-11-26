@@ -39,7 +39,27 @@
             <version>3.2.5</version>
         </dependency>
     </dependencies>
-    
+ 
+    <!-- enable to run all tests -->
+    <!-- 
+        <build>
+            <plugins>
+                  <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.2.2</version>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>          
+    -->
     <profiles>
         <profile>
             <id>production</id>
