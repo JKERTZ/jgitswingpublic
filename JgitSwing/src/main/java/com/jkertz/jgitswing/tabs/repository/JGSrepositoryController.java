@@ -25,6 +25,7 @@ import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.IJGSsubTabController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGShtmlUtils;
 import com.jkertz.jgitswing.tabs.config.JGSconfigController;
 import com.jkertz.jgitswing.tabs.currentdiff.JGScurrentDiffController;
 import com.jkertz.jgitswing.tabs.graph.JGSgraphController;
@@ -70,6 +71,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     private JGShistoryController jGShistoryController;
     private JGSgraphController jGSgraphController;
     private JGSconfigController jGSconfigController;
+    private JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
 
     public JGSrepositoryController(JGSrepositoryModel jGSrepositoryModel) {
         super(jGSrepositoryModel.getDirectoryFromRepositoryName(), jGSrepositoryModel);
@@ -304,7 +306,7 @@ public final class JGSrepositoryController extends JGScommonController implement
                 int aheadCount = branchTrackingStatus.getAheadCount();
                 int behindCount = branchTrackingStatus.getBehindCount();
                 String remoteTrackingBranch = branchTrackingStatus.getRemoteTrackingBranch();
-                String aheadBehind = " (↑" + aheadCount + " ↓" + behindCount + ") ";
+                String aheadBehind = htmlUtils.toAheadBehind(aheadCount, behindCount);
                 labelText += aheadBehind;
                 String htmlToolTip = "<html>";
                 htmlToolTip += "<b>" + branchName + "</b>";//bold
@@ -312,14 +314,14 @@ public final class JGSrepositoryController extends JGScommonController implement
                 if (aheadCount == 0) {
                     htmlToolTip += "↑ Ahead: " + aheadCount;
                 } else {
-                    htmlToolTip += "<div style='background:red;'> ↑ Ahead: " + aheadCount + "</div>";
+//                    htmlToolTip += "<div style='background:red;'> ↑ Ahead: " + aheadCount + "</div>";
                     htmlToolTip += "<font color=orange>" + "↑ Ahead: " + aheadCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
                 if (behindCount == 0) {
                     htmlToolTip += " ↓ Behind: " + behindCount;
                 } else {
-                    htmlToolTip += "<div style='background:red;'> ↓ Behind: " + behindCount + "</div>";
+//                    htmlToolTip += "<div style='background:red;'> ↓ Behind: " + behindCount + "</div>";
                     htmlToolTip += "<font color=orange>" + " ↓ Behind: " + behindCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
@@ -344,7 +346,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             logger.getLogger().log(Level.SEVERE, "updateBranchName", ex);
             panel.getLabelBranch().setToolTipText(ex.getMessage());
         }
-        panel.getLabelBranch().setText(labelText);
+        panel.getLabelBranch().setText(htmlUtils.toHtml(labelText));
     }
 
 //    private void updateAheadBehind() {

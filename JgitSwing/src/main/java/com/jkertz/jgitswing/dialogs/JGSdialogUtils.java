@@ -142,7 +142,7 @@ public class JGSdialogUtils {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 //        panel.setBackground(Color.YELLOW);
 
-        JPanel subpanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel subpanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 //        subpanel.setBackground(Color.RED);
 
         JLabel jLabel = new JLabel(text, JLabel.TRAILING);

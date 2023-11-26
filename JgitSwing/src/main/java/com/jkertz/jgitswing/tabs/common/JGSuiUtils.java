@@ -16,6 +16,16 @@
  */
 package com.jkertz.jgitswing.tabs.common;
 
+import com.jkertz.jgitswing.businesslogic.JGSstagingStatus;
+import com.jkertz.jgitswing.logger.JGSlogger;
+import com.jkertz.jgitswing.model.JGStag;
+import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
+import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
+import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
+import com.jkertz.jgitswing.tablemodels.ListRefTagsTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,15 +47,6 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import com.jkertz.jgitswing.logger.JGSlogger;
-import com.jkertz.jgitswing.model.JGStag;
-import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
-import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
-import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
-import com.jkertz.jgitswing.tablemodels.ListRefTagsTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
@@ -426,18 +427,18 @@ public class JGSuiUtils {
 
     private Map<String, String> getStagedFiles(Status status) {
         Map<String, String> result = new HashMap<>();
-        addStatusToMap(result, status.getChanged(), "Changed");
-        addStatusToMap(result, status.getAdded(), "Added");
-        addStatusToMap(result, status.getRemoved(), "Removed");
+        addStatusToMap(result, status.getChanged(), JGSstagingStatus.Changed.toString());
+        addStatusToMap(result, status.getAdded(), JGSstagingStatus.Added.toString());
+        addStatusToMap(result, status.getRemoved(), JGSstagingStatus.Removed.toString());
         return result;
     }
 
     private Map<String, String> getUnstagedFiles(Status status) {
         Map<String, String> result = new HashMap<>();
-        addStatusToMap(result, status.getModified(), "Modified");
-        addStatusToMap(result, status.getUntracked(), "Untracked");
-        addStatusToMap(result, status.getConflicting(), "Conflicting");
-        addStatusToMap(result, status.getMissing(), "Missing");
+        addStatusToMap(result, status.getModified(), JGSstagingStatus.Modified.toString());
+        addStatusToMap(result, status.getUntracked(), JGSstagingStatus.Untracked.toString());
+        addStatusToMap(result, status.getConflicting(), JGSstagingStatus.Conflicting.toString());
+        addStatusToMap(result, status.getMissing(), JGSstagingStatus.Missing.toString());
         return result;
     }
 

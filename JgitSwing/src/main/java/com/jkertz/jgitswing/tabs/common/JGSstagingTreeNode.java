@@ -25,13 +25,14 @@ public class JGSstagingTreeNode {
     private final String file;
     private final String statusname;
     private final String htmlNode;
+    private JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
 
     public JGSstagingTreeNode(String file, String statusname) {
         this.file = file;
         this.statusname = statusname;
         String pureFilename = JGSuiUtils.getINSTANCE().getPureBranchname(file);
-        String statushtml = " <i>" + statusname + "</i>";
-        htmlNode = "<html>" + pureFilename + statushtml + "</html>";
+        String statushtml = htmlUtils.toStagingStatus(statusname);
+        htmlNode = htmlUtils.toHtml(pureFilename + " " + statushtml);
     }
 
     @Override
