@@ -18,6 +18,7 @@ package com.jkertz.jgitswing.dialogs;
 
 import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSsetting;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +29,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
@@ -39,7 +42,7 @@ import javax.swing.border.TitledBorder;
 public class JGSeditSettingsDialog {
 
     private JGSsetting setting;
-    private JFrame parentFrame;
+    private Frame parentFrame;
     private JTextField inputTheme;
     private JDialog newdialog;
     private boolean dialogResultOK = false;
@@ -48,9 +51,12 @@ public class JGSeditSettingsDialog {
         this.setting = oldSetting;
     }
 
+//JFrame parentFrame
     public boolean show(JFrame parentFrame) {
         this.parentFrame = parentFrame;
 //        Frame rootFrame = JOptionPane.getRootFrame();
+//        this.parentFrame = rootFrame;
+
         final int x = parentFrame.getX();
         final int y = parentFrame.getY();
         final int parentWidth = parentFrame.getWidth();
@@ -132,8 +138,9 @@ public class JGSeditSettingsDialog {
         return panel;
     }
 
-    private JPanel getRecentsPanel() {
-//        JScrollPane jScrollPane = new JScrollPane();
+    private JScrollPane getRecentsPanel() {
+
+        JScrollPane jScrollPane = new JScrollPane();
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Recents");
@@ -144,7 +151,8 @@ public class JGSeditSettingsDialog {
             panel.add(getRecentEditPanel(recent));
         }
 //        jScrollPane.add(panel);
-        return panel;
+        jScrollPane.setViewportView(panel);
+        return jScrollPane;
     }
 
     private JPanel getThemeEditPanel() {
