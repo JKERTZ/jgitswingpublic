@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.dialogs;
 
+import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -39,21 +40,28 @@ public class JGScheckoutDialog {
     private JDialog newdialog;
     private boolean dialogResultOK = false;
 
-    private JTextField sourceInput;
-    private JTextField targetInput;
+    private final JTextField sourceInput;
+    private final JTextField targetInput;
 
-    private String sourceBranch;
+    private final String sourceBranch;
     private String targetBranch;
 
-    public boolean show(Component parent) {
+    private final Component parent;
+
+    public JGScheckoutDialog(Component parent, String sourceBranch) {
+        this.sourceBranch = sourceBranch;
+        this.parent = parent;
+        this.targetBranch = JGSuiUtils.getINSTANCE().getRemotePureBranchName(sourceBranch);
+        this.sourceInput = new JTextField();
+        this.targetInput = new JTextField();
+    }
+
+    public boolean show() {
         JPanel myPanel = getPanel();
         String title = "Checkout";
         int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        targetBranch = targetInput.getText();
         return result == JOptionPane.OK_OPTION;
-    }
-
-    public String getSourceBranch() {
-        return sourceBranch;
     }
 
     public String getTargetBranch() {
@@ -82,7 +90,7 @@ public class JGScheckoutDialog {
         JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Target Branch");
         sectionPanel.setBorder(sectionBorder);
-        sectionPanel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("Target", targetInput, targetBranch, true));
+        sectionPanel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("Target", targetInput, targetBranch, false));
         return sectionPanel;
     }
 

@@ -146,7 +146,8 @@ public class JGSdialogUtils {
 //        subpanel.setBackground(Color.RED);
 
         JLabel jLabel = new JLabel(text, JLabel.TRAILING);
-        jTextField = new JTextField(40);
+//        jTextField = new JTextField(40);
+        jTextField.setColumns(40);
         jLabel.setLabelFor(jTextField);
         jTextField.setEditable(!isReadonly);
         if (value != null) {

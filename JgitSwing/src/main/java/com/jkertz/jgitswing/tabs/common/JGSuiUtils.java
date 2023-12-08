@@ -263,7 +263,7 @@ public class JGSuiUtils {
 //        }
         for (Ref branch : listLocalBranches) {
             BranchTrackingStatus branchTrackingStatus = mapLocalBranches.get(branch);
-            JGSbranchTreeNode treeNode = new JGSbranchTreeNode(branch, branchTrackingStatus, currentBranch);
+            JGSlocalBranchTreeNode treeNode = new JGSlocalBranchTreeNode(branch, branchTrackingStatus, currentBranch);
             addStringToNode(localRootNode, treeNode);
         }
 
@@ -282,8 +282,10 @@ public class JGSuiUtils {
 //            remoteIndex++;
 //        }
         for (Ref branch : listRemoteBranches) {
-            String name = branch.getName();
-            addStringToNode(remoteRootNode, name);
+//            String name = branch.getName();
+//            addStringToNode(remoteRootNode, name);
+            JGSremoteBranchTreeNode treeNode = new JGSremoteBranchTreeNode(branch);
+            addStringToNode(remoteRootNode, treeNode);
         }
         return defaultTreeModel;
     }
@@ -325,7 +327,16 @@ public class JGSuiUtils {
         addRecusiveToNode.add(localNode);
     }
 
-    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSbranchTreeNode treeNode) {
+    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSlocalBranchTreeNode treeNode) {
+        String name = treeNode.getBranch().getName();
+        String[] split = name.split("/");
+        int length = split.length;
+        DefaultMutableTreeNode addRecusiveToNode = addRecusiveToNode(rootNode, split, 0, length - 1);
+        DefaultMutableTreeNode localNode = new DefaultMutableTreeNode(treeNode);
+        addRecusiveToNode.add(localNode);
+    }
+
+    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSremoteBranchTreeNode treeNode) {
         String name = treeNode.getBranch().getName();
         String[] split = name.split("/");
         int length = split.length;
@@ -382,8 +393,26 @@ public class JGSuiUtils {
         return split[length - 1];
     }
 
-    private String removeRefsRemotes(String name) {
-        String result = name.replace("refs/remotes/origin/", "");
+    /**
+     * retrieves remote name, usually origin, from /refs/remotes/origin/...
+     *
+     * @param text
+     * @return
+     */
+    public String getRemoteName(String text) {
+        String[] split = text.split("/");
+        return split[2];
+    }
+
+    public String removeRefsRemotes(String name) {
+        String toReplace = "refs/remotes/";
+        String result = name.replace(toReplace, "");
+        return result;
+    }
+
+    public String getRemotePureBranchName(String text) {
+        String toReplace = "refs/remotes/" + getRemoteName(text) + "/";
+        String result = text.replace(toReplace, "");
         return result;
     }
 

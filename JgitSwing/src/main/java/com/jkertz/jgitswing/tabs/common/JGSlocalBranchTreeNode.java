@@ -23,14 +23,14 @@ import org.eclipse.jgit.lib.Ref;
  *
  * @author jkertz
  */
-public class JGSbranchTreeNode {
+public class JGSlocalBranchTreeNode {
 
     private final Ref branch;
     private final BranchTrackingStatus branchTrackingStatus;
     private final String htmlNode;
-    private JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
+    private final JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
 
-    public JGSbranchTreeNode(Ref branch, BranchTrackingStatus branchTrackingStatus, String currentBranch) {
+    public JGSlocalBranchTreeNode(Ref branch, BranchTrackingStatus branchTrackingStatus, String currentBranch) {
         this.branch = branch;
         this.branchTrackingStatus = branchTrackingStatus;
 
