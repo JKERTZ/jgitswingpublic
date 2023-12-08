@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.dialogs;
 
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -31,7 +33,7 @@ import javax.swing.border.TitledBorder;
  *
  * @author jkertz
  */
-public class JGScheckDialog {
+public class JGScheckoutDialog {
 
     private JFrame parentFrame;
     private JDialog newdialog;
@@ -43,25 +45,19 @@ public class JGScheckDialog {
     private String sourceBranch;
     private String targetBranch;
 
-    public boolean show(JFrame parentFrame) {
-        this.parentFrame = parentFrame;
-//        Frame rootFrame = JOptionPane.getRootFrame();
-        final int x = parentFrame.getX();
-        final int y = parentFrame.getY();
-        final int parentWidth = parentFrame.getWidth();
-        final int parentHeight = parentFrame.getHeight();
-//        final int locationX = (x + parentWidth) / 2;
-//        final int locationY = (y + parentHeight) / 2;
-        final int locationX = (x + 10);
-        final int locationY = (y + 10);
+    public boolean show(Component parent) {
+        JPanel myPanel = getPanel();
+        String title = "Checkout";
+        int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return result == JOptionPane.OK_OPTION;
+    }
 
-        newdialog = new JDialog(parentFrame, "Clone Repository ", true);
-        newdialog.setContentPane(getPanel());
-        newdialog.setLocation(locationX, locationY);
-        newdialog.pack();//adapt dialog size to content
-        newdialog.setVisible(true);//waits here until closed
+    public String getSourceBranch() {
+        return sourceBranch;
+    }
 
-        return dialogResultOK;
+    public String getTargetBranch() {
+        return targetBranch;
     }
 
     private JPanel getPanel() {
@@ -69,7 +65,7 @@ public class JGScheckDialog {
         myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
         myPanel.add(getSourcePanel());
         myPanel.add(getTargetPanel());
-        myPanel.add(getButtonPanel());
+//        myPanel.add(getButtonPanel());
 
         return myPanel;
     }

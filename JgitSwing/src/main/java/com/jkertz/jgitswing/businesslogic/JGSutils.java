@@ -140,8 +140,8 @@ public class JGSutils {
         return checkoutBranch;
     }
 
-    public Ref checkoutRemoteBranch(Git git, String name) throws Exception {
-        Ref checkoutBranch = wrapper.createAndCheckoutBranch(git, name);
+    public Ref checkoutRemoteBranch(Git git, String name, String remoteAndBranchName) throws Exception {
+        Ref checkoutBranch = wrapper.createAndCheckoutRemoteBranch(git, name, remoteAndBranchName);
         return checkoutBranch;
     }
 

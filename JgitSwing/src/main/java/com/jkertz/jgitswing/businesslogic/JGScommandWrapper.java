@@ -405,6 +405,26 @@ public class JGScommandWrapper {
     }
 
     /**
+     * create and checkout a specific branch
+     *
+     * @param git
+     * @param branchName
+     * @param remoteAndBranchName
+     * @return
+     * @throws GitAPIException
+     */
+    protected Ref createAndCheckoutRemoteBranch(Git git, String branchName, String remoteAndBranchName) throws GitAPIException {
+        Ref call = git.checkout()
+                .setName(branchName)
+                .setCreateBranch(true)
+                .setStartPoint(remoteAndBranchName)
+                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+                .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+                .call();
+        return call;
+    }
+
+    /**
      * trigger a merge into the current branch
      *
      * @param git

@@ -16,18 +16,19 @@
  */
 package com.jkertz.jgitswing.tabs.branches;
 
+import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
+import com.jkertz.jgitswing.dialogs.JGScheckoutDialog;
+import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tabs.common.IJGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGSbranchTreeNode;
+import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import com.jkertz.jgitswing.tabs.common.IJGScommonController;
-import com.jkertz.jgitswing.tabs.common.JGSbranchTreeNode;
-import com.jkertz.jgitswing.tabs.common.JGScommonController;
-import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
@@ -100,6 +101,13 @@ public final class JGSbranchesController extends JGScommonController implements 
     @Override
     public void onBranchesPanelClickedCheckout() {
         showProgressBar("onIJGSbranchesPanelCheckoutClicked");
+
+        JGScheckoutDialog JGScheckoutDialog = new JGScheckoutDialog();
+        boolean result = JGScheckoutDialog.show(panel);
+        if (!result) {
+            return;
+        }
+
         String pathComponent0 = selectionPath.getPathComponent(0).toString();//Branches
         String pathComponent1 = selectionPath.getPathComponent(1).toString();//local
         Object lastPathComponent = selectionPath.getLastPathComponent();
@@ -138,7 +146,8 @@ public final class JGSbranchesController extends JGScommonController implements 
 
                 case REMOTESTRING -> {
                     logger.getLogger().info("checkoutRemoteBranch: " + pathComponent2);
-                    Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, pathComponent2);
+                    String remoteAndBranchName = null;
+                    Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, pathComponent2, remoteAndBranchName);
 //                    showInfoDialog("onBranchesPanelClickedCheckout", checkoutRemoteBranch.getName());
                     showInfoToast("Checkout success " + pathComponent2);
                     hideProgressBar();
