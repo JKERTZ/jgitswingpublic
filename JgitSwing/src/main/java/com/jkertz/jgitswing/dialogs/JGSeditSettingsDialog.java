@@ -18,6 +18,7 @@ package com.jkertz.jgitswing.dialogs;
 
 import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSsetting;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -46,13 +47,22 @@ public class JGSeditSettingsDialog {
     private JTextField inputTheme;
     private JDialog newdialog;
     private boolean dialogResultOK = false;
+    private final Component parent;
 
-    public JGSeditSettingsDialog(JGSsetting oldSetting) {
+    public JGSeditSettingsDialog(Component parent, JGSsetting oldSetting) {
+        this.parent = parent;
         this.setting = oldSetting;
     }
 
+    public boolean show() {
+        JPanel myPanel = getPanel();
+        String title = "Checkout";
+        int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return result == JOptionPane.OK_OPTION;
+    }
+
 //JFrame parentFrame
-    public boolean show(JFrame parentFrame) {
+    private boolean show(JFrame parentFrame) {
         this.parentFrame = parentFrame;
 //        Frame rootFrame = JOptionPane.getRootFrame();
 //        this.parentFrame = rootFrame;
@@ -85,7 +95,7 @@ public class JGSeditSettingsDialog {
 
         myPanel.add(getThemePanel());
         myPanel.add(getRecentsPanel());
-        myPanel.add(getButtonPanel());
+//        myPanel.add(getButtonPanel());
 
 //        myPanel.add(jScrollPane);
         return myPanel;
@@ -156,7 +166,7 @@ public class JGSeditSettingsDialog {
     }
 
     private JPanel getThemeEditPanel() {
-
+        inputTheme = new JTextField();
         return JGSdialogUtils.getINSTANCE().getLabeledInput("Theme", inputTheme, setting.getTheme(), true);
 
 //        JPanel nameValuePanel = new JPanel();

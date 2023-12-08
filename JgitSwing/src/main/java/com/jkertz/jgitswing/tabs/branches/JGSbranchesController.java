@@ -43,8 +43,6 @@ public final class JGSbranchesController extends JGScommonController implements 
 
     private JGSbranchesPanel panel;
     private TreePath selectionPath;
-    private final String LOCALSTRING = "local";
-    private final String REMOTESTRING = "remote";
 
     public JGSbranchesController(JGSrepositoryModel jGSrepositoryModel) {
         super("Branches", jGSrepositoryModel);
@@ -131,7 +129,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                             return;
                         }
                         String path = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
-                        logger.getLogger().info("checkoutLocalBranch: " + path);
+                        logger.getLogger().log(Level.INFO, "checkoutLocalBranch: {0}", path);
                         Ref checkoutLocalBranch = utils.checkoutLocalBranch(git, path);
                         showInfoToast("Checkout success " + path);
                         hideProgressBar();
@@ -150,7 +148,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                         }
                         String newBranchName = jGScheckoutDialog.getTargetBranch();
                         String remoteAndBranchName = JGSuiUtils.getINSTANCE().removeRefsRemotes(branch.getName());
-                        logger.getLogger().info("checkoutRemoteBranch: " + remoteAndBranchName);
+                        logger.getLogger().log(Level.INFO, "checkoutRemoteBranch: {0}", remoteAndBranchName);
                         Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, newBranchName, remoteAndBranchName);
                         showInfoToast("Checkout success " + newBranchName);
                         hideProgressBar();
@@ -164,69 +162,6 @@ public final class JGSbranchesController extends JGScommonController implements 
             showErrorDialog("onBranchesPanelClickedCheckout", "checkoutBranch ERROR:\n" + ex.getMessage());
             hideProgressBar();
         }
-
-//        JGScheckoutDialog JGScheckoutDialog = new JGScheckoutDialog();
-//        boolean result = JGScheckoutDialog.show(panel);
-//        if (!result) {
-//            return;
-//        }
-//
-//        String pathComponent0 = selectionPath.getPathComponent(0).toString();//Branches
-//        String pathComponent1 = selectionPath.getPathComponent(1).toString();//local
-//        Object lastPathComponent = selectionPath.getLastPathComponent();
-////        String pathComponent2 = null;
-////
-////        if (lastPathComponent instanceof DefaultMutableTreeNode defaultMutableTreeNode) {
-////            Object userObject = defaultMutableTreeNode.getUserObject();
-////            if (userObject instanceof JGSbranchTreeNode jGSbranchTreeNode) {
-////                Ref branch = jGSbranchTreeNode.getBranch();
-////                pathComponent2 = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
-////            }
-////        }
-//        String pathComponent2 = getSelectedTreeNode();
-//        Git git = jGSrepositoryModel.getGit();
-//        try {
-//            if (pathComponent2 == null) {
-//                showInfoDialog("Checkout not possible", "Checkout not possible");
-//                hideProgressBar();
-//                return;
-//            }
-//
-//            //Userabfrage
-//            boolean userconfirmed = showConfirmDialog("Confirm checkout", "Checkout Branch " + pathComponent2 + " ?");
-//            if (!userconfirmed) {
-//                hideProgressBar();
-//                return;
-//            }
-//            switch (pathComponent1) {
-//                case LOCALSTRING -> {
-//                    logger.getLogger().info("checkoutLocalBranch: " + pathComponent2);
-//                    Ref checkoutLocalBranch = utils.checkoutLocalBranch(git, pathComponent2);
-////                    showInfoDialog("onBranchesPanelClickedCheckout", checkoutLocalBranch.getName());
-//                    showInfoToast("Checkout success " + pathComponent2);
-//                    hideProgressBar();
-//                }
-//
-//                case REMOTESTRING -> {
-//                    logger.getLogger().info("checkoutRemoteBranch: " + pathComponent2);
-//                    String remoteAndBranchName = null;
-//                    Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, pathComponent2, remoteAndBranchName);
-////                    showInfoDialog("onBranchesPanelClickedCheckout", checkoutRemoteBranch.getName());
-//                    showInfoToast("Checkout success " + pathComponent2);
-//                    hideProgressBar();
-//                }
-//
-//                default -> {
-//                    logger.getLogger().severe("Selected path not valid!");
-//                    hideProgressBar();
-//                }
-//            }
-//
-//        } catch (Exception ex) {
-//            logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCheckout", ex);
-//            showErrorDialog("onBranchesPanelClickedCheckout", "checkoutBranch ERROR:\n" + ex.getMessage());
-//            hideProgressBar();
-//        }
     }
 
     @Override
@@ -249,7 +184,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                 hideProgressBar();
                 return;
             }
-            logger.getLogger().info("mergeIntoCurrentBranch: " + pathComponent2);
+            logger.getLogger().log(Level.INFO, "mergeIntoCurrentBranch: {0}", pathComponent2);
             MergeResult result = utils.mergeIntoCurrentBranch(git, pathComponent2);
 //            showInfoDialog("onBranchesPanelClickedMerge", result.getMergeStatus().toString());
             showInfoToast("Merge success " + pathComponent2);
@@ -284,7 +219,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                 hideProgressBar();
                 return;
             }
-            logger.getLogger().info("deleteBranch: " + pathComponent2);
+            logger.getLogger().log(Level.INFO, "deleteBranch: {0}", pathComponent2);
             List<String> result = utils.deleteBranch(git, pathComponent2);
 //            showInfoDialog("onIJGSbranchesPanelDeleteClicked", result.toString());
             showInfoToast("Delete success " + pathComponent2);

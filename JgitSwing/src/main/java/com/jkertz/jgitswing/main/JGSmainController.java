@@ -288,8 +288,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         JGSsetting oldSetting = JGSsettings.getINSTANCE().getSetting();
 
         JFrame frame = panel.getjFrame();
-        JGSeditSettingsDialog jGSeditSettingsDialog = new JGSeditSettingsDialog(oldSetting);
-        boolean dialogResultOK = jGSeditSettingsDialog.show(frame);
+        JGSeditSettingsDialog jGSeditSettingsDialog = new JGSeditSettingsDialog(frame, oldSetting);
+        boolean dialogResultOK = jGSeditSettingsDialog.show();
         if (dialogResultOK) {
             //save settings
             JGSsetting newSetting = jGSeditSettingsDialog.getSetting();

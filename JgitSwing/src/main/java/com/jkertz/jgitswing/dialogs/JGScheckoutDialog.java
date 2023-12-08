@@ -19,12 +19,7 @@ package com.jkertz.jgitswing.dialogs;
 import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -35,10 +30,6 @@ import javax.swing.border.TitledBorder;
  * @author jkertz
  */
 public class JGScheckoutDialog {
-
-    private JFrame parentFrame;
-    private JDialog newdialog;
-    private boolean dialogResultOK = false;
 
     private final JTextField sourceInput;
     private final JTextField targetInput;
@@ -73,7 +64,6 @@ public class JGScheckoutDialog {
         myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
         myPanel.add(getSourcePanel());
         myPanel.add(getTargetPanel());
-//        myPanel.add(getButtonPanel());
 
         return myPanel;
     }
@@ -92,35 +82,6 @@ public class JGScheckoutDialog {
         sectionPanel.setBorder(sectionBorder);
         sectionPanel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("Target", targetInput, targetBranch, false));
         return sectionPanel;
-    }
-
-    private JPanel getButtonPanel() {
-        JPanel nameValuePanel = new JPanel();
-
-        JButton jButtonOK = new JButton("OK");
-        jButtonOK.addActionListener(getActionListenerButtonOK());
-        nameValuePanel.add(jButtonOK);
-
-        JButton jButtonCancel = new JButton("Cancel");
-        jButtonCancel.addActionListener(getActionListenerButtonCancel());
-        nameValuePanel.add(jButtonCancel);
-
-        return nameValuePanel;
-    }
-
-    private ActionListener getActionListenerButtonOK() {
-        ActionListener actionListener = (ActionEvent e) -> {
-            newdialog.setVisible(false);
-        };
-        return actionListener;
-    }
-
-    private ActionListener getActionListenerButtonCancel() {
-        ActionListener actionListener = (ActionEvent e) -> {
-            dialogResultOK = false;
-            newdialog.setVisible(false);
-        };
-        return actionListener;
     }
 
 }
