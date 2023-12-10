@@ -90,10 +90,10 @@ public class JGSlookAndFeels {
         //Nimus themes destroy behaviour of other themes!
 //            result.put("JGSNimbusLookAndFeel", "jgitswing.themes.JGSNimbusLookAndFeel");
 //            result.put("DarkNimbusLookAndFeel", "jgitswing.themes.DarkNimbusLookAndFeel");
-        result.put("DarkSteelLookAndFeel", "jgitswing.themes.DarkSteelLookAndFeel");
-        result.put("DarkOceanLookAndFeel", "jgitswing.themes.DarkOceanLookAndFeel");
-        result.put("LightSteelLookAndFeel", "jgitswing.themes.LightSteelLookAndFeel");
-        result.put("LightOceanLookAndFeel", "jgitswing.themes.LightOceanLookAndFeel");
+        result.put("DarkSteelLookAndFeel", "com.jkertz.jgitswing.themes.DarkSteelLookAndFeel");
+        result.put("DarkOceanLookAndFeel", "com.jkertz.jgitswing.themes.DarkOceanLookAndFeel");
+        result.put("LightSteelLookAndFeel", "com.jkertz.jgitswing.themes.LightSteelLookAndFeel");
+        result.put("LightOceanLookAndFeel", "com.jkertz.jgitswing.themes.LightOceanLookAndFeel");
 
         installThemes(result);
         return result;

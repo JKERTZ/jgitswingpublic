@@ -30,6 +30,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -64,6 +65,10 @@ public class JGSmainView {
     protected JGSmainView(IJGSmainView receiver) {
         this.receiver = receiver;
         this.jGSlookAndFeels = JGSlookAndFeels.getINSTANCE();
+
+        // enable custom window decorations (not working with native LAFs)
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JDialog.setDefaultLookAndFeelDecorated(true);
 
         //set default theme
         try {
