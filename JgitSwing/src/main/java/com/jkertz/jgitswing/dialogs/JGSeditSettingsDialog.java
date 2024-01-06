@@ -19,6 +19,7 @@ package com.jkertz.jgitswing.dialogs;
 import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSsetting;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -80,6 +81,8 @@ public class JGSeditSettingsDialog {
         newdialog.setContentPane(getPanel());
         newdialog.setLocation(locationX, locationY);
         newdialog.pack();//adapt dialog size to content
+//        Dimension maximumSize = new Dimension(parentWidth, parentHeight);
+//        newdialog.setMaximumSize(maximumSize);
         newdialog.setVisible(true);//waits here until closed
 
         return dialogResultOK;
@@ -151,7 +154,6 @@ public class JGSeditSettingsDialog {
     private JScrollPane getRecentsPanel() {
 
         JScrollPane jScrollPane = new JScrollPane();
-
         JPanel panel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Recents");
         panel.setBorder(sectionBorder);
@@ -161,6 +163,14 @@ public class JGSeditSettingsDialog {
             panel.add(getRecentEditPanel(recent));
         }
 //        jScrollPane.add(panel);
+        int height = panel.getHeight();
+        int width = panel.getWidth();
+        int prefHeight = panel.getPreferredSize().height;
+        int prefWidth = panel.getPreferredSize().width;
+//        int scrollbarWidth = jScrollPane.getVerticalScrollBar().getWidth();
+        int scrollbarWidth = jScrollPane.getVerticalScrollBar().getPreferredSize().width;
+        jScrollPane.setPreferredSize(new Dimension(prefWidth + scrollbarWidth + 10, 400));
+
         jScrollPane.setViewportView(panel);
         return jScrollPane;
     }
