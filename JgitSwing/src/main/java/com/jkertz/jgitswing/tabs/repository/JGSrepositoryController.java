@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -549,6 +550,8 @@ public final class JGSrepositoryController extends JGScommonController implement
         JMenuItem closer = getCloseMenuItem(selectedTabTitle);
         menu.add(closer);
 
+        menu.add(new JSeparator());
+
         List<String> openTabTitles = getOpenTabTitles();
         for (String openTabTitle : openTabTitles) {
             if (!openTabTitle.equals(selectedTabTitle)) {
@@ -556,6 +559,8 @@ public final class JGSrepositoryController extends JGScommonController implement
                 menu.add(closeitem);
             }
         }
+
+        menu.add(new JSeparator());
 
         List<String> closedTabTitles = getClosedTabTitles();
         for (String closedTabTitle : closedTabTitles) {

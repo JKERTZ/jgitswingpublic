@@ -57,7 +57,7 @@ public class JGSeditSettingsDialog {
 
     public boolean show() {
         JPanel myPanel = getPanel();
-        String title = "Checkout";
+        String title = "Settings";
         int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }

@@ -26,6 +26,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +109,8 @@ public class JGSmainView {
         jFrame.setJMenuBar(jMenuBar);
         jFrame.add(jProgressBar, BorderLayout.SOUTH);
         jFrame.add(jTabbedPane, BorderLayout.CENTER);
+
+        jFrame.addWindowListener(getMainWindowListener());
 
         jFrame.setVisible(true);//making the frame visible
 
@@ -439,6 +444,18 @@ public class JGSmainView {
             return null;
         }
 
+    }
+
+    private WindowListener getMainWindowListener() {
+        return new WindowAdapter() {
+            // Method
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (showConfirmDialog("Quit", "really quit?")) {
+                    System.exit(0);
+                }
+            }
+        };
     }
 
 }
