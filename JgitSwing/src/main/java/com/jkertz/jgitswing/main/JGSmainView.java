@@ -16,6 +16,9 @@
  */
 package com.jkertz.jgitswing.main;
 
+import com.jkertz.jgitswing.dialogs.JGSopenRepositoryFileChooser;
+import com.jkertz.jgitswing.dialogs.JgitSwingToast;
+import com.jkertz.jgitswing.settings.JGSsettings;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.LayoutManager;
@@ -23,10 +26,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -41,10 +48,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import com.jkertz.jgitswing.dialogs.JGSopenRepositoryFileChooser;
-import com.jkertz.jgitswing.dialogs.JgitSwingToast;
-import com.jkertz.jgitswing.settings.JGSsettings;
 
 /**
  *
@@ -64,6 +67,10 @@ public class JGSmainView {
     protected JGSmainView(IJGSmainView receiver) {
         this.receiver = receiver;
         this.jGSlookAndFeels = JGSlookAndFeels.getINSTANCE();
+
+        // enable custom window decorations (not working with native LAFs)
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JDialog.setDefaultLookAndFeelDecorated(true);
 
         //set default theme
         try {
@@ -86,7 +93,9 @@ public class JGSmainView {
         jFrame.setSize(800, 600);
         LayoutManager layout = new BorderLayout();
         jFrame.setLayout(layout);
-        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+//        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);//always close window
+        jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);//handle close
 
         jMenuRepository = new JMenu("Repository");
         jMenuThemes = new JMenu("Themes");
@@ -101,6 +110,8 @@ public class JGSmainView {
         jFrame.setJMenuBar(jMenuBar);
         jFrame.add(jProgressBar, BorderLayout.SOUTH);
         jFrame.add(jTabbedPane, BorderLayout.CENTER);
+
+        jFrame.addWindowListener(getMainWindowListener());
 
         jFrame.setVisible(true);//making the frame visible
 
@@ -225,6 +236,9 @@ public class JGSmainView {
         jMenuRepository.add(getMenuItemInitRepository());
         jMenuRepository.add(getMenuItemInitBareRepository());
         jMenuRepository.add(getMenuItemCloneRepository());
+        jMenuRepository.add(new JSeparator());
+        jMenuRepository.add(getMenuItemEditSettings());
+
     }
 
     private void updateThemesMenu() {
@@ -285,6 +299,14 @@ public class JGSmainView {
         return newItem;
     }
 
+    private JMenuItem getMenuItemEditSettings() {
+        JMenuItem newItem = new JMenuItem();
+        newItem.setText("Edit Settings");
+        newItem.setToolTipText("Edit Settings");
+        newItem.addActionListener(getActionListenerEditSettings());
+        return newItem;
+    }
+
     private JMenuItem getMenuItemTheme(String theme) {
         JMenuItem newItem = new JMenuItem();
         newItem.setText(theme);
@@ -331,6 +353,13 @@ public class JGSmainView {
     private ActionListener getActionListenerCloneRepository() {
         ActionListener actionListener = (ActionEvent e) -> {
             receiver.onCloneRepositoryClicked();
+        };
+        return actionListener;
+    }
+
+    private ActionListener getActionListenerEditSettings() {
+        ActionListener actionListener = (ActionEvent e) -> {
+            receiver.onEditSettingsClicked();
         };
         return actionListener;
     }
@@ -416,6 +445,18 @@ public class JGSmainView {
             return null;
         }
 
+    }
+
+    private WindowListener getMainWindowListener() {
+        return new WindowAdapter() {
+            // Method
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (showConfirmDialog("Quit", "really quit?")) {
+                    System.exit(0);
+                }
+            }
+        };
     }
 
 }

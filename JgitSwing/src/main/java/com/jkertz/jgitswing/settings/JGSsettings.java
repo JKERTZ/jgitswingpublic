@@ -59,8 +59,16 @@ public class JGSsettings {
         this.subDirectory = defaultSubDirectory;
         this.sep = getFileSeparator();
         this.receivers = new HashSet<>();
-        validateSettingsFile();
-        load();
+//        validateSettingsFile();
+        checkAndCreateUserSubdir();
+        if (!settingsFileExists()) {
+            this.setting = createNewSettingsFile();
+            save();
+        } else {
+            this.setting = load();
+
+        }
+
     }
 
     public static JGSsettings getINSTANCE() {
@@ -74,10 +82,23 @@ public class JGSsettings {
         receivers.add(receiver);
     }
 
+    public JGSsetting getSetting() {
+        return setting;
+    }
+
+    public void setSetting(JGSsetting setting) {
+        this.setting = setting;
+        save();
+    }
+
     public void loadRecentRepositories() {
         notifyRecentRepositoryChanged();
     }
 
+    /**
+     *
+     * @param newTheme
+     */
     public void setTheme(String newTheme) {
         String theme = setting.getTheme();
         if (newTheme != null && !newTheme.isEmpty() && !newTheme.equals(theme)) {
@@ -86,26 +107,96 @@ public class JGSsettings {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTheme() {
         String theme = setting.getTheme();
         return theme;
     }
 
+    /**
+     *
+     * @param repoPath
+     * @param user
+     * @param password
+     * @param uri
+     */
+    public void setUserAndPassword(String repoPath, String user, String password, String uri) {
+        boolean userValid = user != null && !user.isEmpty();
+        boolean passwordValid = password != null && !password.isEmpty();
+        boolean repoPathValid = repoPath != null && !repoPath.isEmpty();
+        if (userValid && passwordValid && repoPathValid) {
+            JGSrecent recent = findJGSrecentByPath(repoPath);
+            if (recent != null) {
+                //existing recent
+                String recentRemoteUsername = recent.getRemoteUsername();
+                String recentRemotePassword = recent.getRemotePassword();
+                String recentUri = recent.getUri();
+                boolean userChanged = !user.equals(recentRemoteUsername);
+                boolean passwordChanged = !password.equals(recentRemotePassword);
+                boolean uriChanged = uri != null && !uri.equals(recentUri);
+                boolean saveRequired = false;
+
+                if (userChanged) {
+                    recent.setRemoteUsername(user);
+                    saveRequired = true;
+                }
+                if (passwordChanged) {
+                    recent.setRemotePassword(password);
+                    saveRequired = true;
+                }
+                if (uriChanged) {
+                    recent.setUri(uri);
+                    saveRequired = true;
+                }
+                if (saveRequired) {
+                    save();
+                }
+            } else {
+                //new recent
+                recent = new JGSrecent();
+                recent.setRemoteUsername(user);
+                recent.setRemotePassword(password);
+                recent.setLocalPath(repoPath);
+                recent.setUri(uri);
+                setting.getRecents().add(recent);
+                save();
+            }
+        }
+    }
+
+    /**
+     *
+     * @param repoPath
+     * @param user
+     * @param password
+     */
     public void setUserAndPassword(String repoPath, String user, String password) {
         boolean userValid = user != null && !user.isEmpty();
         boolean passwordValid = password != null && !password.isEmpty();
         boolean repoPathValid = repoPath != null && !repoPath.isEmpty();
         if (userValid && passwordValid && repoPathValid) {
-            JGSrecent recent = findJGSrecent(repoPath);
+            JGSrecent recent = findJGSrecentByPath(repoPath);
             if (recent != null) {
                 //existing recent
-                String remoteUsername = recent.getRemoteUsername();
-                String remotePassword = recent.getRemotePassword();
-                boolean userChanged = !user.equals(remoteUsername);
-                boolean passwordChanged = !password.equals(remotePassword);
-                if (userChanged || passwordChanged) {
+                String recentRemoteUsername = recent.getRemoteUsername();
+                String recentRemotePassword = recent.getRemotePassword();
+                String recentUri = recent.getUri();
+                boolean userChanged = !user.equals(recentRemoteUsername);
+                boolean passwordChanged = !password.equals(recentRemotePassword);
+                boolean saveRequired = false;
+
+                if (userChanged) {
                     recent.setRemoteUsername(user);
+                    saveRequired = true;
+                }
+                if (passwordChanged) {
                     recent.setRemotePassword(password);
+                    saveRequired = true;
+                }
+                if (saveRequired) {
                     save();
                 }
             } else {
@@ -120,26 +211,45 @@ public class JGSsettings {
         }
     }
 
+    /**
+     *
+     * @param path
+     * @return
+     */
     public String getUsername(String path) {
-        JGSrecent currenRepository = findJGSrecent(path);
+        JGSrecent currenRepository = findJGSrecentByPath(path);
         if (currenRepository != null) {
             return currenRepository.getRemoteUsername();
         }
         return null;
     }
 
+    /**
+     *
+     * @param path
+     * @return
+     */
     public String getPassword(String path) {
-        JGSrecent currenRepository = findJGSrecent(path);
+        JGSrecent currenRepository = findJGSrecentByPath(path);
         if (currenRepository != null) {
             return currenRepository.getRemotePassword();
         }
         return null;
     }
 
+    public JGSrecent getRemoteSettings(String path) {
+        JGSrecent currenRepository = findJGSrecentByPath(path);
+        return currenRepository;
+    }
+
+    /**
+     *
+     * @param path
+     */
     public void setPath(String path) {
         logger.getLogger().fine("setPath");
 //        JGSrecent savedRecent = JGSutils.getINSTANCE().findSavedRecent(directory, recentRepositorys);
-        JGSrecent savedRecent = findJGSrecent(path);
+        JGSrecent savedRecent = findJGSrecentByPath(path);
         if (savedRecent == null) {
             //not found
             logger.getLogger().fine("setPath not found");
@@ -154,14 +264,13 @@ public class JGSsettings {
         }
     }
 
-    private void validateSettingsFile() {
-        checkAndCreateUserSubdir();
-        if (!settingsFileExists()) {
-            createNewSettingsFile();
-        }
-    }
-
-    private void load() {
+//    private void validateSettingsFile() {
+//        checkAndCreateUserSubdir();
+//        if (!settingsFileExists()) {
+//            createNewSettingsFile();
+//        }
+//    }
+    private JGSsetting load() {
         FileInputStream streamIn = null;
         ObjectInputStream objectinputstream = null;
 
@@ -171,9 +280,16 @@ public class JGSsettings {
             objectinputstream = new ObjectInputStream(streamIn);
 
 //            Set<JGSrecent> readCase = (Set<JGSrecent>) objectinputstream.readObject();
-            setting = (JGSsetting) objectinputstream.readObject();
+            Object readObject = objectinputstream.readObject();
+            JGSsetting jGSsetting = (JGSsetting) readObject;
+            return jGSsetting;
+//            setting = (JGSsetting) objectinputstream.readObject();
+        } catch (ClassNotFoundException e) {
+            //saved settings do not match current code
+            logger.getLogger().severe(e.getMessage());
+            logger.getLogger().warning("creating new settings");
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             logger.getLogger().severe(e.getMessage());
         } finally {
             if (objectinputstream != null) {
@@ -189,6 +305,7 @@ public class JGSsettings {
                 }
             }
         }
+        return createNewSettingsFile();
     }
 
     private void save() {
@@ -309,19 +426,30 @@ public class JGSsettings {
     /**
      * create/overwrite settings file
      */
-    private void createNewSettingsFile() {
-        setting = new JGSsetting();
+    private JGSsetting createNewSettingsFile() {
+        JGSsetting jGSsetting = new JGSsetting();
         Set<JGSrecent> recents = new LinkedHashSet();
-        setting.setTheme(defaultTheme);
-        setting.setRecents(recents);
-        save();
+        jGSsetting.setTheme(defaultTheme);
+        jGSsetting.setRecents(recents);
+        return jGSsetting;
     }
 
-    private JGSrecent findJGSrecent(String repoPath) {
+    private JGSrecent findJGSrecentByPath(String repoPath) {
         Set<JGSrecent> recents = setting.getRecents();
         for (JGSrecent recent : recents) {
             String localPath = recent.getLocalPath();
             if (repoPath.equals(localPath)) {
+                return recent;
+            }
+        }
+        return null;
+    }
+
+    private JGSrecent findJGSrecentByUri(String repoUri) {
+        Set<JGSrecent> recents = setting.getRecents();
+        for (JGSrecent recent : recents) {
+            String localUri = recent.getUri();
+            if (repoUri.equals(localUri)) {
                 return recent;
             }
         }

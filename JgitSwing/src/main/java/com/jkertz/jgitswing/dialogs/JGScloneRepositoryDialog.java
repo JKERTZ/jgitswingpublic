@@ -36,18 +36,19 @@ import javax.swing.border.TitledBorder;
  */
 public class JGScloneRepositoryDialog {
 
+    private JFrame parentFrame;
+    private JDialog newdialog;
+    private boolean dialogResultOK = false;
+
     private String uri = null;
     private String username = null;
     private String password = null;
     private String targetDirectory = null;
-    private boolean dialogResultOK = false;
 
-    private JFrame parentFrame;
     private JTextField inputTarget;
     private JTextField inputURI;
     private JTextField inputUsername;
     private JTextField inputPassword;
-    private JDialog newdialog;
 
     public boolean show(JFrame parentFrame) {
         this.parentFrame = parentFrame;
@@ -61,7 +62,7 @@ public class JGScloneRepositoryDialog {
         final int locationX = (x + 10);
         final int locationY = (y + 10);
 
-        newdialog = new JDialog(parentFrame, "Dialog ", true);
+        newdialog = new JDialog(parentFrame, "Clone Repository ", true);
         newdialog.setContentPane(getPanel());
         newdialog.setLocation(locationX, locationY);
         newdialog.pack();//adapt dialog size to content

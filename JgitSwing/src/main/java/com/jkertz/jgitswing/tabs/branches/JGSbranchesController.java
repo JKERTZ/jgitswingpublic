@@ -16,18 +16,20 @@
  */
 package com.jkertz.jgitswing.tabs.branches;
 
+import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
+import com.jkertz.jgitswing.dialogs.JGScheckoutDialog;
+import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tabs.common.IJGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGSlocalBranchTreeNode;
+import com.jkertz.jgitswing.tabs.common.JGSremoteBranchTreeNode;
+import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import com.jkertz.jgitswing.tabs.common.IJGScommonController;
-import com.jkertz.jgitswing.tabs.common.JGSbranchTreeNode;
-import com.jkertz.jgitswing.tabs.common.JGScommonController;
-import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
@@ -41,8 +43,6 @@ public final class JGSbranchesController extends JGScommonController implements 
 
     private JGSbranchesPanel panel;
     private TreePath selectionPath;
-    private final String LOCALSTRING = "local";
-    private final String REMOTESTRING = "remote";
 
     public JGSbranchesController(JGSrepositoryModel jGSrepositoryModel) {
         super("Branches", jGSrepositoryModel);
@@ -83,11 +83,16 @@ public final class JGSbranchesController extends JGScommonController implements 
             if (defaultMutableTreeNode.isLeaf()) {
                 System.out.println("isLeaf");
                 Object userObject = defaultMutableTreeNode.getUserObject();
-                if (userObject instanceof JGSbranchTreeNode jGSbranchTreeNode) {
-                    System.out.println("is JGSbranchTreeNode");
+                if (userObject instanceof JGSlocalBranchTreeNode jGSlocalBranchTreeNode) {
+                    System.out.println("is JGSlocalBranchTreeNode");
                     //rich html node
-                    Ref branch = jGSbranchTreeNode.getBranch();
+                    Ref branch = jGSlocalBranchTreeNode.getBranch();
                     result = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
+                } else if (userObject instanceof JGSremoteBranchTreeNode jGSremoteBranchTreeNode) {
+                    System.out.println("is JGSremoteBranchTreeNode");
+                    //rich html node
+                    Ref branch = jGSremoteBranchTreeNode.getBranch();
+                    result = JGSuiUtils.getINSTANCE().removeRefsRemotes(branch.getName());
                 } else {
                     result = defaultMutableTreeNode.toString();
                     System.out.println("plain leaf: " + result);
@@ -99,57 +104,59 @@ public final class JGSbranchesController extends JGScommonController implements 
 
     @Override
     public void onBranchesPanelClickedCheckout() {
-        showProgressBar("onIJGSbranchesPanelCheckoutClicked");
-        String pathComponent0 = selectionPath.getPathComponent(0).toString();//Branches
-        String pathComponent1 = selectionPath.getPathComponent(1).toString();//local
-        Object lastPathComponent = selectionPath.getLastPathComponent();
-//        String pathComponent2 = null;
-//
-//        if (lastPathComponent instanceof DefaultMutableTreeNode defaultMutableTreeNode) {
-//            Object userObject = defaultMutableTreeNode.getUserObject();
-//            if (userObject instanceof JGSbranchTreeNode jGSbranchTreeNode) {
-//                Ref branch = jGSbranchTreeNode.getBranch();
-//                pathComponent2 = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
-//            }
-//        }
-        String pathComponent2 = getSelectedTreeNode();
-        Git git = jGSrepositoryModel.getGit();
         try {
-            if (pathComponent2 == null) {
-                showInfoDialog("Checkout not possible", "Checkout not possible");
-                hideProgressBar();
+            showProgressBar("onIJGSbranchesPanelCheckoutClicked");
+
+            if (selectionPath == null) {
                 return;
             }
+            Git git = jGSrepositoryModel.getGit();
 
-            //Userabfrage
-            boolean userconfirmed = showConfirmDialog("Confirm checkout", "Checkout Branch " + pathComponent2 + " ?");
-            if (!userconfirmed) {
-                hideProgressBar();
-                return;
+            Object lastPathComponent = selectionPath.getLastPathComponent();
+            if (lastPathComponent instanceof DefaultMutableTreeNode defaultMutableTreeNode) {
+                System.out.println("is DefaultMutableTreeNode");
+                if (defaultMutableTreeNode.isLeaf()) {
+                    System.out.println("isLeaf");
+                    Object userObject = defaultMutableTreeNode.getUserObject();
+                    if (userObject instanceof JGSlocalBranchTreeNode jGSlocalBranchTreeNode) {
+                        System.out.println("is JGSlocalBranchTreeNode");
+                        //rich html node
+                        Ref branch = jGSlocalBranchTreeNode.getBranch();
+                        //Userabfrage
+                        boolean userconfirmed = showConfirmDialog("Confirm checkout", "Checkout Branch " + branch + " ?");
+                        if (!userconfirmed) {
+                            hideProgressBar();
+                            return;
+                        }
+                        String path = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
+                        logger.getLogger().log(Level.INFO, "checkoutLocalBranch: {0}", path);
+                        Ref checkoutLocalBranch = utils.checkoutLocalBranch(git, path);
+                        showInfoToast("Checkout success " + path);
+                        hideProgressBar();
+
+                    } else if (userObject instanceof JGSremoteBranchTreeNode jGSremoteBranchTreeNode) {
+                        System.out.println("is JGSremoteBranchTreeNode");
+                        //rich html node
+                        Ref branch = jGSremoteBranchTreeNode.getBranch();
+                        //Userabfrage
+                        JGScheckoutDialog jGScheckoutDialog = new JGScheckoutDialog(panel, branch.getName());
+                        boolean userconfirmed = jGScheckoutDialog.show();
+                        System.out.println("getTargetBranch: " + jGScheckoutDialog.getTargetBranch());
+                        if (!userconfirmed) {
+                            hideProgressBar();
+                            return;
+                        }
+                        String newBranchName = jGScheckoutDialog.getTargetBranch();
+                        String remoteAndBranchName = JGSuiUtils.getINSTANCE().removeRefsRemotes(branch.getName());
+                        logger.getLogger().log(Level.INFO, "checkoutRemoteBranch: {0}", remoteAndBranchName);
+                        Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, newBranchName, remoteAndBranchName);
+                        showInfoToast("Checkout success " + newBranchName);
+                        hideProgressBar();
+                    } else {
+                        System.out.println("plain leaf: ");
+                    }
+                }
             }
-            switch (pathComponent1) {
-                case LOCALSTRING -> {
-                    logger.getLogger().info("checkoutLocalBranch: " + pathComponent2);
-                    Ref checkoutLocalBranch = utils.checkoutLocalBranch(git, pathComponent2);
-//                    showInfoDialog("onBranchesPanelClickedCheckout", checkoutLocalBranch.getName());
-                    showInfoToast("Checkout success " + pathComponent2);
-                    hideProgressBar();
-                }
-
-                case REMOTESTRING -> {
-                    logger.getLogger().info("checkoutRemoteBranch: " + pathComponent2);
-                    Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, pathComponent2);
-//                    showInfoDialog("onBranchesPanelClickedCheckout", checkoutRemoteBranch.getName());
-                    showInfoToast("Checkout success " + pathComponent2);
-                    hideProgressBar();
-                }
-
-                default -> {
-                    logger.getLogger().severe("Selected path not valid!");
-                    hideProgressBar();
-                }
-            }
-
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCheckout", ex);
             showErrorDialog("onBranchesPanelClickedCheckout", "checkoutBranch ERROR:\n" + ex.getMessage());
@@ -177,7 +184,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                 hideProgressBar();
                 return;
             }
-            logger.getLogger().info("mergeIntoCurrentBranch: " + pathComponent2);
+            logger.getLogger().log(Level.INFO, "mergeIntoCurrentBranch: {0}", pathComponent2);
             MergeResult result = utils.mergeIntoCurrentBranch(git, pathComponent2);
 //            showInfoDialog("onBranchesPanelClickedMerge", result.getMergeStatus().toString());
             showInfoToast("Merge success " + pathComponent2);
@@ -212,7 +219,7 @@ public final class JGSbranchesController extends JGScommonController implements 
                 hideProgressBar();
                 return;
             }
-            logger.getLogger().info("deleteBranch: " + pathComponent2);
+            logger.getLogger().log(Level.INFO, "deleteBranch: {0}", pathComponent2);
             List<String> result = utils.deleteBranch(git, pathComponent2);
 //            showInfoDialog("onIJGSbranchesPanelDeleteClicked", result.toString());
             showInfoToast("Delete success " + pathComponent2);

@@ -16,6 +16,24 @@
  */
 package com.jkertz.jgitswing.tabs.repository;
 
+import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
+import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
+import com.jkertz.jgitswing.model.JGSrecent;
+import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.settings.JGSsettings;
+import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
+import com.jkertz.jgitswing.tabs.common.IJGScommonController;
+import com.jkertz.jgitswing.tabs.common.IJGSsubTabController;
+import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import com.jkertz.jgitswing.tabs.common.JGShtmlUtils;
+import com.jkertz.jgitswing.tabs.config.JGSconfigController;
+import com.jkertz.jgitswing.tabs.currentdiff.JGScurrentDiffController;
+import com.jkertz.jgitswing.tabs.graph.JGSgraphController;
+import com.jkertz.jgitswing.tabs.history.JGShistoryController;
+import com.jkertz.jgitswing.tabs.ignored.JGSignoredController;
+import com.jkertz.jgitswing.tabs.staging.JGSstagingController;
+import com.jkertz.jgitswing.tabs.stagingtree.JGSstagingTreeController;
+import com.jkertz.jgitswing.tabs.tags.JGStagsController;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,23 +45,8 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
-import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import com.jkertz.jgitswing.settings.JGSsettings;
-import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
-import com.jkertz.jgitswing.tabs.common.IJGScommonController;
-import com.jkertz.jgitswing.tabs.common.IJGSsubTabController;
-import com.jkertz.jgitswing.tabs.common.JGScommonController;
-import com.jkertz.jgitswing.tabs.config.JGSconfigController;
-import com.jkertz.jgitswing.tabs.currentdiff.JGScurrentDiffController;
-import com.jkertz.jgitswing.tabs.graph.JGSgraphController;
-import com.jkertz.jgitswing.tabs.history.JGShistoryController;
-import com.jkertz.jgitswing.tabs.ignored.JGSignoredController;
-import com.jkertz.jgitswing.tabs.staging.JGSstagingController;
-import com.jkertz.jgitswing.tabs.stagingtree.JGSstagingTreeController;
-import com.jkertz.jgitswing.tabs.tags.JGStagsController;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -69,6 +72,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     private JGShistoryController jGShistoryController;
     private JGSgraphController jGSgraphController;
     private JGSconfigController jGSconfigController;
+    private JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
 
     public JGSrepositoryController(JGSrepositoryModel jGSrepositoryModel) {
         super(jGSrepositoryModel.getDirectoryFromRepositoryName(), jGSrepositoryModel);
@@ -136,42 +140,50 @@ public final class JGSrepositoryController extends JGScommonController implement
     public void onRepositoryPanelClickedPush() {
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, false);
+        Map<String, Boolean> options = getPushOptions();
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
+            boolean dryRun = options.get("dryrun");
 
-            boolean pushRemotePreview = pushRemotePreview(usernameInput, passwordInput);
-            if (!pushRemotePreview) {
-                return;
-            }
+            pushRemote(usernameInput, passwordInput, dryRun);
             saveRemoteCredentials(usernameInput, passwordInput);
-            boolean pushRemote = pushRemote(usernameInput, passwordInput);
-            hideProgressBar();
-
         }
+        hideProgressBar();
     }
 
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, false);
+        Map<String, Boolean> options = getFetchOptions();
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
-            boolean pushRemotePreview = pushRemotePreview(usernameInput, passwordInput);
-            if (!pushRemotePreview) {
+            boolean dryRun = options.get("dryrun");
+            boolean checkFetchedObjects = options.get("CheckFetchedObjects");
+            boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
+            boolean pushRemotePreview = pushRemote(usernameInput, passwordInput, dryRun);
+            if (dryRun && !pushRemotePreview) {
+                hideProgressBar();
                 return;
             }
             saveRemoteCredentials(usernameInput, passwordInput);
-            boolean pushRemote = pushRemote(usernameInput, passwordInput);
-            boolean dryRun = false;
-            boolean checkFetchedObjects = true;
-            boolean removeDeletedRefs = true;
-            fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
-            hideProgressBar();
+            if (dryRun) {
+                pushRemote(usernameInput, passwordInput, false);
+            }
+            boolean fetchRemotePreview = fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+            if (dryRun && !fetchRemotePreview) {
+                hideProgressBar();
+                return;
+            }
+            if (dryRun) {
+                fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+            }
         }
+        hideProgressBar();
     }
 
     @Override
@@ -303,7 +315,7 @@ public final class JGSrepositoryController extends JGScommonController implement
                 int aheadCount = branchTrackingStatus.getAheadCount();
                 int behindCount = branchTrackingStatus.getBehindCount();
                 String remoteTrackingBranch = branchTrackingStatus.getRemoteTrackingBranch();
-                String aheadBehind = " (↑" + aheadCount + " ↓" + behindCount + ") ";
+                String aheadBehind = htmlUtils.toAheadBehind(aheadCount, behindCount);
                 labelText += aheadBehind;
                 String htmlToolTip = "<html>";
                 htmlToolTip += "<b>" + branchName + "</b>";//bold
@@ -311,14 +323,14 @@ public final class JGSrepositoryController extends JGScommonController implement
                 if (aheadCount == 0) {
                     htmlToolTip += "↑ Ahead: " + aheadCount;
                 } else {
-                    htmlToolTip += "<div style='background:red;'> ↑ Ahead: " + aheadCount + "</div>";
+//                    htmlToolTip += "<div style='background:red;'> ↑ Ahead: " + aheadCount + "</div>";
                     htmlToolTip += "<font color=orange>" + "↑ Ahead: " + aheadCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
                 if (behindCount == 0) {
                     htmlToolTip += " ↓ Behind: " + behindCount;
                 } else {
-                    htmlToolTip += "<div style='background:red;'> ↓ Behind: " + behindCount + "</div>";
+//                    htmlToolTip += "<div style='background:red;'> ↓ Behind: " + behindCount + "</div>";
                     htmlToolTip += "<font color=orange>" + " ↓ Behind: " + behindCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
@@ -343,7 +355,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             logger.getLogger().log(Level.SEVERE, "updateBranchName", ex);
             panel.getLabelBranch().setToolTipText(ex.getMessage());
         }
-        panel.getLabelBranch().setText(labelText);
+        panel.getLabelBranch().setText(htmlUtils.toHtml(labelText));
     }
 
 //    private void updateAheadBehind() {
@@ -394,32 +406,18 @@ public final class JGSrepositoryController extends JGScommonController implement
      * @param checkFetchedObjects
      * @param removeDeletedRefs
      */
-    private void fetchRemote(String usernameInput, String passwordInput, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs) {
+    private boolean fetchRemote(String usernameInput, String passwordInput, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs) {
         Git git = jGSrepositoryModel.getGit();
         try {
             FetchResult fetchRemote = utils.fetchRemote(git, dryRun, checkFetchedObjects, removeDeletedRefs, usernameInput, passwordInput);
-            showFetchResult("FetchResult", fetchRemote);
+            String resultTitle = "Fetch result";
+            if (dryRun) {
+                resultTitle = "Fetch preview";
+            }
+            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
+            return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
-            showErrorDialog("fetchRemote", ex.getMessage());
-        }
-    }
-
-    /**
-     *
-     * @param usernameInput
-     * @param passwordInput
-     * @return
-     */
-    private boolean pushRemotePreview(String usernameInput, String passwordInput) {
-        Git git = jGSrepositoryModel.getGit();
-        try {
-            Iterable<PushResult> pushPreviewResults = utils.pushRemote(git, true, usernameInput, passwordInput);
-            boolean showPushPreviewResult = showPushResult("Push preview", pushPreviewResults);
-            return showPushPreviewResult;
-
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "pushRemotePreview", ex);
             showErrorDialog("fetchRemote", ex.getMessage());
         }
         return false;
@@ -431,12 +429,16 @@ public final class JGSrepositoryController extends JGScommonController implement
      * @param passwordInput
      * @return
      */
-    private boolean pushRemote(String usernameInput, String passwordInput) {
+    private boolean pushRemote(String usernameInput, String passwordInput, boolean dryRun) {
         Git git = jGSrepositoryModel.getGit();
 
         try {
-            Iterable<PushResult> pushResults = utils.pushRemote(git, false, usernameInput, passwordInput);
-            boolean showPushResult = showPushResult("Push result", pushResults);
+            Iterable<PushResult> pushResults = utils.pushRemote(git, dryRun, usernameInput, passwordInput);
+            String resultTitle = "Push result";
+            if (dryRun) {
+                resultTitle = "Push preview";
+            }
+            boolean showPushResult = showPushResult(resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {
@@ -470,8 +472,10 @@ public final class JGSrepositoryController extends JGScommonController implement
 //    }
     private Map<String, String> getUserPasswordParameters() {
         String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+
         String username = JGSsettings.getINSTANCE().getUsername(path);
         String password = JGSsettings.getINSTANCE().getPassword(path);
+        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("Username", username);
         parameters.put("Password", password);
@@ -483,6 +487,12 @@ public final class JGSrepositoryController extends JGScommonController implement
         options.put("dryrun", false);
         options.put("CheckFetchedObjects", false);
         options.put("RemoveDeletedRefs", false);
+        return options;
+    }
+
+    private Map<String, Boolean> getPushOptions() {
+        Map<String, Boolean> options = new LinkedHashMap<>();
+        options.put("dryrun", false);
         return options;
     }
 
@@ -499,6 +509,17 @@ public final class JGSrepositoryController extends JGScommonController implement
 //        }
 //        panel.getLabelThreads().setToolTipText(namesToolTips);
 //    }
+    /**
+     *
+     * @param usernameInput
+     * @param passwordInput
+     * @param uriInput
+     */
+    private void saveRemoteCredentials(String usernameInput, String passwordInput, String uriInput) {
+        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+        JGSsettings.getINSTANCE().setUserAndPassword(path, usernameInput, passwordInput, uriInput);
+    }
+
     /**
      *
      * @param usernameInput
@@ -533,6 +554,8 @@ public final class JGSrepositoryController extends JGScommonController implement
         JMenuItem closer = getCloseMenuItem(selectedTabTitle);
         menu.add(closer);
 
+        menu.add(new JSeparator());
+
         List<String> openTabTitles = getOpenTabTitles();
         for (String openTabTitle : openTabTitles) {
             if (!openTabTitle.equals(selectedTabTitle)) {
@@ -540,6 +563,8 @@ public final class JGSrepositoryController extends JGScommonController implement
                 menu.add(closeitem);
             }
         }
+
+        menu.add(new JSeparator());
 
         List<String> closedTabTitles = getClosedTabTitles();
         for (String closedTabTitle : closedTabTitles) {

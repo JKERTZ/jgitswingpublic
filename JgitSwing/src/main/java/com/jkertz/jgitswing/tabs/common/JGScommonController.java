@@ -117,12 +117,12 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     }
 
     protected boolean showPullResult(String title, PullResult pullResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().show(title, pullResult);
+        boolean showJGSresultDialog = new JGSresultDialog().showPullResult(title, pullResult);
         return showJGSresultDialog;
     }
 
     protected boolean showFetchResult(String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().show(title, fetchResult);
+        boolean showJGSresultDialog = new JGSresultDialog().showFetchResult(title, fetchResult);
         return showJGSresultDialog;
     }
 

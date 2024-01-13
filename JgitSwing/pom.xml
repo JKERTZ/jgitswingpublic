@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jkertz</groupId>
     <artifactId>JgitSwing</artifactId>
-    <version>1.0-20231125</version>
+    <version>1.0-20231126</version>
     <packaging>jar</packaging>
     <organization>
         <name>JKERTZ</name>   
@@ -39,7 +39,27 @@
             <version>3.2.5</version>
         </dependency>
     </dependencies>
-    
+ 
+    <!-- enable to run all tests -->
+    <!-- 
+        <build>
+            <plugins>
+                  <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.2.2</version>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>          
+    -->
     <profiles>
         <profile>
             <id>production</id>
@@ -57,7 +77,8 @@
                                 <configuration>
                                     <archive>
                                         <manifest>
-                                            <mainClass>${fully.qualified.main.class}</mainClass>
+                                            <!--<mainClass>${fully.qualified.main.class}</mainClass>-->
+                                            <mainClass>${exec.mainClass}</mainClass>
                                         </manifest>
                                     </archive>
                                     <descriptorRefs>
@@ -86,7 +107,7 @@
                                 <configuration>
                                     <archive>
                                         <manifest>
-                                            <mainClass>${fully.qualified.main.class}</mainClass>
+                                            <mainClass>${exec.mainClass}</mainClass>
                                         </manifest>
                                     </archive>
                                     <descriptorRefs>

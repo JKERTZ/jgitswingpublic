@@ -16,6 +16,9 @@
  */
 package com.jkertz.jgitswing.dialogs;
 
+import com.jkertz.jgitswing.logger.JGSlogger;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import com.jkertz.jgitswing.logger.JGSlogger;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RebaseResult;
@@ -134,6 +136,30 @@ public class JGSdialogUtils {
             dialogPanel.add(getStringListPanel("mergedCommits", mergedCommitsStrings));
         }
         return dialogPanel;
+    }
+
+    protected JPanel getLabeledInput(String text, JTextField jTextField, String value, boolean isReadonly) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+//        panel.setBackground(Color.YELLOW);
+
+        JPanel subpanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//        subpanel.setBackground(Color.RED);
+
+        JLabel jLabel = new JLabel(text, JLabel.TRAILING);
+//        jTextField = new JTextField(40);
+        jTextField.setColumns(40);
+        jLabel.setLabelFor(jTextField);
+        jTextField.setEditable(!isReadonly);
+        if (value != null) {
+            jTextField.setText(value);
+        }
+        subpanel.add(jLabel);
+        subpanel.add(jTextField);
+
+        subpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        panel.add(subpanel);
+
+        return panel;
     }
 
     private JPanel getDialogPanel(RebaseResult rebaseResult) {

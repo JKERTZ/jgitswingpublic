@@ -34,4 +34,6 @@ public interface IJGSmainView {
 
     public void onCloseTab(String tabTitle);
 
+    public void onEditSettingsClicked();
+
 }

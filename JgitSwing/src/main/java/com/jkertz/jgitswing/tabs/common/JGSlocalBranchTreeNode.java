@@ -23,30 +23,30 @@ import org.eclipse.jgit.lib.Ref;
  *
  * @author jkertz
  */
-public class JGSbranchTreeNode {
+public class JGSlocalBranchTreeNode {
 
     private final Ref branch;
     private final BranchTrackingStatus branchTrackingStatus;
     private final String htmlNode;
+    private final JGShtmlUtils htmlUtils = JGShtmlUtils.getINSTANCE();
 
-    public JGSbranchTreeNode(Ref branch, BranchTrackingStatus branchTrackingStatus, String currentBranch) {
+    public JGSlocalBranchTreeNode(Ref branch, BranchTrackingStatus branchTrackingStatus, String currentBranch) {
         this.branch = branch;
         this.branchTrackingStatus = branchTrackingStatus;
 
         int aheadCount = branchTrackingStatus != null ? branchTrackingStatus.getAheadCount() : 0;
         int behindCount = branchTrackingStatus != null ? branchTrackingStatus.getBehindCount() : 0;
-        String remoteTrackingBranch = branchTrackingStatus != null ? branchTrackingStatus.getRemoteTrackingBranch() : "<font color=orange>" + "no remote branch" + "</font>";
+        String remoteTrackingBranch = branchTrackingStatus != null ? htmlUtils.toOlive(branchTrackingStatus.getRemoteTrackingBranch()) : htmlUtils.toOrange("no remote branch");
 
         String branchname = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
         String _pureBranchname = JGSuiUtils.getINSTANCE().getPureBranchname(branch.getName());
         boolean isCurrentBranch = branchname.equals(currentBranch);
         if (isCurrentBranch) {
-            _pureBranchname = "<b>" + _pureBranchname + "</b>";
+            _pureBranchname = htmlUtils.toBackgroundOlive(htmlUtils.toBold(_pureBranchname));
         }
-        String aheadBehind = " (↑" + aheadCount + " ↓" + behindCount + ") ";
-
-        remoteTrackingBranch = "<i>" + remoteTrackingBranch + "</i>";
-        htmlNode = "<html>" + _pureBranchname + aheadBehind + remoteTrackingBranch + "</html>";
+        String aheadBehind = htmlUtils.toAheadBehind(aheadCount, behindCount);
+        remoteTrackingBranch = htmlUtils.toItalic(remoteTrackingBranch);
+        htmlNode = htmlUtils.toHtml(_pureBranchname + aheadBehind + remoteTrackingBranch);
     }
 
     @Override

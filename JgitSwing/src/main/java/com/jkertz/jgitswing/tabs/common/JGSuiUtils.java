@@ -16,6 +16,16 @@
  */
 package com.jkertz.jgitswing.tabs.common;
 
+import com.jkertz.jgitswing.businesslogic.JGSstagingStatus;
+import com.jkertz.jgitswing.logger.JGSlogger;
+import com.jkertz.jgitswing.model.JGStag;
+import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
+import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
+import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
+import com.jkertz.jgitswing.tablemodels.ListRefTagsTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,15 +47,6 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import com.jkertz.jgitswing.logger.JGSlogger;
-import com.jkertz.jgitswing.model.JGStag;
-import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
-import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
-import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
-import com.jkertz.jgitswing.tablemodels.ListRefTagsTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
-import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
@@ -262,7 +263,7 @@ public class JGSuiUtils {
 //        }
         for (Ref branch : listLocalBranches) {
             BranchTrackingStatus branchTrackingStatus = mapLocalBranches.get(branch);
-            JGSbranchTreeNode treeNode = new JGSbranchTreeNode(branch, branchTrackingStatus, currentBranch);
+            JGSlocalBranchTreeNode treeNode = new JGSlocalBranchTreeNode(branch, branchTrackingStatus, currentBranch);
             addStringToNode(localRootNode, treeNode);
         }
 
@@ -281,8 +282,10 @@ public class JGSuiUtils {
 //            remoteIndex++;
 //        }
         for (Ref branch : listRemoteBranches) {
-            String name = branch.getName();
-            addStringToNode(remoteRootNode, name);
+//            String name = branch.getName();
+//            addStringToNode(remoteRootNode, name);
+            JGSremoteBranchTreeNode treeNode = new JGSremoteBranchTreeNode(branch);
+            addStringToNode(remoteRootNode, treeNode);
         }
         return defaultTreeModel;
     }
@@ -324,7 +327,16 @@ public class JGSuiUtils {
         addRecusiveToNode.add(localNode);
     }
 
-    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSbranchTreeNode treeNode) {
+    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSlocalBranchTreeNode treeNode) {
+        String name = treeNode.getBranch().getName();
+        String[] split = name.split("/");
+        int length = split.length;
+        DefaultMutableTreeNode addRecusiveToNode = addRecusiveToNode(rootNode, split, 0, length - 1);
+        DefaultMutableTreeNode localNode = new DefaultMutableTreeNode(treeNode);
+        addRecusiveToNode.add(localNode);
+    }
+
+    private void addStringToNode(DefaultMutableTreeNode rootNode, JGSremoteBranchTreeNode treeNode) {
         String name = treeNode.getBranch().getName();
         String[] split = name.split("/");
         int length = split.length;
@@ -381,8 +393,26 @@ public class JGSuiUtils {
         return split[length - 1];
     }
 
-    private String removeRefsRemotes(String name) {
-        String result = name.replace("refs/remotes/origin/", "");
+    /**
+     * retrieves remote name, usually origin, from /refs/remotes/origin/...
+     *
+     * @param text
+     * @return
+     */
+    public String getRemoteName(String text) {
+        String[] split = text.split("/");
+        return split[2];
+    }
+
+    public String removeRefsRemotes(String name) {
+        String toReplace = "refs/remotes/";
+        String result = name.replace(toReplace, "");
+        return result;
+    }
+
+    public String getRemotePureBranchName(String text) {
+        String toReplace = "refs/remotes/" + getRemoteName(text) + "/";
+        String result = text.replace(toReplace, "");
         return result;
     }
 
@@ -426,18 +456,18 @@ public class JGSuiUtils {
 
     private Map<String, String> getStagedFiles(Status status) {
         Map<String, String> result = new HashMap<>();
-        addStatusToMap(result, status.getChanged(), "Changed");
-        addStatusToMap(result, status.getAdded(), "Added");
-        addStatusToMap(result, status.getRemoved(), "Removed");
+        addStatusToMap(result, status.getChanged(), JGSstagingStatus.Changed.toString());
+        addStatusToMap(result, status.getAdded(), JGSstagingStatus.Added.toString());
+        addStatusToMap(result, status.getRemoved(), JGSstagingStatus.Removed.toString());
         return result;
     }
 
     private Map<String, String> getUnstagedFiles(Status status) {
         Map<String, String> result = new HashMap<>();
-        addStatusToMap(result, status.getModified(), "Modified");
-        addStatusToMap(result, status.getUntracked(), "Untracked");
-        addStatusToMap(result, status.getConflicting(), "Conflicting");
-        addStatusToMap(result, status.getMissing(), "Missing");
+        addStatusToMap(result, status.getModified(), JGSstagingStatus.Modified.toString());
+        addStatusToMap(result, status.getUntracked(), JGSstagingStatus.Untracked.toString());
+        addStatusToMap(result, status.getConflicting(), JGSstagingStatus.Conflicting.toString());
+        addStatusToMap(result, status.getMissing(), JGSstagingStatus.Missing.toString());
         return result;
     }
 

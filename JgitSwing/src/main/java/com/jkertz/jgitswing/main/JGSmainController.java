@@ -18,8 +18,10 @@ package com.jkertz.jgitswing.main;
 
 import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.dialogs.JGScloneRepositoryDialog;
+import com.jkertz.jgitswing.dialogs.JGSeditSettingsDialog;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.model.JGSsetting;
 import com.jkertz.jgitswing.settings.IJGSsettings;
 import com.jkertz.jgitswing.settings.JGSsettings;
 import com.jkertz.jgitswing.tabs.common.IJGSsubTabController;
@@ -43,6 +45,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //FIXME: after pulling changes are shown in the "staged" panel
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
     //FIXME: progress bar in Toast flickering on Linux (only wayland)
+    //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
 
     //incomplete features
     //TODO: make config like pull-result
@@ -63,12 +66,13 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     private final List<IJGSsubTabController> subControllers;
 
     private JGSmainController() {
+
         logger = JGSlogger.getINSTANCE();
         utils = JGSutils.getINSTANCE();
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20231125");
+        panel.getjFrame().setTitle("JGS v0.20240113");
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);
@@ -224,13 +228,11 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
 //                saveRepositoryPath(jGSrepositoryModel);
 //                saveRemoteCredentials(username, password);
                 String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
-                settings.setUserAndPassword(path, username, password);
+                settings.setUserAndPassword(path, username, password, uri);
                 hideProgressBar();
-
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
-
         } else {
             hideProgressBar();
         }
@@ -278,6 +280,21 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     public void onCloseTab(String tabTitle) {
         logger.getLogger().fine("onCloseTab " + tabTitle);
         removeSubTab(tabTitle);
+    }
+
+    @Override
+    public void onEditSettingsClicked() {
+        logger.getLogger().fine("onEditSettingsClicked");
+        JGSsetting oldSetting = JGSsettings.getINSTANCE().getSetting();
+
+        JFrame frame = panel.getjFrame();
+        JGSeditSettingsDialog jGSeditSettingsDialog = new JGSeditSettingsDialog(frame, oldSetting);
+        boolean dialogResultOK = jGSeditSettingsDialog.show();
+        if (dialogResultOK) {
+            //save settings
+            JGSsetting newSetting = jGSeditSettingsDialog.getSetting();
+            JGSsettings.getINSTANCE().setSetting(newSetting);
+        }
     }
 
     private void removeSubTab(String tabTitle) {

@@ -17,6 +17,7 @@
 package com.jkertz.jgitswing.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -27,6 +28,7 @@ public class JGSrecent implements Serializable {
     private String remoteUsername;
     private String remotePassword;
     private String localPath;
+    private String uri;
 
     public String getRemoteUsername() {
         return remoteUsername;
@@ -50,6 +52,36 @@ public class JGSrecent implements Serializable {
 
     public void setLocalPath(String localPath) {
         this.localPath = localPath;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.localPath);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final JGSrecent other = (JGSrecent) obj;
+        return Objects.equals(this.localPath, other.localPath);
     }
 
 }

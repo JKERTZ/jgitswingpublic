@@ -35,13 +35,13 @@ public class JGSresultDialog {
         this.dialogUtils = JGSdialogUtils.getINSTANCE();
     }
 
-    public boolean show(String title, PullResult pullResult) {
+    public boolean showPullResult(String title, PullResult pullResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(pullResult);
         int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean show(String title, FetchResult fetchResult) {
+    public boolean showFetchResult(String title, FetchResult fetchResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(fetchResult);
         int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
