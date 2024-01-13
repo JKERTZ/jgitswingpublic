@@ -18,6 +18,7 @@ package com.jkertz.jgitswing.dialogs;
 
 import com.jkertz.jgitswing.logger.JGSlogger;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -67,7 +69,7 @@ public class JGSdialogUtils {
         for (PushResult pushResult : pushResults) {
             dialogPanel.add(getDialogPanel(pushResult));
         }
-        return dialogPanel;
+        return makeScrollable(dialogPanel);
     }
 
     protected JPanel getDialogPanel(PullResult pullResult) {
@@ -90,7 +92,7 @@ public class JGSdialogUtils {
             dialogPanel.add(rebaseResultPanel);
         }
 
-        return dialogPanel;
+        return makeScrollable(dialogPanel);
     }
 
     protected JPanel getDialogPanel(FetchResult fetchResult) {
@@ -111,7 +113,7 @@ public class JGSdialogUtils {
             dialogPanel.add(getStringListPanel("trackingRefUpdates", trackingRefUpdatesStrings));
         }
 
-        return dialogPanel;
+        return makeScrollable(dialogPanel);
     }
 
     protected JPanel getDialogPanel(MergeResult mergeResult) {
@@ -135,7 +137,7 @@ public class JGSdialogUtils {
             List<String> mergedCommitsStrings = mergedCommitsList.stream().map(e -> e.toString()).collect(Collectors.toList());
             dialogPanel.add(getStringListPanel("mergedCommits", mergedCommitsStrings));
         }
-        return dialogPanel;
+        return makeScrollable(dialogPanel);
     }
 
     protected JPanel getLabeledInput(String text, JTextField jTextField, String value, boolean isReadonly) {
@@ -146,7 +148,6 @@ public class JGSdialogUtils {
 //        subpanel.setBackground(Color.RED);
 
         JLabel jLabel = new JLabel(text, JLabel.TRAILING);
-//        jTextField = new JTextField(40);
         jTextField.setColumns(40);
         jLabel.setLabelFor(jTextField);
         jTextField.setEditable(!isReadonly);
@@ -227,6 +228,24 @@ public class JGSdialogUtils {
 
         }
         return dialogPanel;
+    }
+
+    private JPanel makeScrollable(JPanel panel) {
+        int prefHeight = panel.getPreferredSize().height;
+        int prefWidth = panel.getPreferredSize().width;
+        int maxHeight = 400;
+        if (prefHeight > maxHeight) {
+            logger.getLogger().fine("makeScrollable prefHeight: " + prefHeight);
+            JScrollPane jScrollPane = new JScrollPane();
+            int scrollbarWidth = jScrollPane.getVerticalScrollBar().getPreferredSize().width;
+            jScrollPane.setPreferredSize(new Dimension(prefWidth + scrollbarWidth + 10, maxHeight));
+
+            jScrollPane.setViewportView(panel);
+            JPanel scrollable = new JPanel();
+            scrollable.add(jScrollPane);
+            return scrollable;
+        }
+        return panel;
     }
 
 }

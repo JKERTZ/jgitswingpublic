@@ -46,11 +46,13 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
     //FIXME: progress bar in Toast flickering on Linux (only wayland)
     //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
+    //FIXME: remove input dialog from main view
+    //FIXME: check if any dialog should be in main view/controller
+    //FIXME: create branch: show option to checkout
+    //FIXME: create branch: configure remote to push new branch
 
     //incomplete features
     //TODO: make config like pull-result
-    //TODO: open only important tabs on startup
-    //TODO: implement a way to re-open closed tabs
     //TODO: remove finalize from all classes after checking memory release on close tabs
     //TODO: running threads should be merged with global progress bar
     //TODO: merge Graph and History Panel
