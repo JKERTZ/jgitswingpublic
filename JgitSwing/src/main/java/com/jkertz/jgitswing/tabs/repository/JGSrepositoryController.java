@@ -140,42 +140,50 @@ public final class JGSrepositoryController extends JGScommonController implement
     public void onRepositoryPanelClickedPush() {
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, false);
+        Map<String, Boolean> options = getPushOptions();
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
+            boolean dryRun = options.get("dryrun");
 
-            boolean pushRemotePreview = pushRemotePreview(usernameInput, passwordInput);
-            if (!pushRemotePreview) {
-                return;
-            }
+            pushRemote(usernameInput, passwordInput, dryRun);
             saveRemoteCredentials(usernameInput, passwordInput);
-            boolean pushRemote = pushRemote(usernameInput, passwordInput);
-            hideProgressBar();
-
         }
+        hideProgressBar();
     }
 
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, false);
+        Map<String, Boolean> options = getFetchOptions();
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
-            boolean pushRemotePreview = pushRemotePreview(usernameInput, passwordInput);
-            if (!pushRemotePreview) {
+            boolean dryRun = options.get("dryrun");
+            boolean checkFetchedObjects = options.get("CheckFetchedObjects");
+            boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
+            boolean pushRemotePreview = pushRemote(usernameInput, passwordInput, dryRun);
+            if (dryRun && !pushRemotePreview) {
+                hideProgressBar();
                 return;
             }
             saveRemoteCredentials(usernameInput, passwordInput);
-            boolean pushRemote = pushRemote(usernameInput, passwordInput);
-            boolean dryRun = false;
-            boolean checkFetchedObjects = true;
-            boolean removeDeletedRefs = true;
-            fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
-            hideProgressBar();
+            if (dryRun) {
+                pushRemote(usernameInput, passwordInput, false);
+            }
+            boolean fetchRemotePreview = fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+            if (dryRun && !fetchRemotePreview) {
+                hideProgressBar();
+                return;
+            }
+            if (dryRun) {
+                fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+            }
         }
+        hideProgressBar();
     }
 
     @Override
@@ -398,32 +406,18 @@ public final class JGSrepositoryController extends JGScommonController implement
      * @param checkFetchedObjects
      * @param removeDeletedRefs
      */
-    private void fetchRemote(String usernameInput, String passwordInput, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs) {
+    private boolean fetchRemote(String usernameInput, String passwordInput, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs) {
         Git git = jGSrepositoryModel.getGit();
         try {
             FetchResult fetchRemote = utils.fetchRemote(git, dryRun, checkFetchedObjects, removeDeletedRefs, usernameInput, passwordInput);
-            showFetchResult("FetchResult", fetchRemote);
+            String resultTitle = "Fetch result";
+            if (dryRun) {
+                resultTitle = "Fetch preview";
+            }
+            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
+            return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
-            showErrorDialog("fetchRemote", ex.getMessage());
-        }
-    }
-
-    /**
-     *
-     * @param usernameInput
-     * @param passwordInput
-     * @return
-     */
-    private boolean pushRemotePreview(String usernameInput, String passwordInput) {
-        Git git = jGSrepositoryModel.getGit();
-        try {
-            Iterable<PushResult> pushPreviewResults = utils.pushRemote(git, true, usernameInput, passwordInput);
-            boolean showPushPreviewResult = showPushResult("Push preview", pushPreviewResults);
-            return showPushPreviewResult;
-
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "pushRemotePreview", ex);
             showErrorDialog("fetchRemote", ex.getMessage());
         }
         return false;
@@ -435,12 +429,16 @@ public final class JGSrepositoryController extends JGScommonController implement
      * @param passwordInput
      * @return
      */
-    private boolean pushRemote(String usernameInput, String passwordInput) {
+    private boolean pushRemote(String usernameInput, String passwordInput, boolean dryRun) {
         Git git = jGSrepositoryModel.getGit();
 
         try {
-            Iterable<PushResult> pushResults = utils.pushRemote(git, false, usernameInput, passwordInput);
-            boolean showPushResult = showPushResult("Push result", pushResults);
+            Iterable<PushResult> pushResults = utils.pushRemote(git, dryRun, usernameInput, passwordInput);
+            String resultTitle = "Push result";
+            if (dryRun) {
+                resultTitle = "Push preview";
+            }
+            boolean showPushResult = showPushResult(resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {
@@ -489,6 +487,12 @@ public final class JGSrepositoryController extends JGScommonController implement
         options.put("dryrun", false);
         options.put("CheckFetchedObjects", false);
         options.put("RemoveDeletedRefs", false);
+        return options;
+    }
+
+    private Map<String, Boolean> getPushOptions() {
+        Map<String, Boolean> options = new LinkedHashMap<>();
+        options.put("dryrun", false);
         return options;
     }
 

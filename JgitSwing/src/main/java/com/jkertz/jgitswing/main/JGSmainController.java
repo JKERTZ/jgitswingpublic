@@ -72,7 +72,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240107");
+        panel.getjFrame().setTitle("JGS v0.20240113");
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);

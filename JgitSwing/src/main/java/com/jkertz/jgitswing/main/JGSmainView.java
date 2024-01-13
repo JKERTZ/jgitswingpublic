@@ -48,7 +48,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
 
 /**
  *
@@ -94,7 +93,9 @@ public class JGSmainView {
         jFrame.setSize(800, 600);
         LayoutManager layout = new BorderLayout();
         jFrame.setLayout(layout);
-        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+//        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);//always close window
+        jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);//handle close
 
         jMenuRepository = new JMenu("Repository");
         jMenuThemes = new JMenu("Themes");
