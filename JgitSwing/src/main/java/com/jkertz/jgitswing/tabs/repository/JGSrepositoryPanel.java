@@ -16,6 +16,9 @@
  */
 package com.jkertz.jgitswing.tabs.repository;
 
+import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
+import com.jkertz.jgitswing.toolbars.repository.IJGSrepositoryToolbar;
+import com.jkertz.jgitswing.toolbars.repository.JGSrepositoryToolbar;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,9 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
-import com.jkertz.jgitswing.toolbars.repository.IJGSrepositoryToolbar;
-import com.jkertz.jgitswing.toolbars.repository.JGSrepositoryToolbar;
 
 /**
  *
@@ -101,6 +101,11 @@ public class JGSrepositoryPanel extends JGScommonPanel implements IJGSrepository
 
     private void onRepositoryTabRightClick(JTabbedPane tabbedPane, int x, int y) {
         receiver.onRepositoryTabRightClick(tabbedPane, x, y);
+    }
+
+    @Override
+    public void onRepositoryToolbarClickedOpenFileManager() {
+        receiver.onRepositoryPanelClickedOpenFileManager();
     }
 
     private void initTabClickListener(JTabbedPane tabbedPane) {

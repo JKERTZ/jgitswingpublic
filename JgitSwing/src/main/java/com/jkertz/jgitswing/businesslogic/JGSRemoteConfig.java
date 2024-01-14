@@ -19,6 +19,7 @@ package com.jkertz.jgitswing.businesslogic;
 import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -40,4 +41,13 @@ public class JGSRemoteConfig extends JGScachedResult {
         }
         return remoteList;
     }
+
+    public void setRemote(String remoteName, URIish remoteUri) throws Exception {
+        wrapper.remoteSetUrl(git, remoteName, remoteUri);
+    }
+
+    public void addRemote(String remoteName, URIish remoteUri) throws Exception {
+        wrapper.remoteAdd(git, remoteName, remoteUri);
+    }
+
 }

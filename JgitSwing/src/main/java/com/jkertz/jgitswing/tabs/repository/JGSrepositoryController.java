@@ -34,7 +34,9 @@ import com.jkertz.jgitswing.tabs.ignored.JGSignoredController;
 import com.jkertz.jgitswing.tabs.staging.JGSstagingController;
 import com.jkertz.jgitswing.tabs.stagingtree.JGSstagingTreeController;
 import com.jkertz.jgitswing.tabs.tags.JGStagsController;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -44,6 +46,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -53,6 +56,8 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -94,6 +99,11 @@ public final class JGSrepositoryController extends JGScommonController implement
 //    }
     @Override
     public void onRepositoryPanelClickedFetch() {
+        //validate remote configuration
+        if (!checkAndSelectRemote()) {
+            return;
+        }
+
         showProgressBar("FetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
@@ -114,6 +124,10 @@ public final class JGSrepositoryController extends JGScommonController implement
 
     @Override
     public void onRepositoryPanelClickedPull() {
+        //validate remote configuration
+        if (!checkAndSelectRemote()) {
+            return;
+        }
         showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         boolean showParameterMapDialog = new JGSParameterMapDialog().show("Pull", parameters, false);
@@ -138,6 +152,11 @@ public final class JGSrepositoryController extends JGScommonController implement
 
     @Override
     public void onRepositoryPanelClickedPush() {
+        //validate remote configuration
+        if (!checkAndSelectRemote()) {
+            return;
+        }
+
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
@@ -155,7 +174,12 @@ public final class JGSrepositoryController extends JGScommonController implement
 
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
-        showProgressBar("PushRemote");
+        //validate remote configuration
+        if (!checkAndSelectRemote()) {
+            return;
+        }
+
+        showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
         boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
@@ -195,9 +219,23 @@ public final class JGSrepositoryController extends JGScommonController implement
 
     @Override
     public void onRepositoryTabRightClick(JTabbedPane tabbedPane, int x, int y) {
+        logger.getLogger().fine("onRepositoryTabRightClick");
         String selectedTabTitle = getSelectedTabTitle(tabbedPane);
         JPopupMenu menu = getTabRightClickMenu(selectedTabTitle);
         menu.show(tabbedPane, x, y);
+    }
+
+    @Override
+    public void onRepositoryPanelClickedOpenFileManager() {
+        logger.getLogger().fine("onRepositoryPanelClickedOpenFileManager");
+        Git git = jGSrepositoryModel.getGit();
+        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+        File directory = new File(path);
+        try {
+            Desktop.getDesktop().open(directory);
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "onRepositoryPanelClickedOpenFileManager", ex);
+        }
     }
 
     @Override
@@ -614,6 +652,40 @@ public final class JGSrepositoryController extends JGScommonController implement
             }
         }
         return closedTabTitles;
+    }
+
+    private boolean checkAndSelectRemote() {
+        Git git = jGSrepositoryModel.getGit();
+
+        try {
+            String remoteUrlFromConfig = utils.getRemoteUrlFromConfig(git);
+            if (remoteUrlFromConfig == null || remoteUrlFromConfig.isEmpty()) {
+                //get list of remotes
+                List<RemoteConfig> remoteList = jGSrepositoryModel.getRemoteList();
+                List<String> options = new ArrayList<>();
+                for (RemoteConfig remoteConfig : remoteList) {
+                    String remoteConfigName = remoteConfig.getName();
+                    options.add(remoteConfigName);
+                    System.out.println(remoteConfigName);
+                    List<URIish> urIs = remoteConfig.getURIs();
+                }
+                Object[] optionsArray = options.toArray();
+                int selectionindex = JOptionPane.showOptionDialog(null, "Choose remote", "Remote", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionsArray, optionsArray[0]);
+//                String selectedRemote = (String)optionsArray[selectionindex];
+                RemoteConfig selectedRemote = remoteList.get(selectionindex);
+
+                String remoteName = selectedRemote.getName();
+                URIish remoteUri = selectedRemote.getURIs().get(0);
+                jGSrepositoryModel.setRemote(remoteName, remoteUri);
+//                jGSrepositoryModel.addRemote(remoteName, remoteUri);
+
+            }
+            return true;
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "checkAndSelectRemote", ex);
+            showErrorDialog("checkAndSelectRemote", ex.getMessage());
+        }
+        return false;
     }
 
     @Override

@@ -78,6 +78,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
         } catch (Exception ex) {
             Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, "editConfigInfo", ex);
         }
+        hideProgressBar();
     }
 
     private void autoFixRemoteEditConfigInfo() {
@@ -129,6 +130,8 @@ public final class JGSconfigController extends JGScommonController implements IJ
         } catch (Exception ex) {
             Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, "autoFixRemoteEditConfigInfo", ex);
         }
+        hideProgressBar();
+
     }
 
 //    private IJGScallbackDirConfigInfoMap editConfigCallback(IJGScallbackRefresh refresh) {

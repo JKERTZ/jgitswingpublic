@@ -56,6 +56,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revplot.PlotWalk;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 
 /**
  * This unifies JGSbc and JGSgitModel
@@ -294,6 +295,14 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
     public synchronized List<RemoteConfig> getRemoteList() throws Exception {
         List<RemoteConfig> remoteList = jGSRemoteConfig.getRemoteList();
         return remoteList;
+    }
+
+    public synchronized void setRemote(String remoteName, URIish remoteUri) throws Exception {
+        jGSRemoteConfig.setRemote(remoteName, remoteUri);
+    }
+
+    public synchronized void addRemote(String remoteName, URIish remoteUri) throws Exception {
+        jGSRemoteConfig.addRemote(remoteName, remoteUri);
     }
 
     private void notifyGitConfigChanged() {

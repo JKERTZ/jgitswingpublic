@@ -36,4 +36,6 @@ public interface IJGSrepositoryPanel {
 
     public void onRepositoryTabRightClick(JTabbedPane tabbedPane, int x, int y);
 
+    public void onRepositoryPanelClickedOpenFileManager();
+
 }
