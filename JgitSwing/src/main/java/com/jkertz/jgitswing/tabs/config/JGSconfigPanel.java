@@ -16,14 +16,14 @@
  */
 package com.jkertz.jgitswing.tabs.config;
 
-import java.awt.BorderLayout;
-import java.util.Map;
 import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.config.IJGSconfigToolbar;
 import com.jkertz.jgitswing.toolbars.config.JGSconfigToolbar;
 import com.jkertz.jgitswing.widgets.config.IJGSconfigWidget;
 import com.jkertz.jgitswing.widgets.config.JGSconfigWidget;
+import java.awt.BorderLayout;
+import java.util.Map;
 
 /**
  *
@@ -53,6 +53,11 @@ public class JGSconfigPanel extends JGScommonPanel implements IJGSconfigWidget, 
     @Override
     public void onConfigToolbarClickedEditConfig() {
         receiver.onConfigPanelClickedEditConfig();
+    }
+
+    @Override
+    public void onConfigToolbarClickedFixRemote() {
+        receiver.onConfigToolbarClickedFixRemote();
     }
 
 }

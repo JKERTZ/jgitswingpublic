@@ -16,12 +16,6 @@
  */
 package com.jkertz.jgitswing.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import com.jkertz.jgitswing.businesslogic.JGSBranchTrackingStatus;
 import com.jkertz.jgitswing.businesslogic.JGSCommitsAhead;
 import com.jkertz.jgitswing.businesslogic.JGSConfigInfo;
@@ -32,12 +26,19 @@ import com.jkertz.jgitswing.businesslogic.JGSDiffFile;
 import com.jkertz.jgitswing.businesslogic.JGSLocalBranches;
 import com.jkertz.jgitswing.businesslogic.JGSPlotWalk;
 import com.jkertz.jgitswing.businesslogic.JGSRemoteBranches;
+import com.jkertz.jgitswing.businesslogic.JGSRemoteConfig;
 import com.jkertz.jgitswing.businesslogic.JGSallCommits;
 import com.jkertz.jgitswing.businesslogic.JGScommits;
 import com.jkertz.jgitswing.businesslogic.JGSstatus;
 import com.jkertz.jgitswing.businesslogic.JGStags;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -54,6 +55,7 @@ import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revplot.PlotWalk;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.RemoteConfig;
 
 /**
  * This unifies JGSbc and JGSgitModel
@@ -84,6 +86,7 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
     private final JGSRemoteBranches jGSRemoteBranches;
     private final JGSstatus jGSstatus;
     private final JGSBranchTrackingStatus jGSBranchTrackingStatus;
+    private final JGSRemoteConfig jGSRemoteConfig;
 
     public JGSrepositoryModel(Git git) {
         this.logger = JGSlogger.getINSTANCE();
@@ -104,6 +107,7 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
         this.jGSRemoteBranches = new JGSRemoteBranches(git);
         this.jGSstatus = new JGSstatus(git);
         this.jGSBranchTrackingStatus = new JGSBranchTrackingStatus(git);
+        this.jGSRemoteConfig = new JGSRemoteConfig(git);
 
         git.getRepository().getListenerList().addConfigChangedListener(this);
         git.getRepository().getListenerList().addIndexChangedListener(this);
@@ -285,6 +289,11 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
     public synchronized BranchTrackingStatus getBranchTrackingStatus(String branchName) throws Exception {
         BranchTrackingStatus branchTrackingStatus = jGSBranchTrackingStatus.getBranchTrackingStatus(branchName);
         return branchTrackingStatus;
+    }
+
+    public synchronized List<RemoteConfig> getRemoteList() throws Exception {
+        List<RemoteConfig> remoteList = jGSRemoteConfig.getRemoteList();
+        return remoteList;
     }
 
     private void notifyGitConfigChanged() {

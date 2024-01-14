@@ -963,7 +963,10 @@ public class JGScommandWrapper {
      * @throws GitAPIException
      */
     protected RemoteConfig remoteAdd(Git git, String name, URIish uri) throws GitAPIException {
-        RemoteConfig call = git.remoteAdd().setName(name).setUri(uri).call();
+        RemoteConfig call = git.remoteAdd()
+                .setName(name)
+                .setUri(uri)
+                .call();
         return call;
     }
 

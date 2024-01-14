@@ -16,10 +16,10 @@
  */
 package com.jkertz.jgitswing.toolbars.config;
 
+import com.jkertz.jgitswing.toolbars.common.JGScommonToolbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import com.jkertz.jgitswing.toolbars.common.JGScommonToolbar;
 
 /**
  *
@@ -33,15 +33,25 @@ public class JGSconfigToolbar extends JGScommonToolbar {
         super();
         this.receiver = receiver;
         JButton buttonEditConfig = new JButton("edit config");
+        JButton buttonFixRemote = new JButton("fix remote");
 
         buttonEditConfig.addActionListener(getActionListenerEditConfig());
+        buttonFixRemote.addActionListener(getActionListenerFixRemote());
 
         this.add(buttonEditConfig);
+        this.add(buttonFixRemote);
     }
 
     private ActionListener getActionListenerEditConfig() {
         ActionListener actionListener = (ActionEvent e) -> {
             receiver.onConfigToolbarClickedEditConfig();
+        };
+        return actionListener;
+    }
+
+    private ActionListener getActionListenerFixRemote() {
+        ActionListener actionListener = (ActionEvent e) -> {
+            receiver.onConfigToolbarClickedFixRemote();
         };
         return actionListener;
     }

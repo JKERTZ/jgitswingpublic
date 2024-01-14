@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 jkertz
+ * Copyright (C) 2024 JKERTZ
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.jkertz.jgitswing.toolbars.config;
+package com.jkertz.jgitswing.businesslogic;
+
+import java.util.List;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.transport.RemoteConfig;
 
 /**
  *
  * @author jkertz
  */
-public interface IJGSconfigToolbar {
+public class JGSRemoteConfig extends JGScachedResult {
 
-    public void onConfigToolbarClickedEditConfig();
+    private List<RemoteConfig> remoteList;
 
-    public void onConfigToolbarClickedFixRemote();
+    public JGSRemoteConfig(Git git) {
+        super(git);
+    }
 
+    public List<RemoteConfig> getRemoteList() throws Exception {
+        if (!isValid) {
+            remoteList = wrapper.remoteList(git);
+            //TODO: reenable after finding correct invalidation
+//           isValid = true;
+        }
+        return remoteList;
+    }
 }

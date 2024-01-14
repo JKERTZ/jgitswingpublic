@@ -52,6 +52,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //FIXME: create branch: configure remote to push new branch
 
     //incomplete features
+    //TODO: refresh config on branch switch
     //TODO: make config like pull-result
     //TODO: remove finalize from all classes after checking memory release on close tabs
     //TODO: running threads should be merged with global progress bar
