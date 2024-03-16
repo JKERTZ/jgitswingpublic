@@ -295,6 +295,7 @@ public final class JGSrepositoryController extends JGScommonController implement
 //        addSubTab(jGStagsController);
 //        addSubTab(jGSstagingController);
         addSubTab(jGSstagingTreeController);
+
 //        addSubTab(jGScurrentDiffController);
 //        addSubTab(jGSignoredController);
         addSubTab(jGShistoryController);
@@ -627,8 +628,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             @Override
             public void actionPerformed(ActionEvent e) {
                 openTab(selectedTabTitle);
-
-                addSubTab(jGSbranchesController);
             }
         });
         return opener;
