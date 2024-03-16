@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jkertz</groupId>
     <artifactId>JgitSwing</artifactId>
-    <version>1.0-20231126</version>
+    <version>1.0-20240316</version>
     <packaging>jar</packaging>
     <organization>
         <name>JKERTZ</name>   
     </organization>
-    <inceptionYear>2023</inceptionYear>
+    <inceptionYear>2024</inceptionYear>
     <description>Free Jgit client with Swing UI</description>
     
     <properties>
