@@ -19,7 +19,7 @@ package com.jkertz.jgitswing.tabs.config;
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackString;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
@@ -69,7 +69,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
     private void editConfigInfo() {
         try {
             Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
-            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional(panel, "Config", configInfoMap, false);
+            boolean showParameterMapDialog = new JGSdialogFactory().showSectional(panel, "Config", configInfoMap, false);
             if (showParameterMapDialog) {
                 saveConfigInfo(configInfoMap);
             } else {
@@ -121,7 +121,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
             branchMap.put(ConfigConstants.CONFIG_KEY_MERGE, newBranchMerge);//refs/heads/branchname
 
             //show editor with fixed values for user confirmation
-            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional(panel, "Config", configInfoMap, false);
+            boolean showParameterMapDialog = new JGSdialogFactory().showSectional(panel, "Config", configInfoMap, false);
             if (showParameterMapDialog) {
                 saveConfigInfo(configInfoMap);
             } else {

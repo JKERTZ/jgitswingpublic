@@ -19,7 +19,7 @@ package com.jkertz.jgitswing.tabs.common;
 import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSresultDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
@@ -108,22 +108,22 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     }
 
     protected boolean showMergeResult(Component parent, String title, MergeResult result) {
-        boolean showJGSresultDialog = new JGSresultDialog().showMergeResult(parent, title, result);
+        boolean showJGSresultDialog = new JGSdialogFactory().showMergeResult(parent, title, result);
         return showJGSresultDialog;
     }
 
     protected boolean showPushResult(Component parent, String title, Iterable<PushResult> pushResults) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPushResults(parent, title, pushResults);
+        boolean showJGSresultDialog = new JGSdialogFactory().showPushResults(parent, title, pushResults);
         return showJGSresultDialog;
     }
 
     protected boolean showPullResult(Component parent, String title, PullResult pullResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPullResult(parent, title, pullResult);
+        boolean showJGSresultDialog = new JGSdialogFactory().showPullResult(parent, title, pullResult);
         return showJGSresultDialog;
     }
 
     protected boolean showFetchResult(Component parent, String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showFetchResult(parent, title, fetchResult);
+        boolean showJGSresultDialog = new JGSdialogFactory().showFetchResult(parent, title, fetchResult);
         return showJGSresultDialog;
     }
 

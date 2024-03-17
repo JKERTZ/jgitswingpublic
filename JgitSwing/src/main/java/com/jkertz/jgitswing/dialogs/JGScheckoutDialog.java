@@ -72,7 +72,7 @@ public class JGScheckoutDialog {
         JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Checkout Source");
         sectionPanel.setBorder(sectionBorder);
-        sectionPanel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("Source", sourceInput, sourceBranch, true));
+        sectionPanel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("Source", sourceInput, sourceBranch, true));
         return sectionPanel;
     }
 
@@ -80,7 +80,7 @@ public class JGScheckoutDialog {
         JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
         TitledBorder sectionBorder = new TitledBorder("Target Branch");
         sectionPanel.setBorder(sectionBorder);
-        sectionPanel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("Target", targetInput, targetBranch, false));
+        sectionPanel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("Target", targetInput, targetBranch, false));
         return sectionPanel;
     }
 

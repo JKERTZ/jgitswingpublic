@@ -17,7 +17,7 @@
 package com.jkertz.jgitswing.tabs.repository;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
@@ -108,7 +108,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
 
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Fetch", parameters, options, false);
+        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Fetch", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -130,7 +130,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         }
         showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Pull", parameters, false);
+        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Pull", parameters, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -160,7 +160,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Push", parameters, options, false);
+        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -182,7 +182,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Push", parameters, options, false);
+        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");

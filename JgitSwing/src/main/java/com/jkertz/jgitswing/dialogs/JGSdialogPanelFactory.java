@@ -24,8 +24,10 @@ import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -46,18 +48,18 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
  *
  * @author jkertz
  */
-public class JGSdialogUtils {
+public class JGSdialogPanelFactory {
 
-    private static JGSdialogUtils INSTANCE = null;
+    private static JGSdialogPanelFactory INSTANCE = null;
     private final JGSlogger logger;
 
-    private JGSdialogUtils() {
+    private JGSdialogPanelFactory() {
         logger = JGSlogger.getINSTANCE();
     }
 
-    public static JGSdialogUtils getINSTANCE() {
+    protected static JGSdialogPanelFactory getINSTANCE() {
         if (INSTANCE == null) {
-            INSTANCE = new JGSdialogUtils();
+            INSTANCE = new JGSdialogPanelFactory();
         }
         return INSTANCE;
     }
@@ -159,6 +161,88 @@ public class JGSdialogUtils {
 
         subpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         panel.add(subpanel);
+
+        return panel;
+    }
+
+    protected JPanel getParameterMapPanel(Map<String, JTextField> inputMap, Map<String, String> parameters, boolean isReadonly) {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        for (String key : parameters.keySet()) {
+            String value = parameters.get(key);
+            panel.add(new JLabel(key));
+            JTextField input = new JTextField();
+            input.setEditable(!isReadonly);
+            if (value != null) {
+                input.setText(value);
+            }
+            input.setColumns(30);
+            panel.add(input);
+            inputMap.put(key, input);
+        }
+        return panel;
+    }
+
+    protected JPanel getParameterMapPanel(Map<String, JTextField> inputMap, Map<String, JCheckBox> optionMap, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        for (String key : parameters.keySet()) {
+            String value = parameters.get(key);
+            panel.add(new JLabel(key));
+            JTextField input = new JTextField("input123");
+            input.setEditable(!isReadonly);
+            if (value != null) {
+                input.setText(value);
+            }
+            input.setColumns(30);
+            panel.add(input);
+            inputMap.put(key, input);
+        }
+
+        for (String key : options.keySet()) {
+            Boolean value = options.get(key);
+            JCheckBox check = new JCheckBox(key);
+            check.setEnabled(!isReadonly);
+            if (value != null) {
+                check.setSelected(value);
+            }
+            panel.add(check);
+            optionMap.put(key, check);
+        }
+        return panel;
+    }
+
+    protected JPanel getParameterMapPanelSectional(Map<String, JTextField> inputMap, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        for (String section : parameters.keySet()) {
+            System.out.println("Section: " + section);
+            JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
+            TitledBorder sectionBorder = new TitledBorder(section);
+            sectionPanel.setBorder(sectionBorder);
+            panel.add(sectionPanel);
+
+            Map<String, Map<String, String>> subSectionMap = parameters.get(section);
+            for (String subSection : subSectionMap.keySet()) {
+                System.out.println("-SubSection: " + subSection);
+                JPanel subSectionPanel = new JPanel(new GridLayout(0, 1));
+
+                TitledBorder subSectionBorder = new TitledBorder(subSection);
+                subSectionPanel.setBorder(subSectionBorder);
+                sectionPanel.add(subSectionPanel);
+
+                Map<String, String> nameMap = subSectionMap.get(subSection);
+                for (String name : nameMap.keySet()) {
+                    String value = nameMap.get(name);
+                    System.out.println("--Name: " + name + " Value: " + value);
+
+                    JTextField input = new JTextField();
+                    JPanel nameValuePanel = JGSdialogPanelFactory.getINSTANCE().getLabeledInput(name, input, value, isReadonly);
+
+                    subSectionPanel.add(nameValuePanel);
+                    String key = section + subSection + name;
+                    inputMap.put(key, input);
+                }
+            }
+        }
 
         return panel;
     }

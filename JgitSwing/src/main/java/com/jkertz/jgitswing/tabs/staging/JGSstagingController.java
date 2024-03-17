@@ -23,7 +23,7 @@ import com.jkertz.jgitswing.callback.IJGScallbackRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackStatus;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
@@ -254,7 +254,7 @@ public final class JGSstagingController extends JGScommonController implements I
                 parameters.put("User", username);
                 parameters.put("Email", email);
                 parameters.put("CommitMessage", null);
-                boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Commit", parameters, false);
+                boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Commit", parameters, false);
                 if (showParameterMapDialog) {
                     commit(parameters);
                 } else {
