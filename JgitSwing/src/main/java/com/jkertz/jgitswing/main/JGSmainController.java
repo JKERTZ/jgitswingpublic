@@ -42,12 +42,11 @@ import org.eclipse.jgit.api.Git;
  */
 public class JGSmainController implements IJGSmainView, IJGSsettings {
     //known Bugs, use "Action Items" in Netbeans
-    //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
-    //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
-    //FIXME: remove input dialog from main view
-    //FIXME: check if any dialog should be in main view/controller
     //FIXME: create branch: show option to checkout
     //FIXME: create branch: configure remote to push new branch
+    //FIXME: remove input dialog from main view
+    //FIXME: check if any dialog should be in main view/controller
+    //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
 
     //incomplete features
     //TODO: refresh config on branch switch
