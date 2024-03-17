@@ -34,6 +34,7 @@ import com.jkertz.jgitswing.businesslogic.JGStags;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.tabs.common.JGSuiUtils;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -132,6 +133,9 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
 
     @Override
     public void onIndexChanged(IndexChangedEvent ice) {
+        boolean internal = ice.isInternal();
+        logger.getLogger().info("internal: " + internal);
+
         System.out.println("JGSrepositoryModel onIndexChanged");
         //caused by staging
         jGSstatus.invalidate();
@@ -143,11 +147,17 @@ public class JGSrepositoryModel implements ConfigChangedListener, IndexChangedLi
         System.out.println("JGSrepositoryModel onRefsChanged");
         //caused by create commit
         //caused by branch checkout
+        //caused by pull
         notifyGitRefChanged();
     }
 
     @Override
     public void onWorkingTreeModified(WorkingTreeModifiedEvent wtme) {
+        Collection<String> deleted = wtme.getDeleted();
+        Collection<String> modified = wtme.getModified();
+        logger.getLogger().info("deleted: " + deleted);
+        logger.getLogger().info("modified: " + modified);
+
         System.out.println("JGSrepositoryModel onWorkingTreeModified");
         notifyGitWorkingTreeModified();
     }

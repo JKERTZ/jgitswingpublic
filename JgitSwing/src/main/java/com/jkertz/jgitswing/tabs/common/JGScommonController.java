@@ -202,11 +202,15 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     @Override
     public void onGitIndexChanged() {
+        //caused by staging
         logger.getLogger().fine("onGitIndexChanged");
     }
 
     @Override
     public void onGitRefChanged() {
+        //caused by create commit
+        //caused by branch checkout
+        //caused by pull
         logger.getLogger().fine("onGitRefChanged");
     }
 

@@ -16,10 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.stagingtree;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackDirCache;
 import com.jkertz.jgitswing.callback.IJGScallbackListDirCache;
 import com.jkertz.jgitswing.callback.IJGScallbackListRef;
@@ -31,6 +27,10 @@ import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.dircache.DirCache;
@@ -59,6 +59,13 @@ public final class JGSstagingTreeController extends JGScommonController implemen
         System.out.println("JGSstagingController onGitIndexChanged");
         logger.getLogger().fine("onGitIndexChanged");
         updateWidgets(refreshCallback());
+    }
+
+    @Override
+    public void onGitRefChanged() {
+        //caused by commit, pull
+        logger.getLogger().fine("onGitRefChanged");
+        refresh();
     }
 
     @Override

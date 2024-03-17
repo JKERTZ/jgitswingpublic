@@ -42,9 +42,7 @@ import org.eclipse.jgit.api.Git;
  */
 public class JGSmainController implements IJGSmainView, IJGSsettings {
     //known Bugs, use "Action Items" in Netbeans
-    //FIXME: after pulling changes are shown in the "staged" panel
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
-    //FIXME: progress bar in Toast flickering on Linux (only wayland)
     //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
     //FIXME: remove input dialog from main view
     //FIXME: check if any dialog should be in main view/controller
@@ -61,6 +59,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //TODO: remove hardcoded column number access
     //future
     //TODO: implement SSH remote repository
+    //FIXME: progress bar in Toast flickering on Linux (only wayland)
     private static JGSmainController INSTANCE = null;
     private final JGSlogger logger;
     private final JGSmainView panel;
@@ -75,7 +74,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240316");
+        panel.getjFrame().setTitle("JGS v0.20240317");
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);

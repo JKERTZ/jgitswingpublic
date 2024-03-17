@@ -52,7 +52,7 @@ public final class JGSbranchesController extends JGScommonController implements 
 
     @Override
     public void onGitRefChanged() {
-        //caused by commit
+        //caused by commit, pull
         logger.getLogger().fine("onGitRefChanged");
         refresh();
     }
