@@ -16,10 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.tags;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
 import com.jkertz.jgitswing.callback.IJGScallbackListJGStags;
 import com.jkertz.jgitswing.callback.IJGScallbackListRefCommit;
@@ -30,6 +26,10 @@ import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGStag;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Ref;
@@ -259,7 +259,7 @@ public final class JGStagsController extends JGScommonController implements IJGS
         parameters.put("tagMessage", null);
         parameters.put("taggerName", null);
         parameters.put("taggerEmail", null);
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Commit", parameters, false);
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Commit", parameters, false);
         if (showParameterMapDialog) {
         }
 
@@ -317,7 +317,7 @@ public final class JGStagsController extends JGScommonController implements IJGS
                 parameters.put("taggerEmail", email);
 //                parameters.put("taggerName", null);
 //                parameters.put("taggerEmail", null);
-                boolean showParameterMapDialog = new JGSParameterMapDialog().show("Tag", parameters, false);
+                boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Tag", parameters, false);
                 if (showParameterMapDialog) {
                     createTag(parameters, refresh);
                 } else {

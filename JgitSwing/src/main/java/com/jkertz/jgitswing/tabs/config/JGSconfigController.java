@@ -69,7 +69,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
     private void editConfigInfo() {
         try {
             Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
-            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional("Config", configInfoMap, false);
+            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional(panel, "Config", configInfoMap, false);
             if (showParameterMapDialog) {
                 saveConfigInfo(configInfoMap);
             } else {
@@ -121,7 +121,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
             branchMap.put(ConfigConstants.CONFIG_KEY_MERGE, newBranchMerge);//refs/heads/branchname
 
             //show editor with fixed values for user confirmation
-            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional("Config", configInfoMap, false);
+            boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional(panel, "Config", configInfoMap, false);
             if (showParameterMapDialog) {
                 saveConfigInfo(configInfoMap);
             } else {

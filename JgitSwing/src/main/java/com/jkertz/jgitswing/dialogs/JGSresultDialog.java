@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.dialogs;
 
+import java.awt.Component;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.eclipse.jgit.api.MergeResult;
@@ -35,27 +36,27 @@ public class JGSresultDialog {
         this.dialogUtils = JGSdialogUtils.getINSTANCE();
     }
 
-    public boolean showPullResult(String title, PullResult pullResult) {
+    public boolean showPullResult(Component parent, String title, PullResult pullResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(pullResult);
-        int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showFetchResult(String title, FetchResult fetchResult) {
+    public boolean showFetchResult(Component parent, String title, FetchResult fetchResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(fetchResult);
-        int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showPushResults(String title, Iterable<PushResult> pushResults) {
+    public boolean showPushResults(Component parent, String title, Iterable<PushResult> pushResults) {
         JPanel dialogPanel = dialogUtils.getDialogPanelPushResults(pushResults);
-        int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showMergeResult(String title, MergeResult mergeResult) {
+    public boolean showMergeResult(Component parent, String title, MergeResult mergeResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(mergeResult);
-        int result = JOptionPane.showConfirmDialog(null, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 

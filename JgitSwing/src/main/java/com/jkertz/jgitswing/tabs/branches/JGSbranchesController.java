@@ -203,7 +203,7 @@ public final class JGSbranchesController extends JGScommonController implements 
 //            showInfoDialog("onBranchesPanelClickedMerge", result.getMergeStatus().toString());
             showInfoToast("Merge success " + pathComponent2);
             //show merge result details
-            showMergeResult("Merge Branch " + pathComponent2 + " into " + branchName, result);
+            showMergeResult(panel, "Merge Branch " + pathComponent2 + " into " + branchName, result);
             hideProgressBar();
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedMerge", ex);

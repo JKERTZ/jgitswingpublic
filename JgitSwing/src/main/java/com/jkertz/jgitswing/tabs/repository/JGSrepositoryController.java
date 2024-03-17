@@ -108,7 +108,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
 
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Fetch", parameters, options, false);
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Fetch", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -130,7 +130,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         }
         showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Pull", parameters, false);
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Pull", parameters, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -138,7 +138,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             try {
                 PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
                 saveRemoteCredentials(usernameInput, passwordInput);
-                showPullResult("Pull result", result);
+                showPullResult(panel, "Pull result", result);
             } catch (CheckoutConflictException ccex) {
                 String message = ccex.getMessage();
                 logger.getLogger().log(Level.INFO, message);
@@ -160,7 +160,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -182,7 +182,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
+        boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -453,7 +453,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Fetch preview";
             }
-            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
+            boolean showFetchResult = showFetchResult(panel, resultTitle, fetchRemote);
             return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
@@ -477,7 +477,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Push preview";
             }
-            boolean showPushResult = showPushResult(resultTitle, pushResults);
+            boolean showPushResult = showPushResult(panel, resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {

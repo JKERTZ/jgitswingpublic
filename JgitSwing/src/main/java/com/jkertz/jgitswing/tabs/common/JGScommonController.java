@@ -24,6 +24,7 @@ import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import java.awt.Component;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.transport.FetchResult;
@@ -106,23 +107,23 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         commonPanel.showvProgressBar(text);
     }
 
-    protected boolean showMergeResult(String title, MergeResult result) {
-        boolean showJGSresultDialog = new JGSresultDialog().showMergeResult(title, result);
+    protected boolean showMergeResult(Component parent, String title, MergeResult result) {
+        boolean showJGSresultDialog = new JGSresultDialog().showMergeResult(parent, title, result);
         return showJGSresultDialog;
     }
 
-    protected boolean showPushResult(String title, Iterable<PushResult> pushResults) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPushResults(title, pushResults);
+    protected boolean showPushResult(Component parent, String title, Iterable<PushResult> pushResults) {
+        boolean showJGSresultDialog = new JGSresultDialog().showPushResults(parent, title, pushResults);
         return showJGSresultDialog;
     }
 
-    protected boolean showPullResult(String title, PullResult pullResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPullResult(title, pullResult);
+    protected boolean showPullResult(Component parent, String title, PullResult pullResult) {
+        boolean showJGSresultDialog = new JGSresultDialog().showPullResult(parent, title, pullResult);
         return showJGSresultDialog;
     }
 
-    protected boolean showFetchResult(String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showFetchResult(title, fetchResult);
+    protected boolean showFetchResult(Component parent, String title, FetchResult fetchResult) {
+        boolean showJGSresultDialog = new JGSresultDialog().showFetchResult(parent, title, fetchResult);
         return showJGSresultDialog;
     }
 

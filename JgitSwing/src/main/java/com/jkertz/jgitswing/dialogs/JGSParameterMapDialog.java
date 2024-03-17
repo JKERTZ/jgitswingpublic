@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.dialogs;
 
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,7 @@ import javax.swing.border.TitledBorder;
  */
 public class JGSParameterMapDialog {
 
-    public boolean show(String title, Map<String, String> parameters, boolean isReadonly) {
+    public boolean show(Component parent, String title, Map<String, String> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         JPanel myPanel = new JPanel(new GridLayout(0, 1));
         for (String key : parameters.keySet()) {
@@ -50,7 +51,7 @@ public class JGSParameterMapDialog {
             inputMap.put(key, input);
         }
 
-        int result = JOptionPane.showConfirmDialog(null, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             for (String key : parameters.keySet()) {
                 JTextField input = inputMap.get(key);
@@ -64,7 +65,7 @@ public class JGSParameterMapDialog {
         return false;
     }
 
-    public boolean show(String title, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
+    public boolean show(Component parent, String title, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         Map<String, JCheckBox> optionMap = new HashMap<>();
         JPanel myPanel = new JPanel(new GridLayout(0, 1));
@@ -93,7 +94,7 @@ public class JGSParameterMapDialog {
             optionMap.put(key, check);
         }
 
-        int result = JOptionPane.showConfirmDialog(null, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             for (String key : parameters.keySet()) {
                 JTextField input = inputMap.get(key);
@@ -113,7 +114,7 @@ public class JGSParameterMapDialog {
         return false;
     }
 
-    public boolean showSectional(String title, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
+    public boolean showSectional(Component parent, String title, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         JPanel myPanel = new JPanel();
         myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
@@ -149,7 +150,7 @@ public class JGSParameterMapDialog {
             }
         }
 
-        int result = JOptionPane.showConfirmDialog(null, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(parent, myPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             for (String section : parameters.keySet()) {
 

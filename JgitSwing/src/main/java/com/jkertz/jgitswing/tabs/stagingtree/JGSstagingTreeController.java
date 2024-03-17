@@ -260,7 +260,7 @@ public final class JGSstagingTreeController extends JGScommonController implemen
                 parameters.put("User", username);
                 parameters.put("Email", email);
                 parameters.put("CommitMessage", null);
-                boolean showParameterMapDialog = new JGSParameterMapDialog().show("Commit", parameters, false);
+                boolean showParameterMapDialog = new JGSParameterMapDialog().show(panel, "Commit", parameters, false);
                 if (showParameterMapDialog) {
                     commit(parameters);
                 } else {
