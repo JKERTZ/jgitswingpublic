@@ -16,12 +16,12 @@
  */
 package com.jkertz.jgitswing.toolbars.repository;
 
+import com.jkertz.jgitswing.toolbars.common.JGScommonToolbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.EtchedBorder;
-import com.jkertz.jgitswing.toolbars.common.JGScommonToolbar;
 
 /**
  *
@@ -39,6 +39,7 @@ public final class JGSrepositoryToolbar extends JGScommonToolbar {
         labelBranch.setBorder(new EtchedBorder());
 
         JButton buttonRefresh = new JButton("↺ Refresh");
+        JButton buttonOpenFileManager = new JButton("↪ Open");
         JButton buttonFetch = new JButton("⇣ Fetch");
         JButton buttonPull = new JButton("⇓ Pull");
         JButton buttonPush = new JButton("⇑ Push");
@@ -49,8 +50,10 @@ public final class JGSrepositoryToolbar extends JGScommonToolbar {
         buttonPull.addActionListener(getActionListenerPull());
         buttonPush.addActionListener(getActionListenerPush());
         buttonPushAndFetch.addActionListener(getActionListenerPushAndFetch());
+        buttonOpenFileManager.addActionListener(getActionListenerOpenFileManager());
 
         this.add(buttonRefresh);
+        this.add(buttonOpenFileManager);
         this.add(buttonFetch);
         this.add(buttonPull);
         this.add(buttonPush);
@@ -93,6 +96,13 @@ public final class JGSrepositoryToolbar extends JGScommonToolbar {
     private ActionListener getActionListenerPushAndFetch() {
         ActionListener actionListener = (ActionEvent e) -> {
             receiver.onRepositoryToolbarClickedPushAndFetch();
+        };
+        return actionListener;
+    }
+
+    private ActionListener getActionListenerOpenFileManager() {
+        ActionListener actionListener = (ActionEvent e) -> {
+            receiver.onRepositoryToolbarClickedOpenFileManager();
         };
         return actionListener;
     }

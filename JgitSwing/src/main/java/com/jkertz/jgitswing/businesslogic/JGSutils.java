@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.businesslogic;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,12 +75,7 @@ public class JGSutils {
     }
 
     public FetchResult fetchRemote(Git git, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs, String usernameInput, String passwordInput) throws Exception {
-        Map<String, Map<String, Map<String, String>>> configInfoMap = wrapper.getConfigInfo(git);
-        Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
-        Set<String> subSections = remoteSectionMap.keySet();
-        String subSection = subSections.iterator().next();
-        Map<String, String> remoteMap = remoteSectionMap.get(subSection);
-        String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
+        String remoteUrl = getRemoteUrlFromConfig(git);
 
         FetchResult result = null;
         if (remoteUrl.startsWith("http")) {
@@ -92,12 +88,7 @@ public class JGSutils {
     }
 
     public PullResult pullRemote(Git git, String usernameInput, String passwordInput) throws Exception {
-        Map<String, Map<String, Map<String, String>>> configInfoMap = wrapper.getConfigInfo(git);
-        Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
-        Set<String> subSections = remoteSectionMap.keySet();
-        String subSection = subSections.iterator().next();
-        Map<String, String> remoteMap = remoteSectionMap.get(subSection);
-        String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
+        String remoteUrl = getRemoteUrlFromConfig(git);
 
         PullResult result = null;
         if (remoteUrl.startsWith("http")) {
@@ -110,12 +101,7 @@ public class JGSutils {
 
     public Iterable<PushResult> pushRemote(Git git, boolean dryRun, String usernameInput, String passwordInput) throws Exception {
         String branch = git.getRepository().getBranch();
-        Map<String, Map<String, Map<String, String>>> configInfoMap = wrapper.getConfigInfo(git);
-        Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
-        Set<String> subSections = remoteSectionMap.keySet();
-        String subSection = subSections.iterator().next();
-        Map<String, String> remoteMap = remoteSectionMap.get(subSection);
-        String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
+        String remoteUrl = getRemoteUrlFromConfig(git);
 
         Iterable<PushResult> pushResult = null;
         if (remoteUrl.startsWith("http")) {
@@ -209,6 +195,16 @@ public class JGSutils {
     public RevCommit commit(Git git, String user, String email, String message) throws Exception {
         RevCommit commit = wrapper.commit(git, user, email, message);
         return commit;
+    }
+
+    public String getRemoteUrlFromConfig(Git git) throws IOException {
+        Map<String, Map<String, Map<String, String>>> configInfoMap = wrapper.getConfigInfo(git);
+        Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
+        Set<String> subSections = remoteSectionMap.keySet();
+        String subSection = subSections.iterator().next();
+        Map<String, String> remoteMap = remoteSectionMap.get(subSection);
+        String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
+        return remoteUrl;
     }
 
 }

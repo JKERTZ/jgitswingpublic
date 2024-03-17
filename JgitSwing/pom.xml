@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jkertz</groupId>
     <artifactId>JgitSwing</artifactId>
-    <version>1.0-20231126</version>
+    <version>1.0-20240316</version>
     <packaging>jar</packaging>
     <organization>
         <name>JKERTZ</name>   
     </organization>
-    <inceptionYear>2023</inceptionYear>
+    <inceptionYear>2024</inceptionYear>
     <description>Free Jgit client with Swing UI</description>
     
     <properties>
@@ -23,20 +23,20 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit.ui</artifactId>
-            <version>6.7.0.202309050840-r</version>
+            <version>6.9.0.202403050737-r</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.formdev/flatlaf -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>3.2.5</version>
+            <version>3.4</version>
             <scope>runtime</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.formdev/flatlaf-intellij-themes -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf-intellij-themes</artifactId>
-            <version>3.2.5</version>
+            <version>3.4</version>
         </dependency>
     </dependencies>
  
@@ -122,7 +122,7 @@
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
-                        <version>2.4.1</version>           
+                        <version>2.5.0</version>           
                         <executions>
                             <execution>
                                 <id>l4j-gui</id>

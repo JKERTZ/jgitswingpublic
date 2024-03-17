@@ -32,4 +32,6 @@ public interface IJGSrepositoryToolbar {
 
     public void onRepositoryToolbarClickedPushAndFetch();
 
+    public void onRepositoryToolbarClickedOpenFileManager();
+
 }

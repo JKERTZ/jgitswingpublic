@@ -39,6 +39,7 @@ public class JGShtmlDisplayWidget extends JGScommonScrollwidget {
 
     public JGShtmlDisplayWidget(String filename) {
         super(filename);
+
         jEditorPanel = getHtmlDisplayPane(filename);
         desk = Desktop.getDesktop();
         this.setViewportView(jEditorPanel);

@@ -24,4 +24,6 @@ public interface IJGSconfigPanel {
 
     public void onConfigPanelClickedEditConfig();
 
+    public void onConfigToolbarClickedFixRemote();
+
 }

@@ -16,11 +16,11 @@
  */
 package com.jkertz.jgitswing.tabs.about;
 
+import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
+import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
-import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 
 /**
  *
@@ -34,8 +34,8 @@ public class JGSaboutJgitPanel extends JGScommonPanel {
     public JGSaboutJgitPanel() {
         super(new BorderLayout());
 
-        jGStextDisplayWidget1 = new JGShtmlDisplayWidget("jgit/aboutJgit.html");
-        jGShtmlDisplayWidget2 = new JGShtmlDisplayWidget("jgit/about.html");
+        jGStextDisplayWidget1 = new JGShtmlDisplayWidget("/jgit/aboutJgit.html");
+        jGShtmlDisplayWidget2 = new JGShtmlDisplayWidget("/jgit/about.html");
 
         JPanel gridPanel = new JPanel(new GridLayout(2, 1));
 

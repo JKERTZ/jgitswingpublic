@@ -16,11 +16,11 @@
  */
 package com.jkertz.jgitswing.tabs.about;
 
+import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
+import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
-import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 
 /**
  *
@@ -34,12 +34,8 @@ public class JGSaboutFlatlafintellijPanel extends JGScommonPanel {
     public JGSaboutFlatlafintellijPanel() {
         super(new BorderLayout());
 
-        String text2 = "FlatLaf is open source licensed under the Apache 2.0 License\n"
-                + "FlatLaf documentation on this website is Copyright © 2019-2023 FormDev Software GmbH. All rights\n"
-                + "reserved. Any other use or reproduction requires written consent of FormDev Software GmbH.\n";
-
-        jGStextDisplayWidget2 = new JGShtmlDisplayWidget("flatlafintellij/aboutFlatlafIntellij.html");
-        jGShtmlDisplayWidget = new JGShtmlDisplayWidget("flatlafintellij/LICENSE");
+        jGStextDisplayWidget2 = new JGShtmlDisplayWidget("/flatlafintellij/aboutFlatlafIntellij.html");
+        jGShtmlDisplayWidget = new JGShtmlDisplayWidget("/flatlafintellij/LICENSE");
 
         JPanel gridPanel = new JPanel(new GridLayout(2, 1));
 

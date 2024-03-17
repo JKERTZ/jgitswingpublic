@@ -16,11 +16,11 @@
  */
 package com.jkertz.jgitswing.tabs.about;
 
+import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
+import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
-import com.jkertz.jgitswing.widgets.html.JGShtmlDisplayWidget;
 
 /**
  *
@@ -34,16 +34,9 @@ public class JGSaboutSlf4jPanel extends JGScommonPanel {
     public JGSaboutSlf4jPanel() {
         super(new BorderLayout());
 
-        String text3 = "Homepage	https://www.slf4j.org/\n"
-                + "Package	slf4j-api-1.7.36.jar\n"
-                + "Version  	1.7.36\n"
-                + "License 	MIT License\n"
-                + "http://www.opensource.org/licenses/mit-license.php";
+        jGStextDisplayWidget3 = new JGShtmlDisplayWidget("/slf4j/aboutSLF4J.html");
+        jGShtmlDisplayWidget = new JGShtmlDisplayWidget("/slf4j/LICENSE.txt");
 
-        jGStextDisplayWidget3 = new JGShtmlDisplayWidget("slf4j/aboutSLF4J.html");
-        jGShtmlDisplayWidget = new JGShtmlDisplayWidget("slf4j/LICENSE.txt");
-
-//        this.add(jGStextDisplayWidget3, BorderLayout.CENTER);
         JPanel gridPanel = new JPanel(new GridLayout(2, 1));
 
         gridPanel.add(jGStextDisplayWidget3);

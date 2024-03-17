@@ -60,7 +60,21 @@ public final class JGSbranchesController extends JGScommonController implements 
     @Override
     public void onBranchesPanelClickedCreate() {
         showProgressBar("onBranchesPanelClickedCreate");
+        //TODO: replace InputDialog
         String branchName = showInputDialog("Create Branch", "Enter new branch name");
+        //validate input
+        if (branchName == null) {
+            logger.getLogger().info("onBranchesPanelClickedCreate cancel");
+            hideProgressBar();
+            return;
+        }
+        if (branchName.isEmpty() || branchName.contains(" ")) {
+            logger.getLogger().info("onBranchesPanelClickedCreate wrong input");
+            showWarningToast("invalid branch name");
+            hideProgressBar();
+            return;
+        }
+
         Git git = jGSrepositoryModel.getGit();
 
         try {

@@ -141,15 +141,6 @@ public class JGSParameterMapDialog {
 
                     JTextField input = new JTextField();
                     JPanel nameValuePanel = JGSdialogUtils.getINSTANCE().getLabeledInput(name, input, value, isReadonly);
-//                    JPanel nameValuePanel = new JPanel();
-//
-//                    nameValuePanel.add(new JLabel(name));
-//                    input.setEditable(!isReadonly);
-//                    if (value != null) {
-//                        input.setText(value);
-//                    }
-//                    input.setColumns(40);
-//                    nameValuePanel.add(input);
 
                     subSectionPanel.add(nameValuePanel);
                     String key = section + subSection + name;
