@@ -16,13 +16,13 @@
  */
 package com.jkertz.jgitswing.tabs.currentdiff;
 
-import java.util.List;
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.jgit.diff.DiffEntry;
 
 /**

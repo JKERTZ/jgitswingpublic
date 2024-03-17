@@ -17,10 +17,12 @@
 package com.jkertz.jgitswing.dialogs;
 
 import java.awt.Component;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -35,37 +37,39 @@ import org.eclipse.jgit.transport.PushResult;
  */
 public class JGSdialogFactory {
 
-    JGSdialogPanelFactory dialogUtils;
+    private final JGSdialogPanelFactory dialogUtils;
+    private final Component parent;
 
-    public JGSdialogFactory() {
+    public JGSdialogFactory(Component parent) {
         this.dialogUtils = JGSdialogPanelFactory.getINSTANCE();
+        this.parent = parent;
     }
 
-    public boolean showPullResult(Component parent, String title, PullResult pullResult) {
+    public boolean showPullResult(String title, PullResult pullResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(pullResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showFetchResult(Component parent, String title, FetchResult fetchResult) {
+    public boolean showFetchResult(String title, FetchResult fetchResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(fetchResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showPushResults(Component parent, String title, Iterable<PushResult> pushResults) {
+    public boolean showPushResults(String title, Iterable<PushResult> pushResults) {
         JPanel dialogPanel = dialogUtils.getDialogPanelPushResults(pushResults);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showMergeResult(Component parent, String title, MergeResult mergeResult) {
+    public boolean showMergeResult(String title, MergeResult mergeResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(mergeResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
-    public boolean showParameterMapDialog(Component parent, String title, Map<String, String> parameters, boolean isReadonly) {
+    public boolean showParameterMapDialog(String title, Map<String, String> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         JPanel myPanel = dialogUtils.getParameterMapPanel(inputMap, parameters, isReadonly);
 
@@ -82,7 +86,7 @@ public class JGSdialogFactory {
         return false;
     }
 
-    public boolean showParameterMapDialog(Component parent, String title, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
+    public boolean showParameterMapDialog(String title, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         Map<String, JCheckBox> optionMap = new HashMap<>();
 
@@ -108,7 +112,7 @@ public class JGSdialogFactory {
         return false;
     }
 
-    public boolean showSectional(Component parent, String title, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
+    public boolean showSectional(String title, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
 
         JPanel myPanel = JGSdialogPanelFactory.getINSTANCE().getParameterMapPanelSectional(inputMap, parameters, isReadonly);
@@ -137,4 +141,48 @@ public class JGSdialogFactory {
         return false;
 
     }
+
+    /**
+     * shows a directorychooser returns null if action is canceled by user
+     *
+     * @param parent
+     * @param title
+     * @return
+     */
+    public String chooseDirectory(String title) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(title);
+        fileChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = fileChooser.showOpenDialog(parent);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            String directory = file.getAbsolutePath();
+            System.out.println(directory);
+            return directory;
+
+        } else {
+            System.out.println("File access cancelled by user.");
+            return null;
+        }
+    }
+
+    public void showErrorDialog(String title, String message) {
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showInfoDialog(String title, String message) {
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public String showInputDialog(String title, String message) {
+        String input = JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE);
+        return input;
+    }
+
+    public boolean showConfirmDialog(String title, String message) {
+        int showConfirmDialog = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        // 0=ok, 2=cancel
+        return (showConfirmDialog == 0);
+    }
+
 }

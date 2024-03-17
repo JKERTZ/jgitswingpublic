@@ -17,7 +17,6 @@
 package com.jkertz.jgitswing.tabs.repository;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
@@ -108,7 +107,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
 
-        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Fetch", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Fetch", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -130,7 +129,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         }
         showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Pull", parameters, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Pull", parameters, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -138,7 +137,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             try {
                 PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
                 saveRemoteCredentials(usernameInput, passwordInput);
-                showPullResult(panel, "Pull result", result);
+                showPullResult("Pull result", result);
             } catch (CheckoutConflictException ccex) {
                 String message = ccex.getMessage();
                 logger.getLogger().log(Level.INFO, message);
@@ -160,7 +159,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
-        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Push", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -182,7 +181,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
-        boolean showParameterMapDialog = new JGSdialogFactory().showParameterMapDialog(panel, "Push", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -453,7 +452,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Fetch preview";
             }
-            boolean showFetchResult = showFetchResult(panel, resultTitle, fetchRemote);
+            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
             return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
@@ -477,7 +476,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Push preview";
             }
-            boolean showPushResult = showPushResult(panel, resultTitle, pushResults);
+            boolean showPushResult = showPushResult(resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {

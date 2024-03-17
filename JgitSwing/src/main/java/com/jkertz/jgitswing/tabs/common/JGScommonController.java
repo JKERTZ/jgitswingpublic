@@ -24,7 +24,6 @@ import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import java.awt.Component;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.transport.FetchResult;
@@ -45,6 +44,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     private JGScommonPanel commonPanel;
     private final String name;
     protected final JGSutils utils;
+    protected JGSdialogFactory jGSdialogFactory;
 
     public JGScommonController(String name, JGSrepositoryModel jGSrepositoryModel) {
         this.jGSrepositoryModel = jGSrepositoryModel;
@@ -61,26 +61,23 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     protected void setPanel(JGScommonPanel commonPanel) {
         this.commonPanel = commonPanel;
+        jGSdialogFactory = new JGSdialogFactory(commonPanel);
     }
 
-    protected void showErrorDialog(String title, String message) {
-        mainController.showErrorDialog(title, message);
+    public void showErrorDialog(String title, String message) {
+        jGSdialogFactory.showErrorDialog(title, message);
     }
 
-    protected void showInfoDialog(String title, String message) {
-        mainController.showInfoDialog(title, message);
+    public void showInfoDialog(String title, String message) {
+        jGSdialogFactory.showInfoDialog(title, message);
     }
 
-    protected String showInputDialog(String title, String message) {
-        return mainController.showInputDialog(title, message);
+    public String showInputDialog(String title, String message) {
+        return jGSdialogFactory.showInputDialog(title, message);
     }
 
-    protected boolean showConfirmDialog(String title, String message) {
-        return mainController.showConfirmDialog(title, message);
-    }
-
-    protected String chooseDirectory(String title) {
-        return mainController.chooseDirectory(title);
+    public boolean showConfirmDialog(String title, String message) {
+        return jGSdialogFactory.showConfirmDialog(title, message);
     }
 
     protected void showToast(String message) {
@@ -107,23 +104,23 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         commonPanel.showvProgressBar(text);
     }
 
-    protected boolean showMergeResult(Component parent, String title, MergeResult result) {
-        boolean showJGSresultDialog = new JGSdialogFactory().showMergeResult(parent, title, result);
+    protected boolean showMergeResult(String title, MergeResult result) {
+        boolean showJGSresultDialog = jGSdialogFactory.showMergeResult(title, result);
         return showJGSresultDialog;
     }
 
-    protected boolean showPushResult(Component parent, String title, Iterable<PushResult> pushResults) {
-        boolean showJGSresultDialog = new JGSdialogFactory().showPushResults(parent, title, pushResults);
+    protected boolean showPushResult(String title, Iterable<PushResult> pushResults) {
+        boolean showJGSresultDialog = jGSdialogFactory.showPushResults(title, pushResults);
         return showJGSresultDialog;
     }
 
-    protected boolean showPullResult(Component parent, String title, PullResult pullResult) {
-        boolean showJGSresultDialog = new JGSdialogFactory().showPullResult(parent, title, pullResult);
+    protected boolean showPullResult(String title, PullResult pullResult) {
+        boolean showJGSresultDialog = jGSdialogFactory.showPullResult(title, pullResult);
         return showJGSresultDialog;
     }
 
-    protected boolean showFetchResult(Component parent, String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = new JGSdialogFactory().showFetchResult(parent, title, fetchResult);
+    protected boolean showFetchResult(String title, FetchResult fetchResult) {
+        boolean showJGSresultDialog = jGSdialogFactory.showFetchResult(title, fetchResult);
         return showJGSresultDialog;
     }
 

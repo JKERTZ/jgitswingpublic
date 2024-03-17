@@ -16,8 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.history;
 
-import java.util.List;
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackListDiffEntry;
 import com.jkertz.jgitswing.callback.IJGScallbackListRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
@@ -25,6 +23,8 @@ import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.List;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
