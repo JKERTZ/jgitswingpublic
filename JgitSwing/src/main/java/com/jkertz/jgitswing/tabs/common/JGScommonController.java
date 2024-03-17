@@ -24,10 +24,6 @@ import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import org.eclipse.jgit.api.MergeResult;
-import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.transport.FetchResult;
-import org.eclipse.jgit.transport.PushResult;
 
 /**
  *
@@ -102,26 +98,6 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     protected final void showProgressBar(String text) {
         commonPanel.showvProgressBar(text);
-    }
-
-    protected boolean showMergeResult(String title, MergeResult result) {
-        boolean showJGSresultDialog = jGSdialogFactory.showMergeResult(title, result);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showPushResult(String title, Iterable<PushResult> pushResults) {
-        boolean showJGSresultDialog = jGSdialogFactory.showPushResults(title, pushResults);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showPullResult(String title, PullResult pullResult) {
-        boolean showJGSresultDialog = jGSdialogFactory.showPullResult(title, pullResult);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showFetchResult(String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = jGSdialogFactory.showFetchResult(title, fetchResult);
-        return showJGSresultDialog;
     }
 
     public void deconstruct() {

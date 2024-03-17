@@ -137,7 +137,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             try {
                 PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
                 saveRemoteCredentials(usernameInput, passwordInput);
-                showPullResult("Pull result", result);
+                jGSdialogFactory.showPullResult("Pull result", result);
             } catch (CheckoutConflictException ccex) {
                 String message = ccex.getMessage();
                 logger.getLogger().log(Level.INFO, message);
@@ -452,7 +452,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Fetch preview";
             }
-            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
+            boolean showFetchResult = jGSdialogFactory.showFetchResult(resultTitle, fetchRemote);
             return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
@@ -476,7 +476,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Push preview";
             }
-            boolean showPushResult = showPushResult(resultTitle, pushResults);
+            boolean showPushResult = jGSdialogFactory.showPushResults(resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {
