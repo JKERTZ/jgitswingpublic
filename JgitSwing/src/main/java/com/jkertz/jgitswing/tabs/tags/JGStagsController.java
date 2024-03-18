@@ -29,10 +29,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.PushResult;
 
 /**
  *
@@ -50,8 +52,10 @@ public final class JGStagsController extends JGScommonController implements IJGS
 //        bc.addReceiver(this);
     }
 
-    public void onIJGSbcRefsChanged() {
-        logger.getLogger().fine("onIJGSbcRefsChanged");
+    @Override
+    public void onGitRefChanged() {
+        //caused by commit
+        logger.getLogger().fine("onGitRefChanged");
         refresh();
     }
 
@@ -82,7 +86,29 @@ public final class JGStagsController extends JGScommonController implements IJGS
     @Override
     public void onTagsToolbarClickedPushTags() {
         logger.getLogger().fine("onTagsToolbarClickedPushTags");
-        showErrorDialog("onTagsToolbarClickedPushTags", "Not supported yet.");
+        //validate remote configuration
+        if (!autoFixRemoteEditConfigInfo(true)) {
+            return;
+        }
+
+        try {
+            showProgressBar("PushTags");
+            Git git = jGSrepositoryModel.getGit();
+            Map<String, String> parameters = getUserPasswordParameters();
+            Map<String, Boolean> options = getPushOptions();
+            boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
+            if (showParameterMapDialog) {
+                String usernameInput = parameters.get("Username");
+                String passwordInput = parameters.get("Password");
+                boolean dryRun = options.get("dryrun");
+
+                Iterable<PushResult> pushTags = utils.pushTags(git, usernameInput, passwordInput, dryRun);
+                jGSdialogFactory.showPushResults("PushTags", pushTags);
+            }
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "onTagsToolbarClickedPushTags", ex);
+        }
+        hideProgressBar();
     }
 
     @Override
@@ -101,22 +127,26 @@ public final class JGStagsController extends JGScommonController implements IJGS
     @Override
     public void onTagsHistoryToolbarClickedCreateTag() {
         logger.getLogger().fine("onTagsHistoryToolbarClickedCreateTag");
-        if (!userOperationInProgress) {
-            userOperationInProgress = true;
-            showProgressBar("onStagingPanelClickedCommit");
-//            bc.getConfigInfo(getConfigInfoCallback(() -> {
-//                userOperationInProgress = false;
-//                hideProgressBar();
-//                refresh();
-//            }));
-            try {
-                Map<String, Map<String, Map<String, String>>> configInfo = jGSrepositoryModel.getConfigInfo();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                logger.getLogger().severe("onTagsHistoryToolbarClickedCreateTag");
+        try {
+            if (_commitId != null && !_commitId.isEmpty()) {
+                Git git = jGSrepositoryModel.getGit();
+
+                showProgressBar("CreateTag");
+                Map<String, String> parameters = getCreateTagParameters();
+                boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("CreateTag", parameters, false);
+                if (showParameterMapDialog) {
+                    String tagName = parameters.get("tagName");
+                    String tagMessage = parameters.get("tagMessage");
+                    String taggerName = parameters.get("taggerName");
+                    String taggerEmail = parameters.get("taggerEmail");
+
+                    Ref createTag = utils.createTag(git, tagName, tagMessage, taggerName, taggerEmail, _commitId);
+                }
+            } else {
+                jGSdialogFactory.showErrorDialog("CreateTag", "no commit selected!");
             }
-        } else {
-            logger.getLogger().info("onTagsHistoryToolbarClickedCreateTag ignored, userOperationInProgress");
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "onTagsHistoryToolbarClickedCreateTag", ex);
         }
     }
 
@@ -146,7 +176,8 @@ public final class JGStagsController extends JGScommonController implements IJGS
     }
 
     @Override
-    public void updateWidgets(IJGScallbackRefresh refresh) {
+    public void updateWidgets(IJGScallbackRefresh refresh
+    ) {
         //chain only independent methods here
         getCommits(5, () -> {
             getJGStags(5, refresh);
@@ -353,6 +384,36 @@ public final class JGStagsController extends JGScommonController implements IJGS
         } finally {
             super.finalize();
         }
+    }
+
+    private Map<String, String> getCreateTagParameters() throws Exception {
+
+        try {
+            Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
+
+            Map<String, Map<String, String>> sectionUser = configInfoMap.get(ConfigConstants.CONFIG_USER_SECTION);
+            Map<String, String> userMap = sectionUser.get(null);
+
+            String username = userMap.get(ConfigConstants.CONFIG_KEY_NAME);
+            String email = userMap.get(ConfigConstants.CONFIG_KEY_EMAIL);
+
+            Map<String, String> parameters = new LinkedHashMap<>();
+
+            String tagName = null;
+            String tagMessage = null;
+            String taggerName = username;
+            String taggerEmail = email;
+
+            parameters.put("tagName", tagName);
+            parameters.put("tagMessage", tagMessage);
+            parameters.put("taggerName", taggerName);
+            parameters.put("taggerEmail", taggerEmail);
+            return parameters;
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "getCreateTagParameters", ex);
+            throw ex;
+        }
+
     }
 
 }

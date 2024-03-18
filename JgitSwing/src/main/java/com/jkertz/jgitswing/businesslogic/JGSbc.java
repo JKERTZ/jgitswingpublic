@@ -16,13 +16,6 @@
  */
 package com.jkertz.jgitswing.businesslogic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import com.jkertz.jgitswing.callback.IJGScallbackDirCache;
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
 import com.jkertz.jgitswing.callback.IJGScallbackListDiffEntry;
@@ -44,6 +37,13 @@ import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.model.IJGSgitModel;
 import com.jkertz.jgitswing.model.JGSgitModel;
 import com.jkertz.jgitswing.model.JGStag;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
@@ -1111,7 +1111,7 @@ public class JGSbc implements IJGSgitModel {
         Thread thread = new Thread(() -> {
             try {
                 // Lambda Expression
-                Iterable<PushResult> pushTags = wrapper.pushTags(model.getGit());
+                Iterable<PushResult> pushTags = wrapper.pushTags(model.getGit(), false);
                 callback.onSuccess(pushTags);
             } catch (GitAPIException ex) {
                 logger.getLogger().severe(Arrays.toString(ex.getStackTrace()));

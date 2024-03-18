@@ -17,7 +17,6 @@
 package com.jkertz.jgitswing.tabs.repository;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
 import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
@@ -505,29 +504,11 @@ public final class JGSrepositoryController extends JGScommonController implement
 //        });
 //
 //    }
-    private Map<String, String> getUserPasswordParameters() {
-        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
-
-        String username = JGSsettings.getINSTANCE().getUsername(path);
-        String password = JGSsettings.getINSTANCE().getPassword(path);
-        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
-        Map<String, String> parameters = new LinkedHashMap<>();
-        parameters.put("Username", username);
-        parameters.put("Password", password);
-        return parameters;
-    }
-
     private Map<String, Boolean> getFetchOptions() {
         Map<String, Boolean> options = new LinkedHashMap<>();
         options.put("dryrun", false);
         options.put("CheckFetchedObjects", false);
         options.put("RemoveDeletedRefs", false);
-        return options;
-    }
-
-    private Map<String, Boolean> getPushOptions() {
-        Map<String, Boolean> options = new LinkedHashMap<>();
-        options.put("dryrun", false);
         return options;
     }
 

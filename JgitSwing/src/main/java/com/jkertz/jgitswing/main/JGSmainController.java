@@ -43,16 +43,17 @@ import org.eclipse.jgit.api.Git;
  */
 public class JGSmainController implements IJGSmainView, IJGSsettings {
     //known Bugs, use "Action Items" in Netbeans
-    //FIXME: create branch: configure remote to push new branch
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
 
     //incomplete features
+    //TODO: fix tags feature
     //TODO: make config like pull-result
     //TODO: remove finalize from all classes after checking memory release on close tabs
     //TODO: running threads should be merged with global progress bar
     //TODO: merge Graph and History Panel
     //TODO: make Graph Tags reactive
     //TODO: remove hardcoded column number access
+    //TODO: user swingworker for threading
     //future
     //TODO: implement SSH remote repository
     //FIXME: progress bar in Toast flickering on Linux (only wayland)

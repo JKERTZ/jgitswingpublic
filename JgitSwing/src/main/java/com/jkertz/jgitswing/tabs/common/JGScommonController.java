@@ -23,8 +23,11 @@ import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
+import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.settings.JGSsettings;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -292,6 +295,24 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "saveConfigInfo", ex);
         }
+    }
+
+    protected Map<String, String> getUserPasswordParameters() {
+        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+
+        String username = JGSsettings.getINSTANCE().getUsername(path);
+        String password = JGSsettings.getINSTANCE().getPassword(path);
+        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
+        Map<String, String> parameters = new LinkedHashMap<>();
+        parameters.put("Username", username);
+        parameters.put("Password", password);
+        return parameters;
+    }
+
+    protected Map<String, Boolean> getPushOptions() {
+        Map<String, Boolean> options = new LinkedHashMap<>();
+        options.put("dryrun", false);
+        return options;
     }
 
 }
