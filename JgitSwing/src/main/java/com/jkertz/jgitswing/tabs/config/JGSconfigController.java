@@ -48,6 +48,21 @@ public final class JGSconfigController extends JGScommonController implements IJ
     }
 
     @Override
+    public void onGitConfigChanged() {
+        logger.getLogger().fine("onGitConfigChanged");
+        refresh();
+    }
+
+    @Override
+    public void onGitRefChanged() {
+        //caused by create commit
+        //caused by branch checkout
+        //caused by pull
+        logger.getLogger().fine("onGitRefChanged");
+        refresh();
+    }
+
+    @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
         //chain only independent methods here
         updateConfigTree(refresh);

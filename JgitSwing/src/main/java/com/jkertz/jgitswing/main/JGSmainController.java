@@ -47,7 +47,6 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
 
     //incomplete features
-    //TODO: refresh config on branch switch
     //TODO: make config like pull-result
     //TODO: remove finalize from all classes after checking memory release on close tabs
     //TODO: running threads should be merged with global progress bar
@@ -72,7 +71,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240317");
+        panel.getjFrame().setTitle("JGS v0.20240318");
 
         jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
 
