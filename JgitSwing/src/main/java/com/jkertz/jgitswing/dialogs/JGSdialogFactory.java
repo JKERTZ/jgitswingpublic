@@ -40,35 +40,70 @@ public class JGSdialogFactory {
     private final JGSdialogPanelFactory dialogUtils;
     private final Component parent;
 
+    /**
+     *
+     * @param parent
+     */
     public JGSdialogFactory(Component parent) {
         this.dialogUtils = JGSdialogPanelFactory.getINSTANCE();
         this.parent = parent;
     }
 
+    /**
+     *
+     * @param title
+     * @param pullResult
+     * @return
+     */
     public boolean showPullResult(String title, PullResult pullResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(pullResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
+    /**
+     *
+     * @param title
+     * @param fetchResult
+     * @return
+     */
     public boolean showFetchResult(String title, FetchResult fetchResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(fetchResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
+    /**
+     *
+     * @param title
+     * @param pushResults
+     * @return
+     */
     public boolean showPushResults(String title, Iterable<PushResult> pushResults) {
         JPanel dialogPanel = dialogUtils.getDialogPanelPushResults(pushResults);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
+    /**
+     *
+     * @param title
+     * @param mergeResult
+     * @return
+     */
     public boolean showMergeResult(String title, MergeResult mergeResult) {
         JPanel dialogPanel = dialogUtils.getDialogPanel(mergeResult);
         int result = JOptionPane.showConfirmDialog(parent, dialogPanel, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }
 
+    /**
+     *
+     * @param title
+     * @param parameters
+     * @param isReadonly
+     * @return
+     */
     public boolean showParameterMapDialog(String title, Map<String, String> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         JPanel myPanel = dialogUtils.getParameterMapPanel(inputMap, parameters, isReadonly);
@@ -86,6 +121,14 @@ public class JGSdialogFactory {
         return false;
     }
 
+    /**
+     *
+     * @param title
+     * @param parameters
+     * @param options
+     * @param isReadonly
+     * @return
+     */
     public boolean showParameterMapDialog(String title, Map<String, String> parameters, Map<String, Boolean> options, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
         Map<String, JCheckBox> optionMap = new HashMap<>();
@@ -112,6 +155,13 @@ public class JGSdialogFactory {
         return false;
     }
 
+    /**
+     *
+     * @param title
+     * @param parameters
+     * @param isReadonly
+     * @return
+     */
     public boolean showSectional(String title, Map<String, Map<String, Map<String, String>>> parameters, boolean isReadonly) {
         Map<String, JTextField> inputMap = new HashMap<>();
 
@@ -166,23 +216,56 @@ public class JGSdialogFactory {
         }
     }
 
+    /**
+     *
+     * @param title
+     * @param message
+     */
     public void showErrorDialog(String title, String message) {
         JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     *
+     * @param title
+     * @param message
+     */
     public void showInfoDialog(String title, String message) {
         JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     *
+     * @param title
+     * @param message
+     * @return
+     */
     public String showInputDialog(String title, String message) {
         String input = JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE);
         return input;
     }
 
+    /**
+     *
+     * @param title
+     * @param message
+     * @return
+     */
     public boolean showConfirmDialog(String title, String message) {
         int showConfirmDialog = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         // 0=ok, 2=cancel
         return (showConfirmDialog == 0);
     }
 
+    /**
+     *
+     * @param title
+     * @param message
+     * @param optionsArray
+     * @return
+     */
+    public int showOptionDialog(String title, String message, Object[] optionsArray) {
+        int selectionindex = JOptionPane.showOptionDialog(parent, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionsArray, optionsArray[0]);
+        return selectionindex;
+    }
 }

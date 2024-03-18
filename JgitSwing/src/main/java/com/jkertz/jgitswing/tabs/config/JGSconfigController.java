@@ -22,14 +22,8 @@ import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.eclipse.jgit.lib.ConfigConstants;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -77,7 +71,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
     @Override
     public void onConfigToolbarClickedFixRemote() {
         showProgressBar("onConfigToolbarClickedFixRemote");
-        autoFixRemoteEditConfigInfo();
+        autoFixRemoteEditConfigInfo(false);
     }
 
     private void editConfigInfo() {
@@ -90,62 +84,10 @@ public final class JGSconfigController extends JGScommonController implements IJ
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, "editConfigInfo", ex);
+            logger.getLogger().log(Level.SEVERE, "editConfigInfo", ex);
+
         }
         hideProgressBar();
-    }
-
-    private void autoFixRemoteEditConfigInfo() {
-        try {
-            Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
-
-            //check if remote config is valid
-            Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
-            Set<String> remoteSubSections = remoteSectionMap.keySet();
-            String remoteSubSection = remoteSubSections.iterator().next();
-            Map<String, String> remoteMap = remoteSectionMap.get(remoteSubSection);
-            String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
-
-            Map<String, Map<String, String>> branchSectionMap = configInfoMap.get(ConfigConstants.CONFIG_BRANCH_SECTION);
-            Set<String> branchSubSections = branchSectionMap.keySet();
-            String branchSubSection = branchSubSections.iterator().next();
-            Map<String, String> branchMap = branchSectionMap.get(branchSubSection);
-            String branchRemote = branchMap.get(ConfigConstants.CONFIG_KEY_REMOTE);
-            String branchMerge = branchMap.get(ConfigConstants.CONFIG_KEY_MERGE);
-
-            //get list of remotes
-            List<RemoteConfig> remoteList = jGSrepositoryModel.getRemoteList();
-            for (RemoteConfig remoteConfig : remoteList) {
-                String remoteConfigName = remoteConfig.getName();
-                System.out.println(remoteConfigName);
-            }
-
-            //let user choose remote
-            RemoteConfig remoteConfig = remoteList.get(0);
-            String remoteConfigName = remoteConfig.getName();
-
-            //prefill missing remote info
-            URIish uri = remoteConfig.getURIs().get(0);
-            String newUrl = uri.toString();
-            remoteMap.put(ConfigConstants.CONFIG_KEY_URL, newUrl);
-
-            branchMap.put(ConfigConstants.CONFIG_KEY_REMOTE, remoteConfigName);//origin
-
-            String newBranchMerge = "refs/heads/" + branchSubSection;
-            branchMap.put(ConfigConstants.CONFIG_KEY_MERGE, newBranchMerge);//refs/heads/branchname
-
-            //show editor with fixed values for user confirmation
-            boolean showParameterMapDialog = jGSdialogFactory.showSectional("Config", configInfoMap, false);
-            if (showParameterMapDialog) {
-                saveConfigInfo(configInfoMap);
-            } else {
-            }
-
-        } catch (Exception ex) {
-            Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, "autoFixRemoteEditConfigInfo", ex);
-        }
-        hideProgressBar();
-
     }
 
 //    private IJGScallbackDirConfigInfoMap editConfigCallback(IJGScallbackRefresh refresh) {
@@ -174,15 +116,6 @@ public final class JGSconfigController extends JGScommonController implements IJ
 //        showProgressBar("saveConfigInfo");
 //        bc.saveConfigInfo(configInfoMap, configInfoSavedCallback(refresh));
 //    }
-    private void saveConfigInfo(Map<String, Map<String, Map<String, String>>> configInfoMap) {
-        showProgressBar("saveConfigInfo");
-        try {
-            jGSrepositoryModel.saveConfigInfo(configInfoMap);
-        } catch (Exception ex) {
-            Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     private IJGScallbackString configInfoSavedCallback(IJGScallbackRefresh refresh) {
         IJGScallbackString callback = new IJGScallbackString() {
             @Override
@@ -211,7 +144,8 @@ public final class JGSconfigController extends JGScommonController implements IJ
                 Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
                 panel.updateConfigTree(configInfoMap, endOfChainCallback(refresh));
             } catch (Exception ex) {
-                Logger.getLogger(JGSconfigController.class.getName()).log(Level.SEVERE, null, ex);
+                logger.getLogger().log(Level.SEVERE, "updateConfigTree", ex);
+
                 refresh.finish();
             }
         }).start();

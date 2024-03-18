@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -55,8 +54,6 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -99,7 +96,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedFetch() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
@@ -124,7 +121,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPull() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
         showProgressBar("PullRemote");
@@ -152,7 +149,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPush() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
@@ -174,7 +171,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
@@ -650,40 +647,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             }
         }
         return closedTabTitles;
-    }
-
-    private boolean checkAndSelectRemote() {
-        Git git = jGSrepositoryModel.getGit();
-
-        try {
-            String remoteUrlFromConfig = utils.getRemoteUrlFromConfig(git);
-            if (remoteUrlFromConfig == null || remoteUrlFromConfig.isEmpty()) {
-                //get list of remotes
-                List<RemoteConfig> remoteList = jGSrepositoryModel.getRemoteList();
-                List<String> options = new ArrayList<>();
-                for (RemoteConfig remoteConfig : remoteList) {
-                    String remoteConfigName = remoteConfig.getName();
-                    options.add(remoteConfigName);
-                    System.out.println(remoteConfigName);
-                    List<URIish> urIs = remoteConfig.getURIs();
-                }
-                Object[] optionsArray = options.toArray();
-                int selectionindex = JOptionPane.showOptionDialog(null, "Choose remote", "Remote", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionsArray, optionsArray[0]);
-//                String selectedRemote = (String)optionsArray[selectionindex];
-                RemoteConfig selectedRemote = remoteList.get(selectionindex);
-
-                String remoteName = selectedRemote.getName();
-                URIish remoteUri = selectedRemote.getURIs().get(0);
-                jGSrepositoryModel.setRemote(remoteName, remoteUri);
-//                jGSrepositoryModel.addRemote(remoteName, remoteUri);
-
-            }
-            return true;
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "checkAndSelectRemote", ex);
-            showErrorDialog("checkAndSelectRemote", ex.getMessage());
-        }
-        return false;
     }
 
     @Override
