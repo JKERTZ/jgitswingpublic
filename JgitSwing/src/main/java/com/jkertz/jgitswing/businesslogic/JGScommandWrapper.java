@@ -907,7 +907,7 @@ public class JGScommandWrapper {
 
             jgsTags.add(jGStag);
         }
-
+        walk.dispose();
         return jgsTags;
     }
 
@@ -936,6 +936,7 @@ public class JGScommandWrapper {
                 .setTagger(tagger)
                 .setObjectId(revCommit)
                 .call();
+        rw.dispose();
         return tagRef;
     }
 
