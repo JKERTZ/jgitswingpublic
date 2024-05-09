@@ -51,11 +51,24 @@ public class JGSutils {
         return INSTANCE;
     }
 
+    /**
+     *
+     * @param chooseDirectory
+     * @return
+     * @throws Exception
+     */
     public Git openRepository(String chooseDirectory) throws Exception {
         Git openGit = wrapper.openGit(chooseDirectory);
         return openGit;
     }
 
+    /**
+     *
+     * @param chooseDirectory
+     * @param parameters
+     * @return
+     * @throws Exception
+     */
     public Git cloneRepository(String chooseDirectory, Map<String, String> parameters) throws Exception {
         String uriinput = parameters.get("URI");
         String usernameinput = parameters.get("Username");
@@ -69,11 +82,29 @@ public class JGSutils {
         return openGit;
     }
 
+    /**
+     *
+     * @param chooseDirectory
+     * @param isBare
+     * @return
+     * @throws Exception
+     */
     public Git initRepository(String chooseDirectory, boolean isBare) throws Exception {
         Git openGit = wrapper.initRepository(chooseDirectory, isBare);
         return openGit;
     }
 
+    /**
+     *
+     * @param git
+     * @param dryRun
+     * @param checkFetchedObjects
+     * @param removeDeletedRefs
+     * @param usernameInput
+     * @param passwordInput
+     * @return
+     * @throws Exception
+     */
     public FetchResult fetchRemote(Git git, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs, String usernameInput, String passwordInput) throws Exception {
         String remoteUrl = getRemoteUrlFromConfig(git);
 
@@ -87,6 +118,14 @@ public class JGSutils {
 
     }
 
+    /**
+     *
+     * @param git
+     * @param usernameInput
+     * @param passwordInput
+     * @return
+     * @throws Exception
+     */
     public PullResult pullRemote(Git git, String usernameInput, String passwordInput) throws Exception {
         String remoteUrl = getRemoteUrlFromConfig(git);
 
@@ -99,6 +138,15 @@ public class JGSutils {
         return result;
     }
 
+    /**
+     *
+     * @param git
+     * @param dryRun
+     * @param usernameInput
+     * @param passwordInput
+     * @return
+     * @throws Exception
+     */
     public Iterable<PushResult> pushRemote(Git git, boolean dryRun, String usernameInput, String passwordInput) throws Exception {
         String branch = git.getRepository().getBranch();
         String remoteUrl = getRemoteUrlFromConfig(git);
@@ -113,6 +161,13 @@ public class JGSutils {
 
     }
 
+    /**
+     *
+     * @param git
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public Ref createBranch(Git git, String name) throws Exception {
         if (name == null || name.isEmpty()) {
             return null;
@@ -121,26 +176,62 @@ public class JGSutils {
         return createAndCheckoutBranch;
     }
 
+    /**
+     *
+     * @param git
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public Ref checkoutLocalBranch(Git git, String name) throws Exception {
         Ref checkoutBranch = wrapper.checkoutBranch(git, name);
         return checkoutBranch;
     }
 
+    /**
+     *
+     * @param git
+     * @param name
+     * @param remoteAndBranchName
+     * @return
+     * @throws Exception
+     */
     public Ref checkoutRemoteBranch(Git git, String name, String remoteAndBranchName) throws Exception {
         Ref checkoutBranch = wrapper.createAndCheckoutRemoteBranch(git, name, remoteAndBranchName);
         return checkoutBranch;
     }
 
+    /**
+     *
+     * @param git
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public MergeResult mergeIntoCurrentBranch(Git git, String name) throws Exception {
         MergeResult mergeIntoCurrentBranch = wrapper.mergeIntoCurrentBranch(git, name);
         return mergeIntoCurrentBranch;
     }
 
+    /**
+     *
+     * @param git
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public List<String> deleteBranch(Git git, String name) throws Exception {
         List<String> deleteBranch = wrapper.deleteBranch(git, name, false);
         return deleteBranch;
     }
 
+    /**
+     *
+     * @param git
+     * @param selectionList
+     * @return
+     * @throws Exception
+     */
     public List<DirCache> stageSelectedTable(Git git, List<String> selectionList) throws Exception {
         List<DirCache> addFiles = new ArrayList<>();
         for (String fileName : selectionList) {
@@ -150,6 +241,13 @@ public class JGSutils {
         return addFiles;
     }
 
+    /**
+     *
+     * @param git
+     * @param selectionList
+     * @return
+     * @throws Exception
+     */
     public List<DirCache> removeSelectedTable(Git git, List<String> selectionList) throws Exception {
         List<DirCache> rmFiles = new ArrayList<>();
         for (String fileName : selectionList) {
@@ -159,16 +257,35 @@ public class JGSutils {
         return rmFiles;
     }
 
+    /**
+     *
+     * @param git
+     * @return
+     * @throws Exception
+     */
     public DirCache stageAll(Git git) throws Exception {
         DirCache addAll = wrapper.addAll(git);
         return addAll;
     }
 
+    /**
+     *
+     * @param git
+     * @return
+     * @throws Exception
+     */
     public Ref resetHard(Git git) throws Exception {
         Ref resetHard = wrapper.resetHard(git);
         return resetHard;
     }
 
+    /**
+     *
+     * @param git
+     * @param selectionList
+     * @return
+     * @throws Exception
+     */
     public List<Ref> unstageSelectedTable(Git git, List<String> selectionList) throws Exception {
         List<Ref> resetSofts = new ArrayList<>();
         for (String fileName : selectionList) {
@@ -178,6 +295,13 @@ public class JGSutils {
         return resetSofts;
     }
 
+    /**
+     *
+     * @param git
+     * @param selectionList
+     * @return
+     * @throws Exception
+     */
     public List<Ref> resetFile(Git git, List<String> selectionList) throws Exception {
         List<Ref> resetFiles = new ArrayList<>();
         for (String fileName : selectionList) {
@@ -187,16 +311,37 @@ public class JGSutils {
         return resetFiles;
     }
 
+    /**
+     *
+     * @param git
+     * @return
+     * @throws Exception
+     */
     public Ref unstageAll(Git git) throws Exception {
         Ref resetSoft = wrapper.resetSoft(git);
         return resetSoft;
     }
 
+    /**
+     *
+     * @param git
+     * @param user
+     * @param email
+     * @param message
+     * @return
+     * @throws Exception
+     */
     public RevCommit commit(Git git, String user, String email, String message) throws Exception {
         RevCommit commit = wrapper.commit(git, user, email, message);
         return commit;
     }
 
+    /**
+     *
+     * @param git
+     * @return
+     * @throws IOException
+     */
     public String getRemoteUrlFromConfig(Git git) throws IOException {
         Map<String, Map<String, Map<String, String>>> configInfoMap = wrapper.getConfigInfo(git);
         Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
@@ -205,6 +350,42 @@ public class JGSutils {
         Map<String, String> remoteMap = remoteSectionMap.get(subSection);
         String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
         return remoteUrl;
+    }
+
+    /**
+     *
+     * @param git
+     * @param tagName
+     * @param tagMessage
+     * @param taggerName
+     * @param taggerEmail
+     * @param commit
+     * @return
+     * @throws Exception
+     */
+    public Ref createTag(Git git, String tagName, String tagMessage, String taggerName, String taggerEmail, String commit) throws Exception {
+        Ref tag = wrapper.tag(git, tagName, tagMessage, taggerName, taggerEmail, commit);
+        return tag;
+    }
+
+    /**
+     *
+     * @param git
+     * @param username
+     * @param password
+     * @param dryRun
+     * @return
+     * @throws Exception
+     */
+    public Iterable<PushResult> pushTags(Git git, String username, String password, boolean dryRun) throws Exception {
+        String remoteUrl = getRemoteUrlFromConfig(git);
+        Iterable<PushResult> pushTags;
+        if (remoteUrl.startsWith("http")) {
+            pushTags = wrapper.pushTags(git, username, password, dryRun);
+        } else {
+            pushTags = wrapper.pushTags(git, dryRun);
+        }
+        return pushTags;
     }
 
 }

@@ -19,15 +19,22 @@ package com.jkertz.jgitswing.tabs.common;
 import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSresultDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
+import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
-import org.eclipse.jgit.api.MergeResult;
-import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.transport.FetchResult;
-import org.eclipse.jgit.transport.PushResult;
+import com.jkertz.jgitswing.settings.JGSsettings;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -44,6 +51,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     private JGScommonPanel commonPanel;
     private final String name;
     protected final JGSutils utils;
+    protected JGSdialogFactory jGSdialogFactory;
 
     public JGScommonController(String name, JGSrepositoryModel jGSrepositoryModel) {
         this.jGSrepositoryModel = jGSrepositoryModel;
@@ -60,26 +68,23 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     protected void setPanel(JGScommonPanel commonPanel) {
         this.commonPanel = commonPanel;
+        jGSdialogFactory = new JGSdialogFactory(commonPanel);
     }
 
-    protected void showErrorDialog(String title, String message) {
-        mainController.showErrorDialog(title, message);
+    public void showErrorDialog(String title, String message) {
+        jGSdialogFactory.showErrorDialog(title, message);
     }
 
-    protected void showInfoDialog(String title, String message) {
-        mainController.showInfoDialog(title, message);
+    public void showInfoDialog(String title, String message) {
+        jGSdialogFactory.showInfoDialog(title, message);
     }
 
-    protected String showInputDialog(String title, String message) {
-        return mainController.showInputDialog(title, message);
+    public String showInputDialog(String title, String message) {
+        return jGSdialogFactory.showInputDialog(title, message);
     }
 
-    protected boolean showConfirmDialog(String title, String message) {
-        return mainController.showConfirmDialog(title, message);
-    }
-
-    protected String chooseDirectory(String title) {
-        return mainController.chooseDirectory(title);
+    public boolean showConfirmDialog(String title, String message) {
+        return jGSdialogFactory.showConfirmDialog(title, message);
     }
 
     protected void showToast(String message) {
@@ -104,26 +109,6 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     protected final void showProgressBar(String text) {
         commonPanel.showvProgressBar(text);
-    }
-
-    protected boolean showMergeResult(String title, MergeResult result) {
-        boolean showJGSresultDialog = new JGSresultDialog().showMergeResult(title, result);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showPushResult(String title, Iterable<PushResult> pushResults) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPushResults(title, pushResults);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showPullResult(String title, PullResult pullResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showPullResult(title, pullResult);
-        return showJGSresultDialog;
-    }
-
-    protected boolean showFetchResult(String title, FetchResult fetchResult) {
-        boolean showJGSresultDialog = new JGSresultDialog().showFetchResult(title, fetchResult);
-        return showJGSresultDialog;
     }
 
     public void deconstruct() {
@@ -202,17 +187,132 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     @Override
     public void onGitIndexChanged() {
+        //caused by staging
         logger.getLogger().fine("onGitIndexChanged");
     }
 
     @Override
     public void onGitRefChanged() {
+        //caused by create commit
+        //caused by branch checkout
+        //caused by pull
         logger.getLogger().fine("onGitRefChanged");
     }
 
     @Override
     public void onGitWorkingTreeModified() {
         logger.getLogger().fine("onGitWorkingTreeModified");
+    }
+
+    protected boolean autoFixRemoteEditConfigInfo(boolean silentIfValid) {
+        boolean result = false;
+        try {
+            Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
+
+            //check if remote config is valid
+            Map<String, Map<String, String>> remoteSectionMap = configInfoMap.get(ConfigConstants.CONFIG_REMOTE_SECTION);
+            Set<String> remoteSubSections = remoteSectionMap.keySet();
+            String remoteSubSection = remoteSubSections.iterator().next();
+            Map<String, String> remoteMap = remoteSectionMap.get(remoteSubSection);
+            String remoteUrl = remoteMap.get(ConfigConstants.CONFIG_KEY_URL);
+
+            Map<String, Map<String, String>> branchSectionMap = configInfoMap.get(ConfigConstants.CONFIG_BRANCH_SECTION);
+            Set<String> branchSubSections = branchSectionMap.keySet();
+            String branchSubSection = branchSubSections.iterator().next();
+            Map<String, String> branchMap = branchSectionMap.get(branchSubSection);
+            String branchRemote = branchMap.get(ConfigConstants.CONFIG_KEY_REMOTE);
+            String branchMerge = branchMap.get(ConfigConstants.CONFIG_KEY_MERGE);
+
+            logger.getLogger().fine("autoFixRemoteEditConfigInfo branchRemote: " + branchRemote);
+            logger.getLogger().fine("autoFixRemoteEditConfigInfo branchMerge: " + branchMerge);
+
+            //check if current config is set
+            boolean isValid = (branchRemote != null && !branchRemote.isEmpty() && branchMerge != null && !branchMerge.isEmpty());
+            if (isValid && silentIfValid) {
+                //no further checks needed
+                logger.getLogger().info("autoFixRemoteEditConfigInfo isValid: " + isValid);
+                return true;
+            }
+
+            //get list of remotes
+            List<RemoteConfig> remoteList = jGSrepositoryModel.getRemoteList();
+            for (RemoteConfig remoteConfig : remoteList) {
+                String remoteConfigName = remoteConfig.getName();
+                System.out.println(remoteConfigName);
+            }
+
+            //choose remote
+            int selectionindex = 0;
+            if (remoteList.size() > 1 || !silentIfValid) {
+                //let user choose remote
+                List<String> options = new ArrayList<>();
+                for (RemoteConfig remoteConfig : remoteList) {
+                    String remoteConfigName = remoteConfig.getName();
+                    options.add(remoteConfigName);
+                    System.out.println(remoteConfigName);
+                    List<URIish> urIs = remoteConfig.getURIs();
+                }
+
+                Object[] optionsArray = options.toArray();
+                selectionindex = jGSdialogFactory.showOptionDialog("Remote", "Choose remote", optionsArray);
+            } else {
+                //autoselect first remote
+                selectionindex = 0;
+            }
+            RemoteConfig remoteConfig = remoteList.get(selectionindex);
+            String remoteConfigName = remoteConfig.getName();
+
+            //prefill missing remote info
+            URIish uri = remoteConfig.getURIs().get(0);
+            String newUrl = uri.toString();
+            remoteMap.put(ConfigConstants.CONFIG_KEY_URL, newUrl);
+
+            branchMap.put(ConfigConstants.CONFIG_KEY_REMOTE, remoteConfigName);//origin
+
+            String newBranchMerge = "refs/heads/" + branchSubSection;
+            branchMap.put(ConfigConstants.CONFIG_KEY_MERGE, newBranchMerge);//refs/heads/branchname
+
+            //show editor with fixed values for user confirmation
+            boolean showParameterMapDialog = jGSdialogFactory.showSectional("Confirm remote config for branch", configInfoMap, false);
+            if (showParameterMapDialog) {
+                saveConfigInfo(configInfoMap);
+                result = true;
+            } else {
+                result = false;
+            }
+
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "autoFixRemoteEditConfigInfo", ex);
+        }
+        hideProgressBar();
+        return result;
+    }
+
+    protected void saveConfigInfo(Map<String, Map<String, Map<String, String>>> configInfoMap) {
+        showProgressBar("saveConfigInfo");
+        try {
+            jGSrepositoryModel.saveConfigInfo(configInfoMap);
+        } catch (Exception ex) {
+            logger.getLogger().log(Level.SEVERE, "saveConfigInfo", ex);
+        }
+    }
+
+    protected Map<String, String> getUserPasswordParameters() {
+        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+
+        String username = JGSsettings.getINSTANCE().getUsername(path);
+        String password = JGSsettings.getINSTANCE().getPassword(path);
+        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
+        Map<String, String> parameters = new LinkedHashMap<>();
+        parameters.put("Username", username);
+        parameters.put("Password", password);
+        return parameters;
+    }
+
+    protected Map<String, Boolean> getPushOptions() {
+        Map<String, Boolean> options = new LinkedHashMap<>();
+        options.put("dryrun", false);
+        return options;
     }
 
 }

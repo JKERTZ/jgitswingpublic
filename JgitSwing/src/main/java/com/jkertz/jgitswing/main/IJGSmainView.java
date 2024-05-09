@@ -36,4 +36,6 @@ public interface IJGSmainView {
 
     public void onEditSettingsClicked();
 
+    public void onCloseWindow();
+
 }

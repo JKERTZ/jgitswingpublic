@@ -177,7 +177,7 @@ public class JGSeditSettingsDialog {
 
     private JPanel getThemeEditPanel() {
         inputTheme = new JTextField();
-        return JGSdialogUtils.getINSTANCE().getLabeledInput("Theme", inputTheme, setting.getTheme(), true);
+        return JGSdialogPanelFactory.getINSTANCE().getLabeledInput("Theme", inputTheme, setting.getTheme(), true);
 
 //        JPanel nameValuePanel = new JPanel();
 //        nameValuePanel.add(new JLabel("Theme"));
@@ -200,10 +200,10 @@ public class JGSeditSettingsDialog {
         TitledBorder sectionBorder = new TitledBorder(localPath);
         panel.setBorder(sectionBorder);
 
-        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("localPath", new JTextField(), localPath, false));
-        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("remoteUsername", new JTextField(), remoteUsername, false));
-        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("remotePassword", new JTextField(), remotePassword, false));
-        panel.add(JGSdialogUtils.getINSTANCE().getLabeledInput("uri", new JTextField(), uri, false));
+        panel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("localPath", new JTextField(), localPath, false));
+        panel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("remoteUsername", new JTextField(), remoteUsername, false));
+        panel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("remotePassword", new JTextField(), remotePassword, false));
+        panel.add(JGSdialogPanelFactory.getINSTANCE().getLabeledInput("uri", new JTextField(), uri, false));
 
 //        JPanel panel = new JPanel();
 //        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

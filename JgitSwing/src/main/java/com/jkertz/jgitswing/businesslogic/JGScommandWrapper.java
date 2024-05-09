@@ -907,7 +907,7 @@ public class JGScommandWrapper {
 
             jgsTags.add(jGStag);
         }
-
+        walk.dispose();
         return jgsTags;
     }
 
@@ -936,19 +936,42 @@ public class JGScommandWrapper {
                 .setTagger(tagger)
                 .setObjectId(revCommit)
                 .call();
+        rw.dispose();
         return tagRef;
+    }
+
+    /**
+     * push tags to local
+     *
+     * @param git
+     * @param dryRun
+     * @return
+     * @throws GitAPIException
+     */
+    protected Iterable<PushResult> pushTags(Git git, boolean dryRun) throws GitAPIException {
+        Iterable<PushResult> pushResult = git.push()
+                .setPushTags()
+                .setDryRun(dryRun)
+                .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+                .call();
+        return pushResult;
     }
 
     /**
      * push tags to remote
      *
      * @param git
+     * @param username
+     * @param password
+     * @param dryRun
      * @return
      * @throws GitAPIException
      */
-    protected Iterable<PushResult> pushTags(Git git) throws GitAPIException {
+    protected Iterable<PushResult> pushTags(Git git, String username, String password, boolean dryRun) throws GitAPIException {
         Iterable<PushResult> pushResult = git.push()
                 .setPushTags()
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+                .setDryRun(dryRun)
                 .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
                 .call();
         return pushResult;

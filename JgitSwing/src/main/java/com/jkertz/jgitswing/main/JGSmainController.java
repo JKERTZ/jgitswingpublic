@@ -18,6 +18,7 @@ package com.jkertz.jgitswing.main;
 
 import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.dialogs.JGScloneRepositoryDialog;
+import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.dialogs.JGSeditSettingsDialog;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
@@ -42,31 +43,27 @@ import org.eclipse.jgit.api.Git;
  */
 public class JGSmainController implements IJGSmainView, IJGSsettings {
     //known Bugs, use "Action Items" in Netbeans
-    //FIXME: after pulling changes are shown in the "staged" panel
     //FIXME: currentDiff takes a long time on huge repositories, progress is not shown correctly
-    //FIXME: progress bar in Toast flickering on Linux (only wayland)
-    //FIXME: checkout of remote branch does not consider full branch path (e.g. "feature")
-    //FIXME: remove input dialog from main view
-    //FIXME: check if any dialog should be in main view/controller
-    //FIXME: create branch: show option to checkout
-    //FIXME: create branch: configure remote to push new branch
 
     //incomplete features
-    //TODO: refresh config on branch switch
+    //TODO: fix tags feature
     //TODO: make config like pull-result
     //TODO: remove finalize from all classes after checking memory release on close tabs
     //TODO: running threads should be merged with global progress bar
     //TODO: merge Graph and History Panel
     //TODO: make Graph Tags reactive
     //TODO: remove hardcoded column number access
+    //TODO: user swingworker for threading
     //future
     //TODO: implement SSH remote repository
+    //FIXME: progress bar in Toast flickering on Linux (only wayland)
     private static JGSmainController INSTANCE = null;
     private final JGSlogger logger;
     private final JGSmainView panel;
     private final JGSsettings settings;
     private final JGSutils utils;
     private final List<IJGSsubTabController> subControllers;
+    private final JGSdialogFactory jGSdialogFactory;
 
     private JGSmainController() {
 
@@ -75,7 +72,9 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240316");
+        panel.getjFrame().setTitle("JGS v0.20240318");
+
+        jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);
@@ -91,22 +90,6 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
             INSTANCE = new JGSmainController();
         }
         return INSTANCE;
-    }
-
-    public void showErrorDialog(String title, String message) {
-        panel.showErrorDialog(title, message);
-    }
-
-    public void showInfoDialog(String title, String message) {
-        panel.showInfoDialog(title, message);
-    }
-
-    public String showInputDialog(String title, String message) {
-        return panel.showInputDialog(title, message);
-    }
-
-    public boolean showConfirmDialog(String title, String message) {
-        return panel.showConfirmDialog(title, message);
     }
 
     public void showToast(String message) {
@@ -131,10 +114,6 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
 
     private void showProgressBar(String text) {
         panel.showProgressBar(text);
-    }
-
-    public String chooseDirectory(String title) {
-        return panel.chooseDirectory(title);
     }
 
     @Override
@@ -189,7 +168,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     }
 
     private void initRepository(boolean isBare) {
-        String chooseDirectory = chooseDirectory("Init: choose Target Directory");
+
+        String chooseDirectory = jGSdialogFactory.chooseDirectory("Init: choose Target Directory");
         if (chooseDirectory != null) {
 
             try {
@@ -297,6 +277,13 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
             //save settings
             JGSsetting newSetting = jGSeditSettingsDialog.getSetting();
             JGSsettings.getINSTANCE().setSetting(newSetting);
+        }
+    }
+
+    @Override
+    public void onCloseWindow() {
+        if (jGSdialogFactory.showConfirmDialog("Quit", "really quit?")) {
+            System.exit(0);
         }
     }
 

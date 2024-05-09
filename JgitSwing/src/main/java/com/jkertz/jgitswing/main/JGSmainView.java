@@ -39,7 +39,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
@@ -148,48 +147,6 @@ public class JGSmainView {
 
     protected void hideProgressBar() {
         jProgressBar.setVisible(false);
-    }
-
-    /**
-     * shows a directorychooser returns null if action is canceled by user
-     *
-     * @param title
-     * @return
-     */
-    protected String chooseDirectory(String title) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = fileChooser.showOpenDialog(jFrame);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            String directory = file.getAbsolutePath();
-            System.out.println(directory);
-            return directory;
-
-        } else {
-            System.out.println("File access cancelled by user.");
-            return null;
-        }
-    }
-
-    protected void showErrorDialog(String title, String message) {
-        JOptionPane.showMessageDialog(jFrame, message, title, JOptionPane.ERROR_MESSAGE);
-    }
-
-    protected void showInfoDialog(String title, String message) {
-        JOptionPane.showMessageDialog(jFrame, message, title, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    protected String showInputDialog(String title, String message) {
-        String input = JOptionPane.showInputDialog(jFrame, message, title, JOptionPane.QUESTION_MESSAGE);
-        return input;
-    }
-
-    protected boolean showConfirmDialog(String title, String message) {
-        int showConfirmDialog = JOptionPane.showConfirmDialog(jFrame, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-        // 0=ok, 2=cancel
-        return (showConfirmDialog == 0);
     }
 
     protected void showToast(String message) {
@@ -452,9 +409,7 @@ public class JGSmainView {
             // Method
             @Override
             public void windowClosing(WindowEvent e) {
-                if (showConfirmDialog("Quit", "really quit?")) {
-                    System.exit(0);
-                }
+                receiver.onCloseWindow();
             }
         };
     }

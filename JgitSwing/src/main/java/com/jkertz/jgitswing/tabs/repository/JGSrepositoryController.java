@@ -17,8 +17,6 @@
 package com.jkertz.jgitswing.tabs.repository;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
-import com.jkertz.jgitswing.model.JGSrecent;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
 import com.jkertz.jgitswing.tabs.branches.JGSbranchesController;
@@ -46,7 +44,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -56,8 +53,6 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.BranchTrackingStatus;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 
 /**
  *
@@ -100,7 +95,7 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedFetch() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
@@ -108,7 +103,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
 
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Fetch", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Fetch", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -125,12 +120,12 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPull() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
         showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Pull", parameters, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Pull", parameters, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -138,7 +133,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             try {
                 PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
                 saveRemoteCredentials(usernameInput, passwordInput);
-                showPullResult("Pull result", result);
+                jGSdialogFactory.showPullResult("Pull result", result);
             } catch (CheckoutConflictException ccex) {
                 String message = ccex.getMessage();
                 logger.getLogger().log(Level.INFO, message);
@@ -153,14 +148,14 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPush() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
         showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -175,14 +170,14 @@ public final class JGSrepositoryController extends JGScommonController implement
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
         //validate remote configuration
-        if (!checkAndSelectRemote()) {
+        if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
 
         showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
-        boolean showParameterMapDialog = new JGSParameterMapDialog().show("Push", parameters, options, false);
+        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
         if (showParameterMapDialog) {
             String usernameInput = parameters.get("Username");
             String passwordInput = parameters.get("Password");
@@ -453,7 +448,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Fetch preview";
             }
-            boolean showFetchResult = showFetchResult(resultTitle, fetchRemote);
+            boolean showFetchResult = jGSdialogFactory.showFetchResult(resultTitle, fetchRemote);
             return showFetchResult;
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "fetchRemote", ex);
@@ -477,7 +472,7 @@ public final class JGSrepositoryController extends JGScommonController implement
             if (dryRun) {
                 resultTitle = "Push preview";
             }
-            boolean showPushResult = showPushResult(resultTitle, pushResults);
+            boolean showPushResult = jGSdialogFactory.showPushResults(resultTitle, pushResults);
             return showPushResult;
 
         } catch (Exception ex) {
@@ -509,29 +504,11 @@ public final class JGSrepositoryController extends JGScommonController implement
 //        });
 //
 //    }
-    private Map<String, String> getUserPasswordParameters() {
-        String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
-
-        String username = JGSsettings.getINSTANCE().getUsername(path);
-        String password = JGSsettings.getINSTANCE().getPassword(path);
-        JGSrecent remoteSettings = JGSsettings.getINSTANCE().getRemoteSettings(path);
-        Map<String, String> parameters = new LinkedHashMap<>();
-        parameters.put("Username", username);
-        parameters.put("Password", password);
-        return parameters;
-    }
-
     private Map<String, Boolean> getFetchOptions() {
         Map<String, Boolean> options = new LinkedHashMap<>();
         options.put("dryrun", false);
         options.put("CheckFetchedObjects", false);
         options.put("RemoveDeletedRefs", false);
-        return options;
-    }
-
-    private Map<String, Boolean> getPushOptions() {
-        Map<String, Boolean> options = new LinkedHashMap<>();
-        options.put("dryrun", false);
         return options;
     }
 
@@ -651,40 +628,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             }
         }
         return closedTabTitles;
-    }
-
-    private boolean checkAndSelectRemote() {
-        Git git = jGSrepositoryModel.getGit();
-
-        try {
-            String remoteUrlFromConfig = utils.getRemoteUrlFromConfig(git);
-            if (remoteUrlFromConfig == null || remoteUrlFromConfig.isEmpty()) {
-                //get list of remotes
-                List<RemoteConfig> remoteList = jGSrepositoryModel.getRemoteList();
-                List<String> options = new ArrayList<>();
-                for (RemoteConfig remoteConfig : remoteList) {
-                    String remoteConfigName = remoteConfig.getName();
-                    options.add(remoteConfigName);
-                    System.out.println(remoteConfigName);
-                    List<URIish> urIs = remoteConfig.getURIs();
-                }
-                Object[] optionsArray = options.toArray();
-                int selectionindex = JOptionPane.showOptionDialog(null, "Choose remote", "Remote", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionsArray, optionsArray[0]);
-//                String selectedRemote = (String)optionsArray[selectionindex];
-                RemoteConfig selectedRemote = remoteList.get(selectionindex);
-
-                String remoteName = selectedRemote.getName();
-                URIish remoteUri = selectedRemote.getURIs().get(0);
-                jGSrepositoryModel.setRemote(remoteName, remoteUri);
-//                jGSrepositoryModel.addRemote(remoteName, remoteUri);
-
-            }
-            return true;
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "checkAndSelectRemote", ex);
-            showErrorDialog("checkAndSelectRemote", ex.getMessage());
-        }
-        return false;
     }
 
     @Override

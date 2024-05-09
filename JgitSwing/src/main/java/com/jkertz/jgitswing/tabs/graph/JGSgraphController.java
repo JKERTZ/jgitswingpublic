@@ -16,14 +16,14 @@
  */
 package com.jkertz.jgitswing.tabs.graph;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import javax.swing.SwingUtilities;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import com.jkertz.jgitswing.widgets.graph.JGSgraphPane;
+import java.io.IOException;
+import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.revplot.PlotWalk;
 

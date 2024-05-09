@@ -16,10 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.staging;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackDirCache;
 import com.jkertz.jgitswing.callback.IJGScallbackListDirCache;
 import com.jkertz.jgitswing.callback.IJGScallbackListRef;
@@ -27,10 +23,13 @@ import com.jkertz.jgitswing.callback.IJGScallbackRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackStatus;
-import com.jkertz.jgitswing.dialogs.JGSParameterMapDialog;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.dircache.DirCache;
@@ -254,7 +253,7 @@ public final class JGSstagingController extends JGScommonController implements I
                 parameters.put("User", username);
                 parameters.put("Email", email);
                 parameters.put("CommitMessage", null);
-                boolean showParameterMapDialog = new JGSParameterMapDialog().show("Commit", parameters, false);
+                boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Commit", parameters, false);
                 if (showParameterMapDialog) {
                     commit(parameters);
                 } else {

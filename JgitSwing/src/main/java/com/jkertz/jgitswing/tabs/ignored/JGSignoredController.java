@@ -16,12 +16,12 @@
  */
 package com.jkertz.jgitswing.tabs.ignored;
 
-import java.util.logging.Level;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackStatus;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.Status;
 
 /**
