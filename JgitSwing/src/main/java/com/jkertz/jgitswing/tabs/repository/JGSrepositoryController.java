@@ -47,6 +47,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -115,6 +116,52 @@ public final class JGSrepositoryController extends JGScommonController implement
 
         }
         hideProgressBar();
+    }
+
+    private void fetchWithWorker() {
+        SwingWorker sw1 = new SwingWorker() {
+            /**
+             * Die "doInBackground()"-Methode wird in einem eigenen
+             * Background-Thread ausgefuehrt. Sie darf nicht direkt
+             * Swing-Komponenten manipulieren.
+             */
+            @Override
+            protected Object doInBackground() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                /**
+                 * Die "publish()"-Methode sendet Zwischenergebnis-Objekte an
+                 * die "process()"-Methode, in welcher Swing-Aktionen
+                 * Thread-sicher asynchron im EDT ausgefuehrt werden.
+                 */
+
+            }
+
+            /**
+             * Die "process()"-Methode empfaengt die ueber "publish()"
+             * uebergebenen Objekte. Sie laeuft im EDT und kann asynchron
+             * Swing-Komponenten manipulieren.
+             */
+            @Override
+            protected void process(List chunks) {
+                // define what the event dispatch thread
+                // will do with the intermediate results
+                // received while the thread is executing
+
+            }
+
+            /**
+             * Die "done()"-Methode wird nach Beendigung der
+             * "doInBackground()"-Methode aufgerufen. Sie laeuft im EDT und kann
+             * Swing-Komponenten manipulieren.
+             */
+            @Override
+            protected void done() {
+
+            }
+
+        };
+        // Executes the swingworker on worker thread
+        sw1.execute();
     }
 
     @Override
@@ -310,8 +357,10 @@ public final class JGSrepositoryController extends JGScommonController implement
     }
 
     private void addSubTab(IJGSsubTabController subtab) {
+        progress.addProgress("addSubTab: " + subtab.getName(), 0);
         activeSubControllers.add(subtab);
         panel.addTab(subtab.getName(), subtab.getPanel());
+        progress.addProgress("addSubTab: " + subtab.getName(), 100);
     }
 
     private void removeSubTab(String tabTitle) {

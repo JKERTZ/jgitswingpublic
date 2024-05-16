@@ -20,6 +20,7 @@ import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
+import com.jkertz.jgitswing.dialogs.JGSprogressCollector;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.main.JGSmainController;
 import com.jkertz.jgitswing.model.IJGSrepositoryModel;
@@ -52,6 +53,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     private final String name;
     protected final JGSutils utils;
     protected JGSdialogFactory jGSdialogFactory;
+    protected final JGSprogressCollector progress;
 
     public JGScommonController(String name, JGSrepositoryModel jGSrepositoryModel) {
         this.jGSrepositoryModel = jGSrepositoryModel;
@@ -62,6 +64,8 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         mainController = JGSmainController.getINSTANCE();
         uiUtils = JGSuiUtils.getINSTANCE();
         utils = JGSutils.getINSTANCE();
+        progress = JGSprogressCollector.getINSTANCE();
+
         jGSrepositoryModel.addReceiver(this);
 
     }

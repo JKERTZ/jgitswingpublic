@@ -16,6 +16,8 @@
  */
 package com.jkertz.jgitswing.widgets.staging;
 
+import com.jkertz.jgitswing.tabs.common.JGSstagingTreeNode;
+import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JTree;
@@ -27,10 +29,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
-import com.jkertz.jgitswing.tabs.common.JGSstagingTreeNode;
-import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
-import org.eclipse.jgit.api.Status;
 
 /**
  *
@@ -52,8 +50,8 @@ public class JGSstagingTreeWidget extends JGScommonScrollwidget {
 
     }
 
-    public void updateStagedTable(Status status, IJGScallbackChain callback) {
-        DefaultTreeModel dtm = uiUtils.buildTreeModelStaged(status);
+    public void updateStagedTable(DefaultTreeModel dtm) {
+//        DefaultTreeModel dtm = uiUtils.buildTreeModelStaged(status);
 
         SwingUtilities.invokeLater(() -> {
             jTree.removeAll();
@@ -62,12 +60,12 @@ public class JGSstagingTreeWidget extends JGScommonScrollwidget {
             for (int i = 0; i < jTree.getRowCount(); i++) {
                 jTree.expandRow(i);
             }
-            callback.doNext(null);
+//            callback.doNext(null);
         });
     }
 
-    public void updateUnstagedTable(Status status, IJGScallbackChain callback) {
-        DefaultTreeModel dtm = uiUtils.buildTreeModelUnstaged(status);
+    public void updateUnstagedTable(DefaultTreeModel dtm) {
+//        DefaultTreeModel dtm = uiUtils.buildTreeModelUnstaged(status);
 
         SwingUtilities.invokeLater(() -> {
             jTree.removeAll();
@@ -76,7 +74,7 @@ public class JGSstagingTreeWidget extends JGScommonScrollwidget {
             for (int i = 0; i < jTree.getRowCount(); i++) {
                 jTree.expandRow(i);
             }
-            callback.doNext(null);
+//            callback.doNext(null);
         });
     }
 

@@ -16,12 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.stagingtree;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import javax.swing.JPanel;
 import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.staged.IJGSstagedToolbar;
@@ -32,7 +26,13 @@ import com.jkertz.jgitswing.widgets.currentdiff.IJGScurrentdiffWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGScurrentdiffWidget;
 import com.jkertz.jgitswing.widgets.staging.IJGSstagingTreeWidget;
 import com.jkertz.jgitswing.widgets.staging.JGSstagingTreeWidget;
-import org.eclipse.jgit.api.Status;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.swing.JPanel;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -75,10 +75,10 @@ public class JGSstagingTreePanel extends JGScommonPanel implements IJGSunstagedT
 //    public void updateUnstagedTable(Status status, IJGScallbackChain callback) {
 //        jGSfileStatusWidgetUnstaged.updateUnstagedTable(status, callback);
 //    }
-    public void updateStagingTrees(Status status, IJGScallbackChain callback) {
-        jGSstagingTreeWidgetStaged.updateStagedTable(status, (Object result) -> {
-            jGSstagingTreeWidgetUnstaged.updateUnstagedTable(status, callback);
-        });
+    public void updateStagingTrees(DefaultTreeModel dtmStaged, DefaultTreeModel dtmUnstaged) {
+        jGSstagingTreeWidgetStaged.updateStagedTable(dtmStaged);
+        jGSstagingTreeWidgetUnstaged.updateUnstagedTable(dtmUnstaged);
+
     }
 
     public void updateCurrentfile(String currentDiffFile, IJGScallbackChain callback) {

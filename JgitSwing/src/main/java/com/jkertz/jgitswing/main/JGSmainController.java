@@ -20,6 +20,7 @@ import com.jkertz.jgitswing.businesslogic.JGSutils;
 import com.jkertz.jgitswing.dialogs.JGScloneRepositoryDialog;
 import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.dialogs.JGSeditSettingsDialog;
+import com.jkertz.jgitswing.dialogs.JGSprogressCollector;
 import com.jkertz.jgitswing.logger.JGSlogger;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGSsetting;
@@ -64,6 +65,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     private final JGSutils utils;
     private final List<IJGSsubTabController> subControllers;
     private final JGSdialogFactory jGSdialogFactory;
+    private final JGSprogressCollector progress;
 
     private JGSmainController() {
 
@@ -75,6 +77,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         panel.getjFrame().setTitle("JGS v0.20240318");
 
         jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
+        progress = JGSprogressCollector.getINSTANCE();
+        progress.setParentFrame(panel.getjFrame());
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);
@@ -83,6 +87,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         addSubTabs();
         showInfoToast("JGSmainController completed");
         logger.getLogger().fine("JGSmainController completed");
+        progress.addProgress("Startup completed", 100);
+//        startDemoProgress();
     }
 
     public static JGSmainController getINSTANCE() {
@@ -321,8 +327,10 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     }
 
     private void addSubTab(IJGSsubTabController subtab, boolean autoselect) {
+        progress.addProgress("addSubTab: " + subtab.getName(), 0);
         subControllers.add(subtab);
         panel.addTab(subtab.getName(), subtab.getPanel(), autoselect);
+        progress.addProgress("addSubTab: " + subtab.getName(), 100);
     }
 
     private void saveRepositoryPath(JGSrepositoryModel jGSrepositoryModel) {
@@ -332,6 +340,20 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
 
     private String chooseOpenRepository() {
         return panel.chooseOpenRepository();
+    }
+
+    private void startDemoProgress() {
+        new Thread(() -> {
+            for (int prog = 0; prog <= 100; prog++) {
+                progress.addProgress("DemoProgress", prog);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+//            jGSprogressCollector.removeProgress("DemoProgress");
+        }).start();
     }
 
 }

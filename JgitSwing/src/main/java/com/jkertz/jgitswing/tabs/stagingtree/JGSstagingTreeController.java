@@ -22,7 +22,6 @@ import com.jkertz.jgitswing.callback.IJGScallbackListRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.callback.IJGScallbackStatus;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
@@ -30,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.tree.DefaultTreeModel;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.dircache.DirCache;
@@ -41,7 +41,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
  *
  * @author jkertz
  */
-public final class JGSstagingTreeController extends JGScommonController implements IJGSstagingTreePanel, IJGScommonController {
+public final class JGSstagingTreeController extends JGScommonController implements IJGSstagingTreePanel, IJGScommonController, IJGSstagingTreeModel {
 
     private JGSstagingTreePanel panel;
     private List<String> unstagedSelectionList;
@@ -73,7 +73,9 @@ public final class JGSstagingTreeController extends JGScommonController implemen
             try {
                 //chain only independent methods here
                 Status status = jGSrepositoryModel.getStatus();
-                panel.updateStagingTrees(status, endOfChainCallback(refresh));
+                DefaultTreeModel dtmStaged = uiUtils.buildTreeModelStaged(status);
+                DefaultTreeModel dtmUnstaged = uiUtils.buildTreeModelUnstaged(status);
+                panel.updateStagingTrees(dtmStaged, dtmUnstaged);
 
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateWidgets", ex);
@@ -312,23 +314,6 @@ public final class JGSstagingTreeController extends JGScommonController implemen
         return callback;
     }
 
-    private IJGScallbackStatus updateTablesCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackStatus callback = new IJGScallbackStatus() {
-            @Override
-            public void onSuccess(Status result) {
-                panel.updateStagingTrees(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("updateTables", "getStatus ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
     private IJGScallbackListDirCache stagingChangedCallback(IJGScallbackRefresh refresh) {
         IJGScallbackListDirCache callback = new IJGScallbackListDirCache() {
             @Override
@@ -418,7 +403,9 @@ public final class JGSstagingTreeController extends JGScommonController implemen
     private void updateTables() {
         try {
             Status status = jGSrepositoryModel.getStatus();
-            panel.updateStagingTrees(status, doNothingChainCallback());
+            DefaultTreeModel dtmStaged = uiUtils.buildTreeModelStaged(status);
+            DefaultTreeModel dtmUnstaged = uiUtils.buildTreeModelUnstaged(status);
+            panel.updateStagingTrees(dtmStaged, dtmUnstaged);
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "updateTables", ex);
         }
