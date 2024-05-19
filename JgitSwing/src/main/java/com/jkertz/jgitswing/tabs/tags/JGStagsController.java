@@ -209,7 +209,7 @@ public final class JGStagsController extends JGScommonController implements IJGS
                 showProgressBar("getCommits " + amount, 30);
                 IterableRevCommitTableModel tableModel = uiUtils.getTableModel(commits);
                 SwingUtilities.invokeLater(() -> {
-                    showProgressBar("getAllCommits", 60);
+                    showProgressBar("getCommits " + amount, 60);
                     panel.updateHistoryTable(tableModel);
                     showProgressBar("getCommits " + amount, 100);
                 });

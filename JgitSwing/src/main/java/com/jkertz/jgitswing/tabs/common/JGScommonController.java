@@ -112,7 +112,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     }
 
     protected final void showProgressBar(String title, int progress) {
-        progressCollector.addProgress(title, progress);
+        progressCollector.addProgress(title, progress, this.getClass().getName());
     }
 
     public void deconstruct() {

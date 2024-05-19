@@ -87,7 +87,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         addSubTabs();
         showInfoToast("JGSmainController completed");
         logger.getLogger().fine("JGSmainController completed");
-        progress.addProgress("Startup completed", 100);
+        progress.addProgress("Startup completed", 100, this.getClass().getName());
 //        startDemoProgress();
     }
 
@@ -327,10 +327,10 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     }
 
     private void addSubTab(IJGSsubTabController subtab, boolean autoselect) {
-        progress.addProgress("addSubTab: " + subtab.getName(), 0);
+        progress.addProgress("addSubTab: " + subtab.getName(), 0, this.getClass().getName());
         subControllers.add(subtab);
         panel.addTab(subtab.getName(), subtab.getPanel(), autoselect);
-        progress.addProgress("addSubTab: " + subtab.getName(), 100);
+        progress.addProgress("addSubTab: " + subtab.getName(), 100, this.getClass().getName());
     }
 
     private void saveRepositoryPath(JGSrepositoryModel jGSrepositoryModel) {
@@ -345,7 +345,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     private void startDemoProgress() {
         new Thread(() -> {
             for (int prog = 0; prog <= 100; prog++) {
-                progress.addProgress("DemoProgress", prog);
+                progress.addProgress("DemoProgress", prog, this.getClass().getName());
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {

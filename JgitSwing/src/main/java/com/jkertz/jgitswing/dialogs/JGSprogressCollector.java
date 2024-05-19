@@ -52,7 +52,7 @@ public class JGSprogressCollector {
         this.parentFrame = parentFrame;
     }
 
-    public void addProgress(String title, int progress) {
+    public void addProgress(String title, int progress, String tooltip) {
         System.out.println("addProgress title: " + title + " progress: " + progress);
         SwingUtilities.invokeLater(() -> {
 
@@ -88,6 +88,7 @@ public class JGSprogressCollector {
                 newProgressBar.setMaximum(100);
                 newProgressBar.setString(title);
                 newProgressBar.setStringPainted(true);
+                newProgressBar.setName(title);
                 progressBarHeight = newProgressBar.getPreferredSize().height;
 
                 if (progress < 0) {
@@ -107,6 +108,10 @@ public class JGSprogressCollector {
             } else {
                 //update progress
                 JProgressBar existingProgressBar = progressMap.get(title);
+                if (tooltip != null && !tooltip.isEmpty()) {
+                    existingProgressBar.setToolTipText(tooltip);
+                }
+
                 if (progress < 0) {
                     //indetermine
                     existingProgressBar.setIndeterminate(true);
@@ -175,7 +180,7 @@ public class JGSprogressCollector {
         new Thread(() -> {
             System.out.println("markForRemove: " + title + " in one second...");
             for (int remProg = 99; remProg > 0; remProg--) {
-                addProgress(title, remProg);
+                addProgress(title, remProg, null);
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {

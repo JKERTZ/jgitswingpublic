@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jkertz</groupId>
     <artifactId>JgitSwing</artifactId>
-    <version>1.0-20240318</version>
+    <version>1.0-20240519</version>
     <packaging>jar</packaging>
     <organization>
         <name>JKERTZ</name>   
