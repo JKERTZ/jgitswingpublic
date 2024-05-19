@@ -41,7 +41,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -58,7 +57,6 @@ public class JGSmainView {
     private final JMenu jMenuRepository;
     private final JMenu jMenuThemes;
     private final JMenuBar jMenuBar;
-    private final JProgressBar jProgressBar;
     private final JTabbedPane jTabbedPane;
     private final JGSlookAndFeels jGSlookAndFeels;
     private final IJGSmainView receiver;
@@ -102,12 +100,9 @@ public class JGSmainView {
         jMenuBar.add(jMenuRepository);
         jMenuBar.add(jMenuThemes);
 
-        jProgressBar = new JProgressBar();
-
         jTabbedPane = new JTabbedPane();
 
         jFrame.setJMenuBar(jMenuBar);
-        jFrame.add(jProgressBar, BorderLayout.SOUTH);
         jFrame.add(jTabbedPane, BorderLayout.CENTER);
 
         jFrame.addWindowListener(getMainWindowListener());
@@ -136,17 +131,6 @@ public class JGSmainView {
 
     protected JTabbedPane getjTabbedPane() {
         return jTabbedPane;
-    }
-
-    protected void showProgressBar(String text) {
-        jProgressBar.setVisible(true);
-        jProgressBar.setIndeterminate(true);
-        jProgressBar.setString(text);
-        jProgressBar.setStringPainted(true);
-    }
-
-    protected void hideProgressBar() {
-        jProgressBar.setVisible(false);
     }
 
     protected void showToast(String message) {

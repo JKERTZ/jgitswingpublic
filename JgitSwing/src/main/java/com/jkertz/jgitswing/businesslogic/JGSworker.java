@@ -25,17 +25,16 @@ import java.util.concurrent.Executors;
  */
 public class JGSworker {
 
-    private final Executor executor;
+    private static final Executor executor = Executors.newSingleThreadExecutor(); // Create a single thread executor
 
-    public JGSworker(Executor executor) {
-        this.executor = executor;
-    }
-
-    public JGSworker() {
-        this.executor = Executors.newSingleThreadExecutor(); // Create a single thread executor
-    }
-
-    public void runOnWorkerThread(Runnable task) {
+//    public JGSworker(Executor executor) {
+//        this.executor = executor;
+//    }
+//
+//    public JGSworker() {
+//        this.executor = Executors.newSingleThreadExecutor(); // Create a single thread executor
+//    }
+    public static void runOnWorkerThread(Runnable task) {
         executor.execute(task);
     }
 }

@@ -53,7 +53,7 @@ public class JGSprogressCollector {
     }
 
     public void addProgress(String title, int progress, String tooltip) {
-        System.out.println("addProgress title: " + title + " progress: " + progress);
+//        System.out.println("addProgress title: " + title + " progress: " + progress);
         SwingUtilities.invokeLater(() -> {
 
             if (progressDialog == null) {
@@ -69,7 +69,7 @@ public class JGSprogressCollector {
                 // add scrollpane to dialog
                 progressDialog.setContentPane(jScrollPane);
                 dialogHeight = progressDialog.getPreferredSize().height;
-                System.out.println("dialogHeight: " + dialogHeight);
+//                System.out.println("dialogHeight: " + dialogHeight);
 
                 //setup size and location
                 progressDialog.setLocationRelativeTo(parentFrame);
@@ -129,7 +129,7 @@ public class JGSprogressCollector {
     public void removeProgress(String title) {
         SwingUtilities.invokeLater(() -> {
             if (progressMap.keySet().contains(title)) {
-                System.out.println("removeProgress: " + title);
+//                System.out.println("removeProgress: " + title);
                 JProgressBar existingProgressBar = progressMap.get(title);
                 panel.remove(existingProgressBar);
 //                LayoutManager layout = panel.getLayout();
@@ -170,8 +170,8 @@ public class JGSprogressCollector {
         if (popHeight > parentHeight) {
             popHeight = parentHeight;
         }
-        System.out.println("popHeight: " + popHeight);
-        System.out.println("locationY: " + locationY);
+//        System.out.println("popHeight: " + popHeight);
+//        System.out.println("locationY: " + locationY);
         progressDialog.setLocation(locationX, locationY);
         progressDialog.setSize(popWidth, popHeight);
     }

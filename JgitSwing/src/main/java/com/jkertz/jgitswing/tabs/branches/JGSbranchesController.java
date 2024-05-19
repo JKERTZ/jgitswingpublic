@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.branches;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.dialogs.JGScheckoutDialog;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
@@ -28,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.eclipse.jgit.api.Git;
@@ -75,14 +77,17 @@ public final class JGSbranchesController extends JGScommonController implements 
 
         Git git = jGSrepositoryModel.getGit();
 
-        try {
-            showProgressBar("onBranchesPanelClickedCreate", 0);
-            Ref result = utils.createBranch(git, branchName);
-            showProgressBar("onBranchesPanelClickedCreate", 100);
-            showInfoDialog("onBranchesPanelClickedCreate", result.getName());
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCreate", ex);
-        }
+        showProgressBar("onBranchesPanelClickedCreate", 0);
+        JGSworker.runOnWorkerThread(() -> {
+            try {
+                Ref result = utils.createBranch(git, branchName);
+                showProgressBar("onBranchesPanelClickedCreate", 100);
+                showInfoDialog("onBranchesPanelClickedCreate", result.getName());
+            } catch (Exception ex) {
+                logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCreate", ex);
+            }
+        });
+
     }
 
     private String getSelectedTreeNode() {
@@ -261,7 +266,7 @@ public final class JGSbranchesController extends JGScommonController implements 
     @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
         //chain only independent methods here
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("updateWidgets", 0);
                 List<Ref> localBranches = getLocalBranches();
@@ -271,14 +276,17 @@ public final class JGSbranchesController extends JGScommonController implements 
                 String branchName = getBranchName();
                 showProgressBar("updateWidgets", 60);
                 Map<Ref, BranchTrackingStatus> mapLocalBranches = getMapLocalBranches(localBranches);
-                showProgressBar("updateWidgets", 80);
-                panel.updateBranchTree(mapLocalBranches, remoteBranches, branchName, doNothingChainCallback());
-                showProgressBar("updateWidgets", 100);
+                SwingUtilities.invokeLater(() -> {
+                    showProgressBar("updateWidgets", 80);
+                    panel.updateBranchTree(mapLocalBranches, remoteBranches, branchName, doNothingChainCallback());
+                    showProgressBar("updateWidgets", 100);
+                });
+
             } catch (Exception e) {
                 logger.getLogger().log(Level.SEVERE, "updateWidgets", e);
             }
             refresh.finish();
-        }).start();
+        });
     }
 
     private Map<Ref, BranchTrackingStatus> getMapLocalBranches(List<Ref> localBranches) throws Exception {

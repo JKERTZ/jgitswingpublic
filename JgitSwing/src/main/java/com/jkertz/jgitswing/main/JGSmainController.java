@@ -17,6 +17,7 @@
 package com.jkertz.jgitswing.main;
 
 import com.jkertz.jgitswing.businesslogic.JGSutils;
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.dialogs.JGScloneRepositoryDialog;
 import com.jkertz.jgitswing.dialogs.JGSdialogFactory;
 import com.jkertz.jgitswing.dialogs.JGSeditSettingsDialog;
@@ -65,7 +66,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     private final JGSutils utils;
     private final List<IJGSsubTabController> subControllers;
     private final JGSdialogFactory jGSdialogFactory;
-    private final JGSprogressCollector progress;
+    private final JGSprogressCollector progressCollector;
 
     private JGSmainController() {
 
@@ -77,8 +78,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         panel.getjFrame().setTitle("JGS v0.20240519");
 
         jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
-        progress = JGSprogressCollector.getINSTANCE();
-        progress.setParentFrame(panel.getjFrame());
+        progressCollector = JGSprogressCollector.getINSTANCE();
+        progressCollector.setParentFrame(panel.getjFrame());
 
         settings = JGSsettings.getINSTANCE();
         settings.addReceiver(this);
@@ -87,8 +88,8 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         addSubTabs();
         showInfoToast("JGSmainController completed");
         logger.getLogger().fine("JGSmainController completed");
-        progress.addProgress("Startup completed", 100, this.getClass().getName());
-//        startDemoProgress();
+        progressCollector.addProgress("Startup completed", 100, this.getClass().getName());
+        startDemoProgress();
     }
 
     public static JGSmainController getINSTANCE() {
@@ -114,63 +115,54 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         panel.showErrorToast(message);
     }
 
-    private void hideProgressBar() {
-        panel.hideProgressBar();
-    }
-
-    private void showProgressBar(String text) {
-        panel.showProgressBar(text);
-    }
-
     @Override
     public void onOpenRepositoryClicked() {
-        showProgressBar("OpenRepository");
-//        String chooseDirectory = chooseDirectory("Open: choose Directory");
         String chooseDirectory = chooseOpenRepository();
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             openRepository(chooseDirectory);
-        }).start();
+        });
     }
 
     @Override
     public void onOpenRepositoryClicked(String chooseDirectory) {
-        showProgressBar("OpenRepository");
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             openRepository(chooseDirectory);
-        }).start();
+        });
     }
 
     private void openRepository(String chooseDirectory) {
         if (chooseDirectory != null) {
             Git git;
             try {
+                showProgressBar("openRepository", 0);
                 git = utils.openRepository(chooseDirectory);
+                showProgressBar("openRepository", 25);
                 JGSrepositoryModel jGSrepositoryModel = new JGSrepositoryModel(git);
+                showProgressBar("openRepository", 50);
                 addRepositoryTab(jGSrepositoryModel);
+                showProgressBar("openRepository", 75);
                 saveRepositoryPath(jGSrepositoryModel);
-                hideProgressBar();
+                showProgressBar("openRepository", 100);
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onOpenRepositoryClicked", ex);
             }
         } else {
-            hideProgressBar();
+            showProgressBar("openRepository", 100);
         }
     }
 
     @Override
     public void onInitRepositoryClicked() {
-        showProgressBar("InitRepository");
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             initRepository(false);
-        }).start();
+        });
     }
 
     @Override
     public void onInitBareRepositoryClicked() {
-        showProgressBar("onInitBareRepositoryClicked");
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             initRepository(true);
-        }).start();
+        });
     }
 
     private void initRepository(boolean isBare) {
@@ -179,23 +171,27 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         if (chooseDirectory != null) {
 
             try {
+                showProgressBar("initRepository", 0);
                 Git git = utils.initRepository(chooseDirectory, isBare);
+                showProgressBar("initRepository", 25);
                 JGSrepositoryModel jGSrepositoryModel = new JGSrepositoryModel(git);
+                showProgressBar("initRepository", 50);
                 addRepositoryTab(jGSrepositoryModel);
+                showProgressBar("initRepository", 75);
                 saveRepositoryPath(jGSrepositoryModel);
-                hideProgressBar();
+                showProgressBar("initRepository", 100);
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
 
         } else {
-            hideProgressBar();
+            showProgressBar("initRepository", 100);
         }
     }
 
     @Override
     public void onCloneRepositoryClicked() {
-        showProgressBar("CloneRepository");
+        //TODO: replace this code with DialogFactory
         JFrame frame = panel.getjFrame();
         JGScloneRepositoryDialog jgScloneRepositoryDialog = new JGScloneRepositoryDialog();
         boolean dialogResultOK = jgScloneRepositoryDialog.show(frame);
@@ -209,52 +205,26 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
             parameters.put("URI", uri);
             parameters.put("Username", username);
             parameters.put("Password", password);
-
-            try {
-                Git git = utils.cloneRepository(targetDirectory, parameters);
-                JGSrepositoryModel jGSrepositoryModel = new JGSrepositoryModel(git);
-                addRepositoryTab(jGSrepositoryModel);
-//                saveRepositoryPath(jGSrepositoryModel);
-//                saveRemoteCredentials(username, password);
-                String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
-                settings.setUserAndPassword(path, username, password, uri);
-                hideProgressBar();
-            } catch (Exception ex) {
-                logger.getLogger().log(Level.SEVERE, null, ex);
-            }
+            JGSworker.runOnWorkerThread(() -> {
+                try {
+                    showProgressBar("CloneRepository", -1);
+                    Git git = utils.cloneRepository(targetDirectory, parameters);
+                    showProgressBar("CloneRepository", 25);
+                    JGSrepositoryModel jGSrepositoryModel = new JGSrepositoryModel(git);
+                    showProgressBar("CloneRepository", 50);
+                    addRepositoryTab(jGSrepositoryModel);
+                    showProgressBar("CloneRepository", 75);
+                    String path = jGSrepositoryModel.getDirectoryFromRepositoryName();
+                    settings.setUserAndPassword(path, username, password, uri);
+                    showProgressBar("CloneRepository", 100);
+                } catch (Exception ex) {
+                    logger.getLogger().log(Level.SEVERE, null, ex);
+                }
+            });
         } else {
-            hideProgressBar();
+            hideProgressBar("CloneRepository");
         }
-//        showProgressBar("CloneRepository");
-//        String chooseDirectory = chooseDirectory("Clone: choose Target Directory");
-//        if (chooseDirectory != null) {
-//            new Thread(() -> {
-//                Map<String, String> parameters = new LinkedHashMap<>();
-//                String uri = "";
-//                String username = "";
-//                String password = "";
-//                parameters.put("URI", uri);
-//                parameters.put("Username", username);
-//                parameters.put("Password", password);
-//
-//                if (new JGSParameterMapDialog().show("Enter remote location", parameters, false)) {
-//                    try {
-//                        Git git = utils.cloneRepository(chooseDirectory, parameters);
-//                        JGSrepositoryModel jGSrepositoryModel = new JGSrepositoryModel(git);
-//                        addRepositoryTab(jGSrepositoryModel);
-//                        saveRepositoryPath(jGSrepositoryModel);
-//                        hideProgressBar();
-//
-//                    } catch (Exception ex) {
-//                        logger.getLogger().log(Level.SEVERE, null, ex);
-//                    }
-//                } else {
-//                    hideProgressBar();
-//                }
-//            }).start();
-//        } else {
-//            hideProgressBar();
-//        }
+
     }
 
     @Override
@@ -327,10 +297,10 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     }
 
     private void addSubTab(IJGSsubTabController subtab, boolean autoselect) {
-        progress.addProgress("addSubTab: " + subtab.getName(), 0, this.getClass().getName());
+        showProgressBar("addSubTab: " + subtab.getName(), 0);
         subControllers.add(subtab);
         panel.addTab(subtab.getName(), subtab.getPanel(), autoselect);
-        progress.addProgress("addSubTab: " + subtab.getName(), 100, this.getClass().getName());
+        showProgressBar("addSubTab: " + subtab.getName(), 100);
     }
 
     private void saveRepositoryPath(JGSrepositoryModel jGSrepositoryModel) {
@@ -342,18 +312,37 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         return panel.chooseOpenRepository();
     }
 
+    private void hideProgressBar(String title) {
+        progressCollector.removeProgress(title);
+    }
+
+    private void showProgressBar(String title, int progress) {
+        progressCollector.addProgress(title, progress, this.getClass().getName());
+    }
+
     private void startDemoProgress() {
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             for (int prog = 0; prog <= 100; prog++) {
-                progress.addProgress("DemoProgress", prog, this.getClass().getName());
+                showProgressBar("DemoProgress", prog);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
             }
-//            jGSprogressCollector.removeProgress("DemoProgress");
-        }).start();
+        });
+
+//        new Thread(() -> {
+//            for (int prog = 0; prog <= 100; prog++) {
+//                progress.addProgress("DemoProgress", prog, this.getClass().getName());
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+////            jGSprogressCollector.removeProgress("DemoProgress");
+//        }).start();
     }
 
 }
