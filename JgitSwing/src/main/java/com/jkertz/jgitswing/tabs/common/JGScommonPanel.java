@@ -16,10 +16,8 @@
  */
 package com.jkertz.jgitswing.tabs.common;
 
-import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 /**
  *
@@ -27,24 +25,8 @@ import javax.swing.JProgressBar;
  */
 public class JGScommonPanel extends JPanel {
 
-    private JProgressBar jvProgressBar = null;
-
     public JGScommonPanel(LayoutManager layout) {
         super(layout);
-        jvProgressBar = new JProgressBar(JProgressBar.VERTICAL);
-        this.add(jvProgressBar, BorderLayout.EAST);
-        hidevProgressBar();
-    }
-
-    public final void showvProgressBar(String text) {
-        jvProgressBar.setVisible(true);
-        jvProgressBar.setIndeterminate(true);
-        jvProgressBar.setString(text);
-        jvProgressBar.setStringPainted(true);
-    }
-
-    public final void hidevProgressBar() {
-        jvProgressBar.setVisible(false);
     }
 
 }

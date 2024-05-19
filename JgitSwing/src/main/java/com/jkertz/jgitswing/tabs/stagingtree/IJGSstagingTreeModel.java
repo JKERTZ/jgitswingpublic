@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 jkertz
+ * Copyright (C) 2024 JKERTZ
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.jkertz.jgitswing.widgets.currentdiff;
-
-import javax.swing.JTextPane;
-import javax.swing.text.DefaultStyledDocument;
-import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
+package com.jkertz.jgitswing.tabs.stagingtree;
 
 /**
  *
  * @author jkertz
  */
-public class JGScurrentdiffWidget extends JGScommonScrollwidget {
-
-    private final IJGScurrentdiffWidget receiver;
-    private JTextPane jTextPane1;
-
-    public JGScurrentdiffWidget(IJGScurrentdiffWidget receiver) {
-        super();
-        this.receiver = receiver;
-
-        jTextPane1 = new JTextPane();
-
-        this.setViewportView(jTextPane1);
-    }
-
-    public void updateCurrentfile(DefaultStyledDocument doc) {
-        jTextPane1.setDocument(doc);
-    }
+public interface IJGSstagingTreeModel {
 
 }

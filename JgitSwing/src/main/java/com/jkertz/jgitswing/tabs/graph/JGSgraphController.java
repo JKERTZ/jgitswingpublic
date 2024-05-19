@@ -43,7 +43,7 @@ public final class JGSgraphController extends JGScommonController implements IJG
 
     @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
-        updateGraphTable(10, refresh);
+        updateGraphTable(10);
     }
 
     @Override
@@ -53,15 +53,16 @@ public final class JGSgraphController extends JGScommonController implements IJG
         refresh();
     }
 
-    private void updateGraphTable(Integer amount, IJGScallbackRefresh refresh) {
-        showProgressBar("updateWidgets");
+    private void updateGraphTable(Integer amount) {
         // jGSrepositoryModel async thread
         new Thread(() -> {
             try {
                 String branchName = jGSrepositoryModel.getBranchName();
                 if (branchName != null && !branchName.isEmpty()) {
+                    showProgressBar("updateGraphTable", 0);
                     PlotWalk plotWalk = jGSrepositoryModel.getPlotWalk(branchName);
-                    fillGraphPane(plotWalk, amount, refresh);
+                    showProgressBar("updateGraphTable", 100);
+                    fillGraphPane(plotWalk, amount);
                 } else {
                     logger.getLogger().log(Level.SEVERE, "updateGraphTable", "no branch");
                     showErrorDialog("updateGraphTable", "no branch");
@@ -69,13 +70,13 @@ public final class JGSgraphController extends JGScommonController implements IJG
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateGraphTable", ex);
 //                showErrorDialog("updateWidgets", "updateWidgets ERROR:\n" + ex.getMessage());
-                refresh.finish();
             }
         }).start();
     }
 
-    private void fillGraphPane(PlotWalk plotWalk, Integer amount, IJGScallbackRefresh refresh) throws Exception {
+    private void fillGraphPane(PlotWalk plotWalk, Integer amount) throws Exception {
         SwingUtilities.invokeLater(() -> {
+            showProgressBar("fillGraphPane", 0);
             JGSgraphPane graphPane = panel.getGraphPane();
             graphPane.getCommitList().clear();
             graphPane.getCommitList().source(plotWalk);
@@ -86,7 +87,7 @@ public final class JGSgraphController extends JGScommonController implements IJG
             } catch (IOException ex) {
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
-            refresh.finish();
+            showProgressBar("fillGraphPane", 100);
         });
     }
 
@@ -97,16 +98,12 @@ public final class JGSgraphController extends JGScommonController implements IJG
 //    }
     @Override
     public void onGraphPanelClickedShowAll() {
-        updateGraphTable(Integer.MAX_VALUE, () -> {
-            hideProgressBar();
-        });
+        updateGraphTable(Integer.MAX_VALUE);
     }
 
     @Override
     public void onGraphPanelClickedShow100() {
-        updateGraphTable(100, () -> {
-            hideProgressBar();
-        });
+        updateGraphTable(100);
     }
 
     @Override

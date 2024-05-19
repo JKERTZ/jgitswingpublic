@@ -53,7 +53,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
     private final String name;
     protected final JGSutils utils;
     protected JGSdialogFactory jGSdialogFactory;
-    protected final JGSprogressCollector progress;
+    protected final JGSprogressCollector progressCollector;
 
     public JGScommonController(String name, JGSrepositoryModel jGSrepositoryModel) {
         this.jGSrepositoryModel = jGSrepositoryModel;
@@ -64,7 +64,7 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         mainController = JGSmainController.getINSTANCE();
         uiUtils = JGSuiUtils.getINSTANCE();
         utils = JGSutils.getINSTANCE();
-        progress = JGSprogressCollector.getINSTANCE();
+        progressCollector = JGSprogressCollector.getINSTANCE();
 
         jGSrepositoryModel.addReceiver(this);
 
@@ -107,12 +107,12 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         mainController.showErrorToast(message);
     }
 
-    protected final void hideProgressBar() {
-        commonPanel.hidevProgressBar();
+    protected final void hideProgressBar(String title) {
+        progressCollector.removeProgress(title);
     }
 
-    protected final void showProgressBar(String text) {
-        commonPanel.showvProgressBar(text);
+    protected final void showProgressBar(String title, int progress) {
+        progressCollector.addProgress(title, progress);
     }
 
     public void deconstruct() {
@@ -152,7 +152,6 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
             isRefreshing = true;
             updateWidgets(() -> {
                 isRefreshing = false;
-                hideProgressBar();
             });
 
         } else {
@@ -173,7 +172,6 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
 
     protected final IJGScallbackRefresh refreshCallback() {
         IJGScallbackRefresh callback = () -> {
-            hideProgressBar();
         };
         return callback;
     }
@@ -288,17 +286,17 @@ public class JGScommonController implements IJGSsubTabController, IJGSrepository
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "autoFixRemoteEditConfigInfo", ex);
         }
-        hideProgressBar();
         return result;
     }
 
     protected void saveConfigInfo(Map<String, Map<String, Map<String, String>>> configInfoMap) {
-        showProgressBar("saveConfigInfo");
+        showProgressBar("saveConfigInfo", 0);
         try {
             jGSrepositoryModel.saveConfigInfo(configInfoMap);
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "saveConfigInfo", ex);
         }
+        showProgressBar("saveConfigInfo", 100);
     }
 
     protected Map<String, String> getUserPasswordParameters() {

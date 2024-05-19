@@ -16,7 +16,6 @@
  */
 package com.jkertz.jgitswing.tabs.stagingtree;
 
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.staged.IJGSstagedToolbar;
 import com.jkertz.jgitswing.toolbars.staged.JGSstagedToolbar;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JPanel;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -78,11 +78,10 @@ public class JGSstagingTreePanel extends JGScommonPanel implements IJGSunstagedT
     public void updateStagingTrees(DefaultTreeModel dtmStaged, DefaultTreeModel dtmUnstaged) {
         jGSstagingTreeWidgetStaged.updateStagedTable(dtmStaged);
         jGSstagingTreeWidgetUnstaged.updateUnstagedTable(dtmUnstaged);
-
     }
 
-    public void updateCurrentfile(String currentDiffFile, IJGScallbackChain callback) {
-        jGScurrentdiffWidget.updateCurrentfile(currentDiffFile, callback);
+    public void updateCurrentfile(DefaultStyledDocument doc) {
+        jGScurrentdiffWidget.updateCurrentfile(doc);
     }
 
     private IJGSstagingTreeWidget unstagedTreeSelectionChangedCallback() {

@@ -20,7 +20,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
+import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.staged.IJGSstagedToolbar;
 import com.jkertz.jgitswing.toolbars.staged.JGSstagedToolbar;
@@ -28,7 +29,6 @@ import com.jkertz.jgitswing.toolbars.unstaged.IJGSunstagedToolbar;
 import com.jkertz.jgitswing.toolbars.unstaged.JGSunstagedToolbar;
 import com.jkertz.jgitswing.widgets.currentdiff.IJGSfileStatusWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGSfileStatusWidget;
-import org.eclipse.jgit.api.Status;
 
 /**
  *
@@ -57,12 +57,12 @@ public class JGSstagingPanel extends JGScommonPanel implements IJGSunstagedToolb
         this.add(gridPanel, BorderLayout.CENTER);
     }
 
-    public void updateStagedTable(Status status, IJGScallbackChain callback) {
-        jGSfileStatusWidgetStaged.updateStagedTable(status, callback);
+    public void updateStagedTable(StatusStagedTableModel tableModelStaged) {
+        jGSfileStatusWidgetStaged.updateStagedTable(tableModelStaged);
     }
 
-    public void updateUnstagedTable(Status status, IJGScallbackChain callback) {
-        jGSfileStatusWidgetUnstaged.updateUnstagedTable(status, callback);
+    public void updateUnstagedTable(StatusUnstagedTableModel tableModelUnstaged) {
+        jGSfileStatusWidgetUnstaged.updateUnstagedTable(tableModelUnstaged);
     }
 
     private IJGSfileStatusWidget unstagedListSelectionChangedCallback() {

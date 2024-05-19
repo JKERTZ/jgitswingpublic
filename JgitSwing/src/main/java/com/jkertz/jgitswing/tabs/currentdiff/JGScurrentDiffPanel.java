@@ -20,13 +20,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
+import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.widgets.currentdiff.IJGScurrentdiffWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.IJGSfileStatusWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGScurrentdiffWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGSfileStatusWidget;
-import org.eclipse.jgit.diff.DiffEntry;
+import javax.swing.text.DefaultStyledDocument;
 
 /**
  *
@@ -54,12 +54,12 @@ public class JGScurrentDiffPanel extends JGScommonPanel implements IJGScurrentdi
 
     }
 
-    public void updateFileTables(List<DiffEntry> currentDiff, IJGScallbackChain callback) {
-        jGSfileStatusWidget.updateFileTables(currentDiff, callback);
+    public void updateFileTables(ListDiffEntryTableModel tableModel) {
+        jGSfileStatusWidget.updateFileTables(tableModel);
     }
 
-    public void updateCurrentfile(String currentDiffFile, IJGScallbackChain callback) {
-        jGScurrentdiffWidget.updateCurrentfile(currentDiffFile, callback);
+    public void updateCurrentfile(DefaultStyledDocument doc) {
+        jGScurrentdiffWidget.updateCurrentfile(doc);
     }
 
     @Override

@@ -18,10 +18,9 @@ package com.jkertz.jgitswing.tabs.tags;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.util.List;
 import javax.swing.JPanel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
-import com.jkertz.jgitswing.model.JGStag;
+import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
+import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.tags.IJGStagsHistoryToolbar;
 import com.jkertz.jgitswing.toolbars.tags.IJGStagsToolbar;
@@ -31,7 +30,6 @@ import com.jkertz.jgitswing.widgets.tags.IJGShistoryTableWidget;
 import com.jkertz.jgitswing.widgets.tags.IJGStagsWidget;
 import com.jkertz.jgitswing.widgets.tags.JGShistoryTableWidget;
 import com.jkertz.jgitswing.widgets.tags.JGStagsWidget;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
  *
@@ -62,15 +60,15 @@ public class JGStagsPanel extends JGScommonPanel implements IJGStagsWidget, IJGS
         this.add(gridPanel, BorderLayout.CENTER);
     }
 
-    protected void updateHistoryTable(Iterable<RevCommit> result, IJGScallbackChain callback) {
-        jGShistoryTableWidget.updateHistoryTable(result, callback);
+    protected void updateHistoryTable(IterableRevCommitTableModel tableModel) {
+        jGShistoryTableWidget.updateHistoryTable(tableModel);
     }
 
 //    protected void updateTagTable(List<Ref> result, IJGScallbackChain callback) {
 //        jGStagsWidget.render(result, callback);
 //    }
-    void updateTagTable(List<JGStag> result, IJGScallbackChain callback) {
-        jGStagsWidget.render(result, callback);
+    void updateTagTable(ListJGStagsTableModel tableModelJGStags) {
+        jGStagsWidget.render(tableModelJGStags);
     }
 
     private JPanel getHistoryPanel() {

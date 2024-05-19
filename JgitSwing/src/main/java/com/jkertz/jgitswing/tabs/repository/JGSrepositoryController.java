@@ -100,7 +100,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             return;
         }
 
-        showProgressBar("FetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
 
@@ -115,7 +114,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             saveRemoteCredentials(usernameInput, passwordInput);
 
         }
-        hideProgressBar();
     }
 
     private void fetchWithWorker() {
@@ -170,7 +168,6 @@ public final class JGSrepositoryController extends JGScommonController implement
         if (!autoFixRemoteEditConfigInfo(true)) {
             return;
         }
-        showProgressBar("PullRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Pull", parameters, false);
         if (showParameterMapDialog) {
@@ -178,9 +175,12 @@ public final class JGSrepositoryController extends JGScommonController implement
             String passwordInput = parameters.get("Password");
             Git git = jGSrepositoryModel.getGit();
             try {
+                showProgressBar("PullRemote", 0);
                 PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
+                showProgressBar("PullRemote", 90);
                 saveRemoteCredentials(usernameInput, passwordInput);
                 jGSdialogFactory.showPullResult("Pull result", result);
+                showProgressBar("PullRemote", 100);
             } catch (CheckoutConflictException ccex) {
                 String message = ccex.getMessage();
                 logger.getLogger().log(Level.INFO, message);
@@ -189,7 +189,6 @@ public final class JGSrepositoryController extends JGScommonController implement
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
         }
-        hideProgressBar();
     }
 
     @Override
@@ -199,7 +198,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             return;
         }
 
-        showProgressBar("PushRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getPushOptions();
         boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
@@ -211,7 +209,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             pushRemote(usernameInput, passwordInput, dryRun);
             saveRemoteCredentials(usernameInput, passwordInput);
         }
-        hideProgressBar();
     }
 
     @Override
@@ -221,7 +218,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             return;
         }
 
-        showProgressBar("PushAndFetchRemote");
         Map<String, String> parameters = getUserPasswordParameters();
         Map<String, Boolean> options = getFetchOptions();
         boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
@@ -233,7 +229,6 @@ public final class JGSrepositoryController extends JGScommonController implement
             boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
             boolean pushRemotePreview = pushRemote(usernameInput, passwordInput, dryRun);
             if (dryRun && !pushRemotePreview) {
-                hideProgressBar();
                 return;
             }
             saveRemoteCredentials(usernameInput, passwordInput);
@@ -242,14 +237,12 @@ public final class JGSrepositoryController extends JGScommonController implement
             }
             boolean fetchRemotePreview = fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
             if (dryRun && !fetchRemotePreview) {
-                hideProgressBar();
                 return;
             }
             if (dryRun) {
                 fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
             }
         }
-        hideProgressBar();
     }
 
     @Override
@@ -357,10 +350,10 @@ public final class JGSrepositoryController extends JGScommonController implement
     }
 
     private void addSubTab(IJGSsubTabController subtab) {
-        progress.addProgress("addSubTab: " + subtab.getName(), 0);
+        showProgressBar("addSubTab: " + subtab.getName(), 0);
         activeSubControllers.add(subtab);
         panel.addTab(subtab.getName(), subtab.getPanel());
-        progress.addProgress("addSubTab: " + subtab.getName(), 100);
+        showProgressBar("addSubTab: " + subtab.getName(), 100);
     }
 
     private void removeSubTab(String tabTitle) {
@@ -388,7 +381,6 @@ public final class JGSrepositoryController extends JGScommonController implement
     private void updateBranchName() {
         logger.getLogger().fine("updateBranchName");
         String labelText = "Branch: ";
-        showProgressBar("updateBranchName");
         try {
             String branchName = jGSrepositoryModel.getBranchName();
             labelText += branchName;
@@ -492,7 +484,10 @@ public final class JGSrepositoryController extends JGScommonController implement
     private boolean fetchRemote(String usernameInput, String passwordInput, boolean dryRun, boolean checkFetchedObjects, boolean removeDeletedRefs) {
         Git git = jGSrepositoryModel.getGit();
         try {
+            showProgressBar("fetchRemote", 0);
             FetchResult fetchRemote = utils.fetchRemote(git, dryRun, checkFetchedObjects, removeDeletedRefs, usernameInput, passwordInput);
+            showProgressBar("fetchRemote", 100);
+
             String resultTitle = "Fetch result";
             if (dryRun) {
                 resultTitle = "Fetch preview";
@@ -516,7 +511,9 @@ public final class JGSrepositoryController extends JGScommonController implement
         Git git = jGSrepositoryModel.getGit();
 
         try {
+            showProgressBar("PushRemote", 0);
             Iterable<PushResult> pushResults = utils.pushRemote(git, dryRun, usernameInput, passwordInput);
+            showProgressBar("PushRemote", 100);
             String resultTitle = "Push result";
             if (dryRun) {
                 resultTitle = "Push preview";

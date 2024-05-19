@@ -64,13 +64,11 @@ public final class JGSconfigController extends JGScommonController implements IJ
 
     @Override
     public void onConfigPanelClickedEditConfig() {
-        showProgressBar("onConfigPanelClickedEditConfig");
         editConfigInfo();
     }
 
     @Override
     public void onConfigToolbarClickedFixRemote() {
-        showProgressBar("onConfigToolbarClickedFixRemote");
         autoFixRemoteEditConfigInfo(false);
     }
 
@@ -87,7 +85,6 @@ public final class JGSconfigController extends JGScommonController implements IJ
             logger.getLogger().log(Level.SEVERE, "editConfigInfo", ex);
 
         }
-        hideProgressBar();
     }
 
 //    private IJGScallbackDirConfigInfoMap editConfigCallback(IJGScallbackRefresh refresh) {
@@ -138,11 +135,14 @@ public final class JGSconfigController extends JGScommonController implements IJ
     private void updateConfigTree(IJGScallbackRefresh refresh) {
         logger.getLogger().fine("updateConfigTree");
         //        bc.getConfigInfo(updateConfigCallback(refresh));
-        showProgressBar("updateConfigTree");
         new Thread(() -> {
             try {
+                showProgressBar("getConfigInfo", 0);
                 Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
+                showProgressBar("getConfigInfo", 100);
+                showProgressBar("updateConfigTree", 0);
                 panel.updateConfigTree(configInfoMap, endOfChainCallback(refresh));
+                showProgressBar("updateConfigTree", 100);
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateConfigTree", ex);
 

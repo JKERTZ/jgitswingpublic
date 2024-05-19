@@ -16,19 +16,15 @@
  */
 package com.jkertz.jgitswing.widgets.currentdiff;
 
-import java.util.List;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
 import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
 import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
 import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
-import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.diff.DiffEntry;
+import java.util.List;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -50,57 +46,40 @@ public class JGSfileStatusWidget extends JGScommonScrollwidget {
 
     }
 
-    public void updateFileTables(List<DiffEntry> currentDiff, IJGScallbackChain callback) {
-//        DefaultTableModel dtm = uiUtils.buildTableModel(currentDiff);
-        long tableModelStart = System.nanoTime();
-        ListDiffEntryTableModel tableModel = uiUtils.getTableModel(currentDiff);
-        long tableModelEnd = System.nanoTime();
-        long tableModelBuildTime = tableModelEnd - tableModelStart;
-        Double tableModelBuildTimeInms = tableModelBuildTime / 1000D;
-        System.out.println("tableModelBuildTimeInms: " + tableModelBuildTimeInms);
-
-        SwingUtilities.invokeLater(() -> {
-            jTableFiles.removeAll();
-            long tableStart = System.nanoTime();
-            uiUtils.setTableSingleSelect(jTableFiles, tableModel);
-            long tableEnd = System.nanoTime();
-            long tableBuildTime = tableEnd - tableStart;
-            Double tableBuildTimeInms = tableBuildTime / 1000D;
-            System.out.println("tableBuildTimeInms: " + tableBuildTimeInms);
-
-            callback.doNext(null);
-        });
+    public void updateFileTables(ListDiffEntryTableModel tableModel) {
+        jTableFiles.removeAll();
+        uiUtils.setTableSingleSelect(jTableFiles, tableModel);
     }
 
-    public void updateIgnoredTable(Status status, IJGScallbackChain callback) {
+    public void updateIgnoredTable(StatusIgnoredTableModel tableModelIgnored) {
 //        DefaultTableModel dtm = uiUtils.buildIgnoredTableModel(status);
-        StatusIgnoredTableModel tableModelIgnored = uiUtils.getTableModelIgnored(status);
-        SwingUtilities.invokeLater(() -> {
-            jTableFiles.removeAll();
-            uiUtils.setTableSingleSelect(jTableFiles, tableModelIgnored);
-            callback.doNext(null);
-        });
+//        StatusIgnoredTableModel tableModelIgnored = uiUtils.getTableModelIgnored(status);
+//        SwingUtilities.invokeLater(() -> {
+        jTableFiles.removeAll();
+        uiUtils.setTableSingleSelect(jTableFiles, tableModelIgnored);
+//            callback.doNext(null);
+//        });
     }
 
-    public void updateStagedTable(Status status, IJGScallbackChain callback) {
+    public void updateStagedTable(StatusStagedTableModel tableModelStaged) {
 //        DefaultTableModel dtm = uiUtils.buildStagedTableModel(status);
-        StatusStagedTableModel tableModelStaged = uiUtils.getTableModelStaged(status);
-        SwingUtilities.invokeLater(() -> {
-            jTableFiles.removeAll();
-            uiUtils.setTableMultiSelect(jTableFiles, tableModelStaged);
-            callback.doNext(null);
-        });
+//        StatusStagedTableModel tableModelStaged = uiUtils.getTableModelStaged(status);
+//        SwingUtilities.invokeLater(() -> {
+        jTableFiles.removeAll();
+        uiUtils.setTableMultiSelect(jTableFiles, tableModelStaged);
+//            callback.doNext(null);
+//        });
     }
 
-    public void updateUnstagedTable(Status status, IJGScallbackChain callback) {
+    public void updateUnstagedTable(StatusUnstagedTableModel tableModelUnstaged) {
 //        DefaultTableModel dtm = uiUtils.buildUnstagedTableModel(status);
-        StatusUnstagedTableModel tableModelUnstaged = uiUtils.getTableModelUnstaged(status);
-
-        SwingUtilities.invokeLater(() -> {
-            jTableFiles.removeAll();
-            uiUtils.setTableMultiSelect(jTableFiles, tableModelUnstaged);
-            callback.doNext(null);
-        });
+//        StatusUnstagedTableModel tableModelUnstaged = uiUtils.getTableModelUnstaged(status);
+//
+//        SwingUtilities.invokeLater(() -> {
+        jTableFiles.removeAll();
+        uiUtils.setTableMultiSelect(jTableFiles, tableModelUnstaged);
+//            callback.doNext(null);
+//        });
     }
 
     private ListSelectionListener getListSelectionListenerFile() {

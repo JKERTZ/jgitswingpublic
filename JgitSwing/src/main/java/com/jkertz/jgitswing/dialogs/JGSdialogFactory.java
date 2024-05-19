@@ -268,4 +268,12 @@ public class JGSdialogFactory {
         int selectionindex = JOptionPane.showOptionDialog(parent, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionsArray, optionsArray[0]);
         return selectionindex;
     }
+
+    public void showProgress(String title, int progress) {
+
+    }
+
+    public void hideProgress() {
+
+    }
 }

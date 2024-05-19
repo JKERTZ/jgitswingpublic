@@ -18,11 +18,10 @@ package com.jkertz.jgitswing.tabs.ignored;
 
 import java.awt.BorderLayout;
 import java.util.List;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
+import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.widgets.currentdiff.IJGSfileStatusWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGSfileStatusWidget;
-import org.eclipse.jgit.api.Status;
 
 /**
  *
@@ -42,8 +41,8 @@ public class JGSignoredPanel extends JGScommonPanel implements IJGSfileStatusWid
         this.add(jGSfileStatusWidget, BorderLayout.CENTER);
     }
 
-    public void updateIgnoredTable(Status status, IJGScallbackChain callback) {
-        jGSfileStatusWidget.updateIgnoredTable(status, callback);
+    public void updateIgnoredTable(StatusIgnoredTableModel tableModelIgnored) {
+        jGSfileStatusWidget.updateIgnoredTable(tableModelIgnored);
     }
 
     @Override

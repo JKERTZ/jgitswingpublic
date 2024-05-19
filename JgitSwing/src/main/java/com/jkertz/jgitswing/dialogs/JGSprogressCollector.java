@@ -157,6 +157,14 @@ public class JGSprogressCollector {
         int amount = progressMap.keySet().size();
         int popHeight = dialogHeight + progressBarHeight * amount;
         int locationY = y + parentHeight - popHeight - 5;
+
+        //limit size to parent window
+        if (locationY < y) {
+            locationY = y;
+        }
+        if (popHeight > parentHeight) {
+            popHeight = parentHeight;
+        }
         System.out.println("popHeight: " + popHeight);
         System.out.println("locationY: " + locationY);
         progressDialog.setLocation(locationX, locationY);

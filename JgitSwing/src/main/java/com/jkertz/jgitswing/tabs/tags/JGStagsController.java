@@ -17,18 +17,19 @@
 package com.jkertz.jgitswing.tabs.tags;
 
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
-import com.jkertz.jgitswing.callback.IJGScallbackListJGStags;
-import com.jkertz.jgitswing.callback.IJGScallbackListRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.model.JGStag;
+import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
+import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.lib.ConfigConstants;
@@ -63,7 +64,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
     public void onTagsToolbarClickedShow5() {
         logger.getLogger().fine("onTagsToolbarClickedShow5");
         getJGStags(5, () -> {
-            hideProgressBar();
         });
     }
 
@@ -71,7 +71,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
     public void onTagsToolbarClickedShow100() {
         logger.getLogger().fine("onTagsToolbarClickedShow100");
         getJGStags(100, () -> {
-            hideProgressBar();
         });
     }
 
@@ -79,7 +78,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
     public void onTagsToolbarClickedShowAll() {
         logger.getLogger().fine("onTagsToolbarClickedShowAll");
         getJGStags(Integer.MAX_VALUE, () -> {
-            hideProgressBar();
         });
     }
 
@@ -92,7 +90,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
         }
 
         try {
-            showProgressBar("PushTags");
             Git git = jGSrepositoryModel.getGit();
             Map<String, String> parameters = getUserPasswordParameters();
             Map<String, Boolean> options = getPushOptions();
@@ -101,14 +98,14 @@ public final class JGStagsController extends JGScommonController implements IJGS
                 String usernameInput = parameters.get("Username");
                 String passwordInput = parameters.get("Password");
                 boolean dryRun = options.get("dryrun");
-
+                showProgressBar("PushTags", 0);
                 Iterable<PushResult> pushTags = utils.pushTags(git, usernameInput, passwordInput, dryRun);
+                showProgressBar("PushTags", 100);
                 jGSdialogFactory.showPushResults("PushTags", pushTags);
             }
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onTagsToolbarClickedPushTags", ex);
         }
-        hideProgressBar();
     }
 
     @Override
@@ -131,7 +128,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
             if (_commitId != null && !_commitId.isEmpty()) {
                 Git git = jGSrepositoryModel.getGit();
 
-                showProgressBar("CreateTag");
                 Map<String, String> parameters = getCreateTagParameters();
                 boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("CreateTag", parameters, false);
                 if (showParameterMapDialog) {
@@ -139,8 +135,9 @@ public final class JGStagsController extends JGScommonController implements IJGS
                     String tagMessage = parameters.get("tagMessage");
                     String taggerName = parameters.get("taggerName");
                     String taggerEmail = parameters.get("taggerEmail");
-
+                    showProgressBar("CreateTag", 0);
                     Ref createTag = utils.createTag(git, tagName, tagMessage, taggerName, taggerEmail, _commitId);
+                    showProgressBar("CreateTag", 100);
                 }
             } else {
                 jGSdialogFactory.showErrorDialog("CreateTag", "no commit selected!");
@@ -154,7 +151,6 @@ public final class JGStagsController extends JGScommonController implements IJGS
     public void onTagsHistoryToolbarClickedShow5() {
         logger.getLogger().fine("onTagsHistoryToolbarClickedShow5");
         getCommits(5, () -> {
-            hideProgressBar();
         });
     }
 
@@ -162,16 +158,13 @@ public final class JGStagsController extends JGScommonController implements IJGS
     public void onTagsHistoryToolbarClickedShow100() {
         logger.getLogger().fine("onTagsHistoryToolbarClickedShow100");
         getCommits(100, () -> {
-            hideProgressBar();
         });
     }
 
     @Override
     public void onTagsHistoryToolbarClickedShowAll() {
         logger.getLogger().fine("onTagsHistoryToolbarClickedShowAll");
-        showProgressBar("getAllCommits");
         getAllCommits(() -> {
-            hideProgressBar();
         });
     }
 
@@ -186,43 +179,41 @@ public final class JGStagsController extends JGScommonController implements IJGS
 
     private void getAllCommits(IJGScallbackRefresh refresh) {
         logger.getLogger().fine("getAllCommits");
-        showProgressBar("getAllCommits");
 //        bc.getAllCommits(updateHistoryTableCallback(refresh));
         try {
+            showProgressBar("getAllCommits", 0);
+
             Iterable<RevCommit> allCommits = jGSrepositoryModel.getAllCommits();
-            panel.updateHistoryTable(allCommits, endOfChainCallback(refresh));
+            showProgressBar("getAllCommits", 30);
+            IterableRevCommitTableModel tableModel = uiUtils.getTableModel(allCommits);
+            SwingUtilities.invokeLater(() -> {
+                showProgressBar("getAllCommits", 60);
+                panel.updateHistoryTable(tableModel);
+                showProgressBar("getAllCommits", 100);
+            });
+
         } catch (Exception ex) {
             logger.getLogger().severe(ex.getMessage());
         }
 
     }
 
-    private IJGScallbackListRefCommit updateHistoryTableCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackListRefCommit callback = new IJGScallbackListRefCommit() {
-            @Override
-            public void onSuccess(Iterable<RevCommit> result) {
-                panel.updateHistoryTable(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("getAllCommits", "getAllCommits ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
     private void getCommits(Integer amount, IJGScallbackRefresh refresh) {
         logger.getLogger().fine("getCommits: " + amount);
-        showProgressBar("getCommits " + amount);
 //        bc.getCommits(amount, limitedCommitsCallback(refresh));
 
         new Thread(() -> {
             try {
+                showProgressBar("getCommits " + amount, 0);
                 Iterable<RevCommit> commits = jGSrepositoryModel.getCommits(amount);
-                panel.updateHistoryTable(commits, endOfChainCallback(refresh));
+                showProgressBar("getCommits " + amount, 30);
+                IterableRevCommitTableModel tableModel = uiUtils.getTableModel(commits);
+                SwingUtilities.invokeLater(() -> {
+                    showProgressBar("getAllCommits", 60);
+                    panel.updateHistoryTable(tableModel);
+                    showProgressBar("getCommits " + amount, 100);
+                });
+
             } catch (NoHeadException nhw) {
                 logger.getLogger().info(nhw.getMessage());
                 showErrorDialog("NoHeadException", "This repository has no commits yet, please create an initial commit");
@@ -233,54 +224,25 @@ public final class JGStagsController extends JGScommonController implements IJGS
 
     }
 
-    private IJGScallbackListRefCommit limitedCommitsCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackListRefCommit callback = new IJGScallbackListRefCommit() {
-            @Override
-            public void onSuccess(Iterable<RevCommit> result) {
-                panel.updateHistoryTable(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("limitedCommitsCallback", "getCommits ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
     private void getJGStags(int amount, IJGScallbackRefresh refresh) {
         logger.getLogger().fine("getJGStags: " + amount);
-        showProgressBar("getJGStags " + amount);
 //        bc.getJGStags(amount, limitedJGStagsCallback(refresh));
         new Thread(() -> {
             try {
+                showProgressBar("getJGStags " + amount, 0);
                 List<JGStag> jgStags = jGSrepositoryModel.getJGStags(amount);
-                panel.updateTagTable(jgStags, endOfChainCallback(refresh));
+                showProgressBar("getJGStags " + amount, 25);
+                ListJGStagsTableModel tableModelJGStags = uiUtils.getTableModelJGStags(jgStags);
+                showProgressBar("getJGStags " + amount, 50);
+                SwingUtilities.invokeLater(() -> {
+                    showProgressBar("getJGStags " + amount, 75);
+                    panel.updateTagTable(tableModelJGStags);
+                    showProgressBar("getJGStags " + amount, 100);
+                });
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "getJGStags", ex);
             }
         }).start();
-    }
-
-    private IJGScallbackListJGStags limitedJGStagsCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackListJGStags callback = new IJGScallbackListJGStags() {
-            @Override
-            public void onSuccess(List<JGStag> result) {
-                panel.updateTagTable(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("limitedJGStagsCallback", "getJGStags ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-
-        return callback;
-
     }
 
     private void createTag(IJGScallbackRefresh refresh) {

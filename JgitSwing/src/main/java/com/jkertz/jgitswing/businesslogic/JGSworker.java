@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 jkertz
+ * Copyright (C) 2024 JKERTZ
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.jkertz.jgitswing.widgets.currentdiff;
+package com.jkertz.jgitswing.businesslogic;
 
-import javax.swing.JTextPane;
-import javax.swing.text.DefaultStyledDocument;
-import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  *
  * @author jkertz
  */
-public class JGScurrentdiffWidget extends JGScommonScrollwidget {
+public class JGSworker {
 
-    private final IJGScurrentdiffWidget receiver;
-    private JTextPane jTextPane1;
+    private final Executor executor;
 
-    public JGScurrentdiffWidget(IJGScurrentdiffWidget receiver) {
-        super();
-        this.receiver = receiver;
-
-        jTextPane1 = new JTextPane();
-
-        this.setViewportView(jTextPane1);
+    public JGSworker(Executor executor) {
+        this.executor = executor;
     }
 
-    public void updateCurrentfile(DefaultStyledDocument doc) {
-        jTextPane1.setDocument(doc);
+    public JGSworker() {
+        this.executor = Executors.newSingleThreadExecutor(); // Create a single thread executor
     }
 
+    public void runOnWorkerThread(Runnable task) {
+        executor.execute(task);
+    }
 }

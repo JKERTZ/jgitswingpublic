@@ -16,11 +16,8 @@
  */
 package com.jkertz.jgitswing.tabs.history;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.util.List;
-import javax.swing.JPanel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
+import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
+import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.history.IJGShistoryToolbar;
 import com.jkertz.jgitswing.toolbars.history.JGShistoryToolbar;
@@ -30,8 +27,11 @@ import com.jkertz.jgitswing.widgets.currentdiff.JGScurrentdiffWidget;
 import com.jkertz.jgitswing.widgets.currentdiff.JGSfileStatusWidget;
 import com.jkertz.jgitswing.widgets.tags.IJGShistoryTableWidget;
 import com.jkertz.jgitswing.widgets.tags.JGShistoryTableWidget;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.revwalk.RevCommit;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.List;
+import javax.swing.JPanel;
+import javax.swing.text.DefaultStyledDocument;
 
 /**
  *
@@ -70,16 +70,16 @@ public class JGShistoryPanel extends JGScommonPanel implements IJGShistoryToolba
 
     }
 
-    public void updateHistoryTable(Iterable<RevCommit> commits, IJGScallbackChain callback) {
-        jGShistoryTableWidget.updateHistoryTable(commits, callback);
+    public void updateHistoryTable(IterableRevCommitTableModel tableModel) {
+        jGShistoryTableWidget.updateHistoryTable(tableModel);
     }
 
-    public void updateCurrentfile(String currentDiffFile, IJGScallbackChain callback) {
-        jGScurrentdiffWidget.updateCurrentfile(currentDiffFile, callback);
+    public void updateCurrentfile(DefaultStyledDocument doc) {
+        jGScurrentdiffWidget.updateCurrentfile(doc);
     }
 
-    public void updateFileTables(List<DiffEntry> currentDiff, IJGScallbackChain callback) {
-        jGSfileStatusWidget.updateFileTables(currentDiff, callback);
+    public void updateFileTables(ListDiffEntryTableModel tableModel) {
+        jGSfileStatusWidget.updateFileTables(tableModel);
     }
 
     @Override

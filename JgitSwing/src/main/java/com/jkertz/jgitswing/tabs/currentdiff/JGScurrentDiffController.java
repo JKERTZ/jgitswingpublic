@@ -17,12 +17,14 @@
 package com.jkertz.jgitswing.tabs.currentdiff;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultStyledDocument;
 import org.eclipse.jgit.diff.DiffEntry;
 
 /**
@@ -53,12 +55,24 @@ public final class JGScurrentDiffController extends JGScommonController implemen
     }
 
     private void updateCurrentDiff(IJGScallbackRefresh refresh) {
-        showProgressBar("updateWidgets");
         // jGSrepositoryModel async thread
         new Thread(() -> {
             try {
+                showProgressBar("updateCurrentDiff", 0);
                 List<DiffEntry> currentDiff = jGSrepositoryModel.getCurrentDiff();
-                panel.updateFileTables(currentDiff, endOfChainCallback(refresh));
+                showProgressBar("updateCurrentDiff", 30);
+                ListDiffEntryTableModel tableModel = uiUtils.getTableModel(currentDiff);
+                showProgressBar("updateCurrentDiff", 60);
+                SwingUtilities.invokeLater(() -> {
+                    long tableStart = System.nanoTime();
+                    panel.updateFileTables(tableModel);
+                    long tableEnd = System.nanoTime();
+                    long tableBuildTime = tableEnd - tableStart;
+                    Double tableBuildTimeInms = tableBuildTime / 1000D;
+                    System.out.println("tableBuildTimeInms: " + tableBuildTimeInms);
+                    showProgressBar("updateCurrentDiff", 100);
+                });
+
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateCurrentDiff", ex);
                 refresh.finish();
@@ -67,12 +81,18 @@ public final class JGScurrentDiffController extends JGScommonController implemen
     }
 
     private void updateCurrentDiffFile(String path, IJGScallbackRefresh refresh) {
-        showProgressBar("updateWidgets");
         // jGSrepositoryModel async thread
         new Thread(() -> {
             try {
+                showProgressBar("updateCurrentDiffFile", 0);
                 String currentDiffFile = jGSrepositoryModel.getCurrentDiffFile(path);
-                panel.updateCurrentfile(currentDiffFile, endOfChainCallback(refresh));
+                showProgressBar("updateCurrentDiffFile", 30);
+                DefaultStyledDocument doc = uiUtils.buildStyledDocumentFromFileDiff(currentDiffFile);
+                showProgressBar("updateCurrentDiffFile", 60);
+                SwingUtilities.invokeLater(() -> {
+                    panel.updateCurrentfile(doc);
+                    showProgressBar("updateCurrentDiffFile", 100);
+                });
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateCurrentDiffFile", ex);
             }
@@ -81,7 +101,6 @@ public final class JGScurrentDiffController extends JGScommonController implemen
 
     @Override
     public void onFileStatusWidgetListSelectionChanged(List<String> selectionList) {
-        showProgressBar("onFileStatusWidgetListSelectionChanged");
         boolean invalidSelection = (selectionList == null || selectionList.isEmpty());
         String path = invalidSelection ? null : selectionList.get(0);
         updateCurrentDiffFile(path, refreshCallback());
@@ -97,24 +116,23 @@ public final class JGScurrentDiffController extends JGScommonController implemen
 //            bc.getCurrentDiffFile(path, updateCurrentfileCallback(refresh));
 //        }
 //    }
-    private IJGScallbackString updateCurrentfileCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackString callback = new IJGScallbackString() {
-            @Override
-            public void onSuccess(String result) {
-                String currentDiffFile = result;
-                panel.updateCurrentfile(currentDiffFile, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onIJGScurrentDiffPanelFileSelected", "getCurrentDiffFile ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
+//    private IJGScallbackString updateCurrentfileCallback(IJGScallbackRefresh refresh) {
+//        IJGScallbackString callback = new IJGScallbackString() {
+//            @Override
+//            public void onSuccess(String result) {
+//                String currentDiffFile = result;
+//                panel.updateCurrentfile(currentDiffFile, endOfChainCallback(refresh));
+//            }
+//
+//            @Override
+//            public void onError(Exception ex) {
+//                ex.printStackTrace();
+//                showErrorDialog("onIJGScurrentDiffPanelFileSelected", "getCurrentDiffFile ERROR:\n" + ex.getMessage());
+//                refresh.finish();
+//            }
+//        };
+//        return callback;
+//    }
 //    @Override
 //    public void onIJGSbcRefsChanged() {
 //        logger.getLogger().fine("onIJGSbcRefsChanged");

@@ -18,13 +18,10 @@ package com.jkertz.jgitswing.widgets.tags;
 
 import java.util.List;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tablemodels.IterableRevCommitTableModel;
 import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
  *
@@ -49,16 +46,9 @@ public class JGShistoryTableWidget extends JGScommonScrollwidget {
         return jTableHistory;
     }
 
-    public void updateHistoryTable(Iterable<RevCommit> commits, IJGScallbackChain chain) {
-        System.out.println("JGShistoryTableWidget updateHistoryTable BEGIN");
-//        DefaultTableModel dtm = uiUtils.buildTableModel(commits);
-        IterableRevCommitTableModel tableModel = uiUtils.getTableModel(commits);
-        System.out.println("JGShistoryTableWidget updateHistoryTable FINISHED");
-        SwingUtilities.invokeLater(() -> {
-            jTableHistory.removeAll();
-            uiUtils.setTableSingleSelect(jTableHistory, tableModel);
-            chain.doNext(null);
-        });
+    public void updateHistoryTable(IterableRevCommitTableModel tableModel) {
+        jTableHistory.removeAll();
+        uiUtils.setTableSingleSelect(jTableHistory, tableModel);
     }
 
     private ListSelectionListener getListSelectionListenerHistory() {

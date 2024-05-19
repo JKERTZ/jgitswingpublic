@@ -17,11 +17,12 @@
 package com.jkertz.jgitswing.tabs.ignored;
 
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.callback.IJGScallbackStatus;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 import org.eclipse.jgit.api.Status;
 
 /**
@@ -61,30 +62,19 @@ public final class JGSignoredController extends JGScommonController implements I
 
         new Thread(() -> {
             try {
+                showProgressBar("updateIgnoredTable", 0);
                 Status status = jGSrepositoryModel.getStatus();
-                panel.updateIgnoredTable(status, endOfChainCallback(refresh));
+                StatusIgnoredTableModel tableModelIgnored = uiUtils.getTableModelIgnored(status);
+                showProgressBar("updateIgnoredTable", 5);
+                SwingUtilities.invokeLater(() -> {
+                    panel.updateIgnoredTable(tableModelIgnored);
+                    showProgressBar("updateIgnoredTable", 100);
+                });
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateIgnoredTable", ex);
             }
             refresh.finish();
         }).start();
-    }
-
-    private IJGScallbackStatus updateIgnoredTableCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackStatus callback = new IJGScallbackStatus() {
-            @Override
-            public void onSuccess(Status result) {
-                panel.updateIgnoredTable(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("updateTables", "getStatus ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
     }
 
     @Override

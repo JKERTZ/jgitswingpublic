@@ -59,27 +59,26 @@ public final class JGSbranchesController extends JGScommonController implements 
 
     @Override
     public void onBranchesPanelClickedCreate() {
-        showProgressBar("onBranchesPanelClickedCreate");
+
         //TODO: replace InputDialog
         String branchName = showInputDialog("Create Branch", "Enter new branch name");
         //validate input
         if (branchName == null) {
             logger.getLogger().info("onBranchesPanelClickedCreate cancel");
-            hideProgressBar();
             return;
         }
         if (branchName.isEmpty() || branchName.contains(" ")) {
             logger.getLogger().info("onBranchesPanelClickedCreate wrong input");
             showWarningToast("invalid branch name");
-            hideProgressBar();
             return;
         }
 
         Git git = jGSrepositoryModel.getGit();
 
         try {
+            showProgressBar("onBranchesPanelClickedCreate", 0);
             Ref result = utils.createBranch(git, branchName);
-            hideProgressBar();
+            showProgressBar("onBranchesPanelClickedCreate", 100);
             showInfoDialog("onBranchesPanelClickedCreate", result.getName());
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCreate", ex);
@@ -119,7 +118,6 @@ public final class JGSbranchesController extends JGScommonController implements 
     @Override
     public void onBranchesPanelClickedCheckout() {
         try {
-            showProgressBar("onIJGSbranchesPanelCheckoutClicked");
 
             if (selectionPath == null) {
                 return;
@@ -139,14 +137,15 @@ public final class JGSbranchesController extends JGScommonController implements 
                         //Userabfrage
                         boolean userconfirmed = showConfirmDialog("Confirm checkout", "Checkout Branch " + branch + " ?");
                         if (!userconfirmed) {
-                            hideProgressBar();
                             return;
                         }
                         String path = JGSuiUtils.getINSTANCE().removeRefsHeads(branch.getName());
                         logger.getLogger().log(Level.INFO, "checkoutLocalBranch: {0}", path);
+                        showProgressBar("onIJGSbranchesPanelCheckoutClicked", 0);
                         Ref checkoutLocalBranch = utils.checkoutLocalBranch(git, path);
+                        showProgressBar("onIJGSbranchesPanelCheckoutClicked", 100);
+
                         showInfoToast("Checkout success " + path);
-                        hideProgressBar();
 
                     } else if (userObject instanceof JGSremoteBranchTreeNode jGSremoteBranchTreeNode) {
                         System.out.println("is JGSremoteBranchTreeNode");
@@ -157,15 +156,15 @@ public final class JGSbranchesController extends JGScommonController implements 
                         boolean userconfirmed = jGScheckoutDialog.show();
                         System.out.println("getTargetBranch: " + jGScheckoutDialog.getTargetBranch());
                         if (!userconfirmed) {
-                            hideProgressBar();
                             return;
                         }
                         String newBranchName = jGScheckoutDialog.getTargetBranch();
                         String remoteAndBranchName = JGSuiUtils.getINSTANCE().removeRefsRemotes(branch.getName());
                         logger.getLogger().log(Level.INFO, "checkoutRemoteBranch: {0}", remoteAndBranchName);
+                        showProgressBar("onIJGSbranchesPanelCheckoutClicked", 0);
                         Ref checkoutRemoteBranch = utils.checkoutRemoteBranch(git, newBranchName, remoteAndBranchName);
+                        showProgressBar("onIJGSbranchesPanelCheckoutClicked", 100);
                         showInfoToast("Checkout success " + newBranchName);
-                        hideProgressBar();
                     } else {
                         System.out.println("plain leaf: ");
                     }
@@ -174,13 +173,11 @@ public final class JGSbranchesController extends JGScommonController implements 
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedCheckout", ex);
             showErrorDialog("onBranchesPanelClickedCheckout", "checkoutBranch ERROR:\n" + ex.getMessage());
-            hideProgressBar();
         }
     }
 
     @Override
     public void onBranchesPanelClickedMerge() {
-        showProgressBar("onIJGSbranchesPanelMergeClicked");
 //        String fileName = selectionPath.getLastPathComponent().toString();
         String pathComponent2 = getSelectedTreeNode();
         Git git = jGSrepositoryModel.getGit();
@@ -188,33 +185,32 @@ public final class JGSbranchesController extends JGScommonController implements 
             String branchName = jGSrepositoryModel.getBranchName();
             if (pathComponent2 == null) {
                 showInfoDialog("Merge not possible", "Merge not possible");
-                hideProgressBar();
                 return;
             }
 
             //Userabfrage
             boolean userconfirmed = showConfirmDialog("Confirm merge", "Merge Branch " + pathComponent2 + " into " + branchName + " ?");
             if (!userconfirmed) {
-                hideProgressBar();
                 return;
             }
             logger.getLogger().log(Level.INFO, "mergeIntoCurrentBranch: {0}", pathComponent2);
+
+            showProgressBar("onIJGSbranchesPanelMergeClicked", 0);
             MergeResult result = utils.mergeIntoCurrentBranch(git, pathComponent2);
+            showProgressBar("onIJGSbranchesPanelMergeClicked", 100);
+
 //            showInfoDialog("onBranchesPanelClickedMerge", result.getMergeStatus().toString());
             showInfoToast("Merge success " + pathComponent2);
             //show merge result details
             jGSdialogFactory.showMergeResult("Merge Branch " + pathComponent2 + " into " + branchName, result);
-            hideProgressBar();
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedMerge", ex);
             showErrorDialog("onIJGSbranchesPanelMergeClicked", "mergeIntoCurrentBranch ERROR:\n" + ex.getMessage());
-            hideProgressBar();
         }
     }
 
     @Override
     public void onBranchesPanelClickedDelete() {
-        showProgressBar("onIJGSbranchesPanelDeleteClicked");
 //        String fileName = selectionPath.getLastPathComponent().toString();
         String pathComponent2 = getSelectedTreeNode();
 
@@ -223,25 +219,26 @@ public final class JGSbranchesController extends JGScommonController implements 
         try {
             if (pathComponent2 == null) {
                 showInfoDialog("Delete not possible", "Delete not possible");
-                hideProgressBar();
                 return;
             }
 
             //Userabfrage
             boolean userconfirmed = showConfirmDialog("Confirm delete", "Delete Branch " + pathComponent2 + " ?");
             if (!userconfirmed) {
-                hideProgressBar();
                 return;
             }
             logger.getLogger().log(Level.INFO, "deleteBranch: {0}", pathComponent2);
+
+            showProgressBar("onIJGSbranchesPanelDeleteClicked", 0);
             List<String> result = utils.deleteBranch(git, pathComponent2);
+            showProgressBar("onIJGSbranchesPanelDeleteClicked", 100);
+
 //            showInfoDialog("onIJGSbranchesPanelDeleteClicked", result.toString());
             showInfoToast("Delete success " + pathComponent2);
         } catch (Exception ex) {
             logger.getLogger().log(Level.SEVERE, "onBranchesPanelClickedDelete", ex);
             showErrorDialog("onIJGSbranchesPanelDeleteClicked", "deleteBranch ERROR:\n" + ex.getMessage());
         }
-        hideProgressBar();
     }
 
     @Override
@@ -266,12 +263,17 @@ public final class JGSbranchesController extends JGScommonController implements 
         //chain only independent methods here
         new Thread(() -> {
             try {
+                showProgressBar("updateWidgets", 0);
                 List<Ref> localBranches = getLocalBranches();
+                showProgressBar("updateWidgets", 20);
                 List<Ref> remoteBranches = getRemoteBranches();
+                showProgressBar("updateWidgets", 40);
                 String branchName = getBranchName();
-
+                showProgressBar("updateWidgets", 60);
                 Map<Ref, BranchTrackingStatus> mapLocalBranches = getMapLocalBranches(localBranches);
+                showProgressBar("updateWidgets", 80);
                 panel.updateBranchTree(mapLocalBranches, remoteBranches, branchName, doNothingChainCallback());
+                showProgressBar("updateWidgets", 100);
             } catch (Exception e) {
                 logger.getLogger().log(Level.SEVERE, "updateWidgets", e);
             }
@@ -300,8 +302,6 @@ public final class JGSbranchesController extends JGScommonController implements 
     }
 
     private List<Ref> getLocalBranches() {
-        showProgressBar("getLocalBranches");
-
         try {
             List<Ref> localBranches = jGSrepositoryModel.getLocalBranches();
             return localBranches;
@@ -313,8 +313,6 @@ public final class JGSbranchesController extends JGScommonController implements 
     }
 
     private List<Ref> getRemoteBranches() {
-        showProgressBar("getRemoteBranches");
-
         try {
             List<Ref> remoteBranches = jGSrepositoryModel.getRemoteBranches();
             return remoteBranches;
@@ -322,7 +320,6 @@ public final class JGSbranchesController extends JGScommonController implements 
             logger.getLogger().log(Level.SEVERE, "getRemoteBranches", ex);
         }
         return null;
-
     }
 
     @Override

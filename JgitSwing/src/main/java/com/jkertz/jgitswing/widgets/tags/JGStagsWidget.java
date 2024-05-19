@@ -16,13 +16,9 @@
  */
 package com.jkertz.jgitswing.widgets.tags;
 
-import java.util.List;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
-import com.jkertz.jgitswing.model.JGStag;
 import com.jkertz.jgitswing.tablemodels.ListJGStagsTableModel;
 import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
 
@@ -61,17 +57,17 @@ public class JGStagsWidget extends JGScommonScrollwidget {
 //            callback.doNext(null);
 //        });
 //    }
-    public void render(List<JGStag> result, IJGScallbackChain callback) {
+    public void render(ListJGStagsTableModel tableModelJGStags) {
         System.out.println("JGStagsWidget render BEGIN");
 
 //        DefaultTableModel dtm = uiUtils.buildTableModelJGStags(result);
-        ListJGStagsTableModel tableModelJGStags = uiUtils.getTableModelJGStags(result);
-        SwingUtilities.invokeLater(() -> {
-            jTableTags.removeAll();
-            uiUtils.setTableSingleSelect(jTableTags, tableModelJGStags);
-            System.out.println("JGStagsWidget render FINISHED");
-            callback.doNext(null);
-        });
+//        ListJGStagsTableModel tableModelJGStags = uiUtils.getTableModelJGStags(result);
+//        SwingUtilities.invokeLater(() -> {
+        jTableTags.removeAll();
+        uiUtils.setTableSingleSelect(jTableTags, tableModelJGStags);
+//            System.out.println("JGStagsWidget render FINISHED");
+//            callback.doNext(null);
+//        });
     }
 
     private ListSelectionListener getListSelectionListenerTags() {

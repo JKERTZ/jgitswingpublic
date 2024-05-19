@@ -74,7 +74,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240318");
+        panel.getjFrame().setTitle("JGS v0.20240519");
 
         jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
         progress = JGSprogressCollector.getINSTANCE();

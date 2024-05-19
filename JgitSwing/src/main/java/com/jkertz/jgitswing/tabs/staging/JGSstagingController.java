@@ -16,26 +16,22 @@
  */
 package com.jkertz.jgitswing.tabs.staging;
 
-import com.jkertz.jgitswing.callback.IJGScallbackDirCache;
-import com.jkertz.jgitswing.callback.IJGScallbackListDirCache;
-import com.jkertz.jgitswing.callback.IJGScallbackListRef;
-import com.jkertz.jgitswing.callback.IJGScallbackRef;
-import com.jkertz.jgitswing.callback.IJGScallbackRefCommit;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.callback.IJGScallbackStatus;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
+import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
+import com.jkertz.jgitswing.tablemodels.StatusUnstagedTableModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
  *
@@ -65,10 +61,18 @@ public final class JGSstagingController extends JGScommonController implements I
         new Thread(() -> {
             try {
                 //chain only independent methods here
+                showProgressBar("updateWidgets", 0);
                 Status status = jGSrepositoryModel.getStatus();
-                panel.updateStagedTable(status, doNothingChainCallback());
-                panel.updateUnstagedTable(status, endOfChainCallback(refresh));
-
+                StatusStagedTableModel tableModelStaged = uiUtils.getTableModelStaged(status);
+                showProgressBar("updateWidgets", 25);
+                StatusUnstagedTableModel tableModelUnstaged = uiUtils.getTableModelUnstaged(status);
+                showProgressBar("updateWidgets", 50);
+                SwingUtilities.invokeLater(() -> {
+                    panel.updateStagedTable(tableModelStaged);
+                    showProgressBar("updateWidgets", 75);
+                    panel.updateUnstagedTable(tableModelUnstaged);
+                    showProgressBar("updateWidgets", 100);
+                });
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateWidgets", ex);
             }
@@ -82,17 +86,17 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedStage");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onIJGSstagingPanelStageClicked");
             Git git = jGSrepositoryModel.getGit();
 
             try {
+                showProgressBar("stageSelectedTable", 0);
                 List<DirCache> stageSelectedTable = utils.stageSelectedTable(git, unstagedSelectionList);
+                showProgressBar("stageSelectedTable", 100);
                 updateTables();
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedStage", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
 
         } else {
             logger.getLogger().info("onStagingPanelClickedStage ignored, userOperationInProgress");
@@ -104,18 +108,16 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedRemove");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onIJGSstagingPanelRemoveClicked");
             Git git = jGSrepositoryModel.getGit();
-
             try {
+                showProgressBar("removeSelectedTable", 0);
                 List<DirCache> removeSelectedTable = utils.removeSelectedTable(git, unstagedSelectionList);
+                showProgressBar("removeSelectedTable", 100);
                 updateTables();
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedRemove", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
-
         } else {
             logger.getLogger().info("onStagingPanelClickedRemove ignored, userOperationInProgress");
         }
@@ -126,18 +128,17 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedStageAll");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onIJGSstagingPanelStageAllClicked");
             Git git = jGSrepositoryModel.getGit();
 
             try {
+                showProgressBar("stageAll", 0);
                 DirCache stageAll = utils.stageAll(git);
+                showProgressBar("stageAll", 100);
                 updateTables();
-
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedStageAll", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
 
         } else {
             logger.getLogger().info("onStagingPanelClickedStageAll ignored, userOperationInProgress");
@@ -149,20 +150,20 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedHardReset");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onIJGSstagingPanelHardResetClicked");
             boolean showConfirmDialog = showConfirmDialog("onStagingPanelClickedHardReset", "All changes will be reverted. Do hard reset?");
             if (showConfirmDialog) {
                 Git git = jGSrepositoryModel.getGit();
 
                 try {
+                    showProgressBar("resetHard", 0);
                     Ref resetHard = utils.resetHard(git);
+                    showProgressBar("resetHard", 100);
                     updateTables();
                 } catch (Exception ex) {
                     logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedHardReset", ex);
                 }
             }
             userOperationInProgress = false;
-            hideProgressBar();
         } else {
             logger.getLogger().info("onStagingPanelClickedStageAll ignored, userOperationInProgress");
         }
@@ -173,17 +174,17 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedUnstage");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onStagingPanelClickedUnstage");
             Git git = jGSrepositoryModel.getGit();
 
             try {
+                showProgressBar("unstageSelectedTable", 0);
                 List<Ref> unstageSelectedTable = utils.unstageSelectedTable(git, stagedSelectionList);
+                showProgressBar("unstageSelectedTable", 100);
                 updateTables();
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedUnstage", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
 
         } else {
             logger.getLogger().info("onStagingPanelClickedUnstage ignored, userOperationInProgress");
@@ -195,19 +196,19 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedResetFile");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onStagingPanelClickedResetFile");
             boolean showConfirmDialog = showConfirmDialog("onStagingPanelClickedResetFile", "All changes of: " + unstagedSelectionList + " will be reverted. Do file reset?");
             if (showConfirmDialog) {
                 Git git = jGSrepositoryModel.getGit();
                 try {
+                    showProgressBar("resetFile", 0);
                     List<Ref> resetFile = utils.resetFile(git, unstagedSelectionList);
+                    showProgressBar("resetFile", 100);
                     updateTables();
                 } catch (Exception ex) {
                     logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedResetFile", ex);
                 }
             }
             userOperationInProgress = false;
-            hideProgressBar();
         } else {
             logger.getLogger().info("onStagingPanelClickedResetFile ignored, userOperationInProgress");
         }
@@ -218,17 +219,17 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedUnstageAll");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onStagingPanelClickedUnstageAll");
             Git git = jGSrepositoryModel.getGit();
 
             try {
+                showProgressBar("unstageAll", 0);
                 Ref unstageAll = utils.unstageAll(git);
+                showProgressBar("unstageAll", 100);
                 updateTables();
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedUnstageAll", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
 
         } else {
             logger.getLogger().info("onStagingPanelClickedUnstageAll ignored, userOperationInProgress");
@@ -240,7 +241,6 @@ public final class JGSstagingController extends JGScommonController implements I
         logger.getLogger().fine("onStagingPanelClickedCommit");
         if (!userOperationInProgress) {
             userOperationInProgress = true;
-            showProgressBar("onStagingPanelClickedCommit");
 
             try {
                 Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
@@ -264,7 +264,6 @@ public final class JGSstagingController extends JGScommonController implements I
                 logger.getLogger().log(Level.SEVERE, "onStagingPanelClickedCommit", ex);
             }
             userOperationInProgress = false;
-            hideProgressBar();
 
         } else {
             logger.getLogger().info("onStagingPanelClickedUnstageAll ignored, userOperationInProgress");
@@ -286,139 +285,31 @@ public final class JGSstagingController extends JGScommonController implements I
         String emailInput = parameters.get("Email");
         String messageInput = parameters.get("CommitMessage");
         Git git = jGSrepositoryModel.getGit();
+        showProgressBar("commit", 0);
         utils.commit(git, userInput, emailInput, messageInput);
-    }
-
-    private IJGScallbackRefCommit commitCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackRefCommit callback = new IJGScallbackRefCommit() {
-            @Override
-            public void onSuccess(RevCommit result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onStagingPanelClickedCommit", "commit ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
-    private IJGScallbackStatus updateTablesCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackStatus callback = new IJGScallbackStatus() {
-            @Override
-            public void onSuccess(Status result) {
-                panel.updateStagedTable(result, endOfChainCallback(refresh));
-                panel.updateUnstagedTable(result, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("updateTables", "getStatus ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
-    private IJGScallbackListDirCache stagingChangedCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackListDirCache callback = new IJGScallbackListDirCache() {
-            @Override
-            public void onSuccess(List<DirCache> result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("stagingChangedCallback", "stagingChangedCallback ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
-    private IJGScallbackDirCache stageAllCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackDirCache callback = new IJGScallbackDirCache() {
-            @Override
-            public void onSuccess(DirCache result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onStagingPanelClickedStageAll", "stageAll ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-
-        };
-        return callback;
-    }
-
-    private IJGScallbackRef resetHardCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackRef callback = new IJGScallbackRef() {
-            @Override
-            public void onSuccess(Ref result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onStagingPanelClickedHardReset", "resetHard ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
-    private IJGScallbackListRef resetFileCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackListRef callback = new IJGScallbackListRef() {
-            @Override
-            public void onSuccess(List<Ref> result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("resetFileCallback", "resetFileCallback ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-    }
-
-    private IJGScallbackRef unstageAllCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackRef callback = new IJGScallbackRef() {
-            @Override
-            public void onSuccess(Ref result) {
-                refresh.finish();
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onStagingPanelClickedUnstageAll", "unstageAll ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
+        showProgressBar("commit", 100);
     }
 
     private void updateTables() {
-        try {
-            Status status = jGSrepositoryModel.getStatus();
-            panel.updateStagedTable(status, doNothingChainCallback());
-            panel.updateUnstagedTable(status, doNothingChainCallback());
-        } catch (Exception ex) {
-            logger.getLogger().log(Level.SEVERE, "updateTables", ex);
-        }
-
+        new Thread(() -> {
+            try {
+                //chain only independent methods here
+                showProgressBar("updateTables", 0);
+                Status status = jGSrepositoryModel.getStatus();
+                StatusStagedTableModel tableModelStaged = uiUtils.getTableModelStaged(status);
+                showProgressBar("updateTables", 25);
+                StatusUnstagedTableModel tableModelUnstaged = uiUtils.getTableModelUnstaged(status);
+                showProgressBar("updateTables", 50);
+                SwingUtilities.invokeLater(() -> {
+                    panel.updateStagedTable(tableModelStaged);
+                    showProgressBar("updateTables", 75);
+                    panel.updateUnstagedTable(tableModelUnstaged);
+                    showProgressBar("updateTables", 100);
+                });
+            } catch (Exception ex) {
+                logger.getLogger().log(Level.SEVERE, "updateTables", ex);
+            }
+        }).start();
     }
 
     @Override
