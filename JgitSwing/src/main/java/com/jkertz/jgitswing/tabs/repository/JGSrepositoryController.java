@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.repository;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.settings.JGSsettings;
@@ -47,7 +48,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -82,167 +82,125 @@ public final class JGSrepositoryController extends JGScommonController implement
         availableSubControllers = new HashSet<>();
         panel = new JGSrepositoryPanel(this);
         setPanel(panel);
-//        bc.addReceiver(this);
         addSubTabs();
         refresh();
         refreshSubTabs();
     }
 
-//    @Override
-//    public void onIJGSbcRefsChanged() {
-//        logger.getLogger().fine("onIJGSbcRefsChanged");
-//        refresh();
-//    }
     @Override
     public void onRepositoryPanelClickedFetch() {
-        //validate remote configuration
-        if (!autoFixRemoteEditConfigInfo(true)) {
-            return;
-        }
-
-        Map<String, String> parameters = getUserPasswordParameters();
-        Map<String, Boolean> options = getFetchOptions();
-
-        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Fetch", parameters, options, false);
-        if (showParameterMapDialog) {
-            String usernameInput = parameters.get("Username");
-            String passwordInput = parameters.get("Password");
-            boolean dryRun = options.get("dryrun");
-            boolean checkFetchedObjects = options.get("CheckFetchedObjects");
-            boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
-            fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
-            saveRemoteCredentials(usernameInput, passwordInput);
-
-        }
-    }
-
-    private void fetchWithWorker() {
-        SwingWorker sw1 = new SwingWorker() {
-            /**
-             * Die "doInBackground()"-Methode wird in einem eigenen
-             * Background-Thread ausgefuehrt. Sie darf nicht direkt
-             * Swing-Komponenten manipulieren.
-             */
-            @Override
-            protected Object doInBackground() throws Exception {
-                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-                /**
-                 * Die "publish()"-Methode sendet Zwischenergebnis-Objekte an
-                 * die "process()"-Methode, in welcher Swing-Aktionen
-                 * Thread-sicher asynchron im EDT ausgefuehrt werden.
-                 */
-
+        JGSworker.runOnWorkerThread(() -> {
+            //validate remote configuration
+            if (!autoFixRemoteEditConfigInfo(true)) {
+                return;
             }
 
-            /**
-             * Die "process()"-Methode empfaengt die ueber "publish()"
-             * uebergebenen Objekte. Sie laeuft im EDT und kann asynchron
-             * Swing-Komponenten manipulieren.
-             */
-            @Override
-            protected void process(List chunks) {
-                // define what the event dispatch thread
-                // will do with the intermediate results
-                // received while the thread is executing
+            Map<String, String> parameters = getUserPasswordParameters();
+            Map<String, Boolean> options = getFetchOptions();
 
+            boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Fetch", parameters, options, false);
+            if (showParameterMapDialog) {
+                String usernameInput = parameters.get("Username");
+                String passwordInput = parameters.get("Password");
+                boolean dryRun = options.get("dryrun");
+                boolean checkFetchedObjects = options.get("CheckFetchedObjects");
+                boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
+                fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+                saveRemoteCredentials(usernameInput, passwordInput);
             }
-
-            /**
-             * Die "done()"-Methode wird nach Beendigung der
-             * "doInBackground()"-Methode aufgerufen. Sie laeuft im EDT und kann
-             * Swing-Komponenten manipulieren.
-             */
-            @Override
-            protected void done() {
-
-            }
-
-        };
-        // Executes the swingworker on worker thread
-        sw1.execute();
+        });
     }
 
     @Override
     public void onRepositoryPanelClickedPull() {
-        //validate remote configuration
-        if (!autoFixRemoteEditConfigInfo(true)) {
-            return;
-        }
-        Map<String, String> parameters = getUserPasswordParameters();
-        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Pull", parameters, false);
-        if (showParameterMapDialog) {
-            String usernameInput = parameters.get("Username");
-            String passwordInput = parameters.get("Password");
-            Git git = jGSrepositoryModel.getGit();
-            try {
-                showProgressBar("PullRemote", 0);
-                PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
-                showProgressBar("PullRemote", 90);
-                saveRemoteCredentials(usernameInput, passwordInput);
-                jGSdialogFactory.showPullResult("Pull result", result);
-                showProgressBar("PullRemote", 100);
-            } catch (CheckoutConflictException ccex) {
-                String message = ccex.getMessage();
-                logger.getLogger().log(Level.INFO, message);
-                showInfoDialog("Checkout conflicts", message);
-            } catch (Exception ex) {
-                logger.getLogger().log(Level.SEVERE, null, ex);
+        JGSworker.runOnWorkerThread(() -> {
+            //validate remote configuration
+            if (!autoFixRemoteEditConfigInfo(true)) {
+                return;
             }
-        }
+            Map<String, String> parameters = getUserPasswordParameters();
+            boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Pull", parameters, false);
+            if (showParameterMapDialog) {
+                String usernameInput = parameters.get("Username");
+                String passwordInput = parameters.get("Password");
+                Git git = jGSrepositoryModel.getGit();
+                try {
+                    showProgressBar("PullRemote", 0);
+                    PullResult result = utils.pullRemote(git, usernameInput, passwordInput);
+                    showProgressBar("PullRemote", 90);
+                    saveRemoteCredentials(usernameInput, passwordInput);
+                    jGSdialogFactory.showPullResult("Pull result", result);
+                    showProgressBar("PullRemote", 100);
+                } catch (CheckoutConflictException ccex) {
+                    String message = ccex.getMessage();
+                    logger.getLogger().log(Level.INFO, message);
+                    showInfoDialog("Checkout conflicts", message);
+                } catch (Exception ex) {
+                    logger.getLogger().log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     @Override
     public void onRepositoryPanelClickedPush() {
-        //validate remote configuration
-        if (!autoFixRemoteEditConfigInfo(true)) {
-            return;
-        }
+        JGSworker.runOnWorkerThread(() -> {
 
-        Map<String, String> parameters = getUserPasswordParameters();
-        Map<String, Boolean> options = getPushOptions();
-        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
-        if (showParameterMapDialog) {
-            String usernameInput = parameters.get("Username");
-            String passwordInput = parameters.get("Password");
-            boolean dryRun = options.get("dryrun");
+            //validate remote configuration
+            if (!autoFixRemoteEditConfigInfo(true)) {
+                return;
+            }
 
-            pushRemote(usernameInput, passwordInput, dryRun);
-            saveRemoteCredentials(usernameInput, passwordInput);
-        }
+            Map<String, String> parameters = getUserPasswordParameters();
+            Map<String, Boolean> options = getPushOptions();
+            boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
+            if (showParameterMapDialog) {
+                String usernameInput = parameters.get("Username");
+                String passwordInput = parameters.get("Password");
+                boolean dryRun = options.get("dryrun");
+
+                pushRemote(usernameInput, passwordInput, dryRun);
+                saveRemoteCredentials(usernameInput, passwordInput);
+            }
+        });
+
     }
 
     @Override
     public void onRepositoryPanelClickedPushAndFetch() {
-        //validate remote configuration
-        if (!autoFixRemoteEditConfigInfo(true)) {
-            return;
-        }
+        JGSworker.runOnWorkerThread(() -> {
 
-        Map<String, String> parameters = getUserPasswordParameters();
-        Map<String, Boolean> options = getFetchOptions();
-        boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
-        if (showParameterMapDialog) {
-            String usernameInput = parameters.get("Username");
-            String passwordInput = parameters.get("Password");
-            boolean dryRun = options.get("dryrun");
-            boolean checkFetchedObjects = options.get("CheckFetchedObjects");
-            boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
-            boolean pushRemotePreview = pushRemote(usernameInput, passwordInput, dryRun);
-            if (dryRun && !pushRemotePreview) {
+            //validate remote configuration
+            if (!autoFixRemoteEditConfigInfo(true)) {
                 return;
             }
-            saveRemoteCredentials(usernameInput, passwordInput);
-            if (dryRun) {
-                pushRemote(usernameInput, passwordInput, false);
+
+            Map<String, String> parameters = getUserPasswordParameters();
+            Map<String, Boolean> options = getFetchOptions();
+            boolean showParameterMapDialog = jGSdialogFactory.showParameterMapDialog("Push", parameters, options, false);
+            if (showParameterMapDialog) {
+                String usernameInput = parameters.get("Username");
+                String passwordInput = parameters.get("Password");
+                boolean dryRun = options.get("dryrun");
+                boolean checkFetchedObjects = options.get("CheckFetchedObjects");
+                boolean removeDeletedRefs = options.get("RemoveDeletedRefs");
+                boolean pushRemotePreview = pushRemote(usernameInput, passwordInput, dryRun);
+                if (dryRun && !pushRemotePreview) {
+                    return;
+                }
+                saveRemoteCredentials(usernameInput, passwordInput);
+                if (dryRun) {
+                    pushRemote(usernameInput, passwordInput, false);
+                }
+                boolean fetchRemotePreview = fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+                if (dryRun && !fetchRemotePreview) {
+                    return;
+                }
+                if (dryRun) {
+                    fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
+                }
             }
-            boolean fetchRemotePreview = fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
-            if (dryRun && !fetchRemotePreview) {
-                return;
-            }
-            if (dryRun) {
-                fetchRemote(usernameInput, passwordInput, dryRun, checkFetchedObjects, removeDeletedRefs);
-            }
-        }
+        });
     }
 
     @Override
@@ -277,7 +235,6 @@ public final class JGSrepositoryController extends JGScommonController implement
     public void updateWidgets(IJGScallbackRefresh refresh) {
         //chain only independent methods here
         updateBranchName();
-//        updateAheadBehind();
         refresh.finish();
     }
 
@@ -285,9 +242,6 @@ public final class JGSrepositoryController extends JGScommonController implement
     public void onGitRefChanged() {
         //caused by commit
         logger.getLogger().fine("onGitRefChanged");
-//        updateAheadBehind();
-//        updateBranchName();
-//        hideProgressBar();
         refresh();
     }
 
@@ -368,9 +322,6 @@ public final class JGSrepositoryController extends JGScommonController implement
         }
         if (subtabToRemove != null) {
             activeSubControllers.remove(subtabToRemove);
-//            subtabToRemove.deconstruct();
-//            subtabToRemove = null;
-//            System.gc();
         }
     }
 
@@ -398,14 +349,12 @@ public final class JGSrepositoryController extends JGScommonController implement
                 if (aheadCount == 0) {
                     htmlToolTip += "↑ Ahead: " + aheadCount;
                 } else {
-//                    htmlToolTip += "<div style='background:red;'> ↑ Ahead: " + aheadCount + "</div>";
                     htmlToolTip += "<font color=orange>" + "↑ Ahead: " + aheadCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
                 if (behindCount == 0) {
                     htmlToolTip += " ↓ Behind: " + behindCount;
                 } else {
-//                    htmlToolTip += "<div style='background:red;'> ↓ Behind: " + behindCount + "</div>";
                     htmlToolTip += "<font color=orange>" + " ↓ Behind: " + behindCount + "</font>";
                 }
                 htmlToolTip += "<br>";//new line
@@ -433,46 +382,6 @@ public final class JGSrepositoryController extends JGScommonController implement
         panel.getLabelBranch().setText(htmlUtils.toHtml(labelText));
     }
 
-//    private void updateAheadBehind() {
-//        logger.getLogger().fine("updateAheadBehind");
-//        showProgressBar("updateAheadBehind");
-//
-//        List<Integer> commitsAhead;
-//        try {
-//            String aheadBehind = "Ahead:-" + " Behind:-";
-//            panel.getLabelAheadBehind().setText(aheadBehind);
-//
-//            commitsAhead = jGSrepositoryModel.getCommitsAhead();
-//            if (commitsAhead != null && commitsAhead.size() > 1) {
-//                aheadBehind = "↑ Ahead:" + commitsAhead.get(0) + " ↓ Behind:" + commitsAhead.get(1);
-//            }
-//            panel.getLabelAheadBehind().setText(aheadBehind);
-//
-//        } catch (Exception ex) {
-//            logger.getLogger().log(Level.SEVERE, "updateAheadBehind", ex);
-////            showErrorDialog("updateAheadBehind", ex.getMessage());
-//        }
-//        try {
-//            String branchName = jGSrepositoryModel.getBranchName();
-//            BranchTrackingStatus branchTrackingStatus = jGSrepositoryModel.getBranchTrackingStatus(branchName);
-//            int aheadCount = branchTrackingStatus.getAheadCount();
-//            int behindCount = branchTrackingStatus.getBehindCount();
-//            String remoteTrackingBranch = branchTrackingStatus.getRemoteTrackingBranch();
-//            String htmlToolTip = "<html>";
-//            htmlToolTip += "<b>" + "bold text" + "</b>";//bold
-//            htmlToolTip += "<br>";//new line
-//            htmlToolTip += "<i>" + "italic text" + "</i>"; //italic
-//            htmlToolTip += "<br>";//new line
-//            htmlToolTip += "<div style='background:green;'> green background </div>";
-//            htmlToolTip += "<div style='background:red;'> red background </div>";
-//            htmlToolTip += "</html>";
-//            panel.getLabelAheadBehind().setToolTipText(htmlToolTip);
-//
-//        } catch (Exception ex) {
-//            panel.getLabelAheadBehind().setToolTipText(ex.getMessage());
-//        }
-//
-//    }
     /**
      *
      * @param usernameInput
@@ -528,28 +437,6 @@ public final class JGSrepositoryController extends JGScommonController implement
         return false;
     }
 
-//    private void getWorkingTree() {
-//        logger.getLogger().fine("getWorkingTree");
-//        showProgressBar("getWorkingTree");
-//        bc.getWorkingTree(new IJGScallbackListString() {
-//            @Override
-//            public void onSuccess(List<String> result) {
-//                List<String> paths = result;
-//                for (String path : paths) {
-//                    System.out.println(path);
-//                }
-//                hideProgressBar();
-//            }
-//
-//            @Override
-//            public void onError(Exception ex) {
-//                ex.printStackTrace();
-//                showErrorDialog("getWorkingTree", "getWorkingTree ERROR:\n" + ex.getMessage());
-//                hideProgressBar();
-//            }
-//        });
-//
-//    }
     private Map<String, Boolean> getFetchOptions() {
         Map<String, Boolean> options = new LinkedHashMap<>();
         options.put("dryrun", false);
@@ -558,19 +445,6 @@ public final class JGSrepositoryController extends JGScommonController implement
         return options;
     }
 
-//    private void updateThreads(List<String> threads) {
-//        int size = threads.size();
-//        panel.getLabelThreads().setText("Threads: " + size);
-//        String namesToolTips = "<html><div style='background:green;'>no threads running</div></html>";
-//        if (size > 0) {
-//            namesToolTips = "<html>";
-//            for (String name : threads) {
-//                namesToolTips += name + "<br>";
-//            }
-//            namesToolTips += "</html>";
-//        }
-//        panel.getLabelThreads().setToolTipText(namesToolTips);
-//    }
     /**
      *
      * @param usernameInput
@@ -695,10 +569,7 @@ public final class JGSrepositoryController extends JGScommonController implement
         jGSconfigController = null;
 
         panel = null;
-        //destroy bc only here
-//        bc.removeReceiver(this);
-//        bc.deconstruct();
-//        bc = null;
+
         super.deconstruct();
     }
 
