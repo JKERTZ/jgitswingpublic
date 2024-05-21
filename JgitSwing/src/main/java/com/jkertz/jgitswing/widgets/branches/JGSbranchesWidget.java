@@ -16,18 +16,12 @@
  */
 package com.jkertz.jgitswing.widgets.branches;
 
-import java.util.List;
-import java.util.Map;
+import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
-import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
-import org.eclipse.jgit.lib.BranchTrackingStatus;
-import org.eclipse.jgit.lib.Ref;
 
 /**
  *
@@ -48,25 +42,18 @@ public class JGSbranchesWidget extends JGScommonScrollwidget {
 
     }
 
-    public void updateBranchTree(Map<Ref, BranchTrackingStatus> mapLocalBranches, List<Ref> listRemoteBranches, String currentBranch, IJGScallbackChain callback) {
-        DefaultTreeModel dtm = uiUtils.buildTreeModelBranches(mapLocalBranches, listRemoteBranches, currentBranch);
+    public void updateBranchTree(DefaultTreeModel dtm) {
+//        DefaultTreeModel dtm = uiUtils.buildTreeModelBranches(mapLocalBranches, listRemoteBranches, currentBranch);
 
-        SwingUtilities.invokeLater(() -> {
-            jTree.removeAll();
-            jTree.setModel(dtm);
+//        SwingUtilities.invokeLater(() -> {
+        jTree.removeAll();
+        jTree.setModel(dtm);
 
-            for (int i = 0; i < jTree.getRowCount(); i++) {
-                jTree.expandRow(i);
-            }
-            callback.doNext(null);
-//            TreePath rootPath = new TreePath(rootNode.getPath());
-//            jTree.expandPath(rootPath);
-//            TreePath localPath = new TreePath(localRootNode.getPath());
-//            jTree.expandPath(localPath);
-//            TreePath remotePath = new TreePath(remoteRootNode.getPath());
-//            jTree.expandPath(remotePath);
-        });
+        for (int i = 0; i < jTree.getRowCount(); i++) {
+            jTree.expandRow(i);
+        }
 
+//        });
     }
 
     private TreeSelectionListener getTreeSelectionListener() {

@@ -16,14 +16,13 @@
  */
 package com.jkertz.jgitswing.tabs.config;
 
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.config.IJGSconfigToolbar;
 import com.jkertz.jgitswing.toolbars.config.JGSconfigToolbar;
 import com.jkertz.jgitswing.widgets.config.IJGSconfigWidget;
 import com.jkertz.jgitswing.widgets.config.JGSconfigWidget;
 import java.awt.BorderLayout;
-import java.util.Map;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -46,8 +45,8 @@ public class JGSconfigPanel extends JGScommonPanel implements IJGSconfigWidget, 
         this.add(jGSconfigWidget, BorderLayout.CENTER);
     }
 
-    public void updateConfigTree(Map<String, Map<String, Map<String, String>>> configInfoMap, IJGScallbackChain callback) {
-        jGSconfigWidget.updateConfigTree(configInfoMap, callback);
+    public void updateConfigTree(DefaultTreeModel dtm) {
+        jGSconfigWidget.updateConfigTree(dtm);
     }
 
     @Override

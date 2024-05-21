@@ -16,12 +16,9 @@
  */
 package com.jkertz.jgitswing.widgets.config;
 
-import java.util.Map;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.DefaultTreeModel;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.widgets.common.JGScommonScrollwidget;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -41,19 +38,17 @@ public class JGSconfigWidget extends JGScommonScrollwidget {
         this.setViewportView(jTree);
     }
 
-    public void updateConfigTree(Map<String, Map<String, Map<String, String>>> configInfoMap, IJGScallbackChain callback) {
-        DefaultTreeModel dtm = uiUtils.buildTreeModelConfig(configInfoMap);
+    public void updateConfigTree(DefaultTreeModel dtm) {
+//        DefaultTreeModel dtm = uiUtils.buildTreeModelConfig(configInfoMap);
+//
+//        SwingUtilities.invokeLater(() -> {
 
-        SwingUtilities.invokeLater(() -> {
-
-            jTree.removeAll();
-            jTree.setModel(dtm);
-            for (int i = 0; i < jTree.getRowCount(); i++) {
-                jTree.expandRow(i);
-            }
-            callback.doNext(null);
-
-        });
+        jTree.removeAll();
+        jTree.setModel(dtm);
+        for (int i = 0; i < jTree.getRowCount(); i++) {
+            jTree.expandRow(i);
+        }
+//        });
 
     }
 

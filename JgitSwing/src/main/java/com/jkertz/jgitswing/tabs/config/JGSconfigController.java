@@ -16,14 +16,15 @@
  */
 package com.jkertz.jgitswing.tabs.config;
 
-import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
-import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
 import com.jkertz.jgitswing.tabs.common.JGScommonController;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -59,7 +60,7 @@ public final class JGSconfigController extends JGScommonController implements IJ
     @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
         //chain only independent methods here
-        updateConfigTree(refresh);
+        updateConfigTree();
     }
 
     @Override
@@ -87,86 +88,24 @@ public final class JGSconfigController extends JGScommonController implements IJ
         }
     }
 
-//    private IJGScallbackDirConfigInfoMap editConfigCallback(IJGScallbackRefresh refresh) {
-//        IJGScallbackDirConfigInfoMap callback = new IJGScallbackDirConfigInfoMap() {
-//            @Override
-//            public void onSuccess(Map<String, Map<String, Map<String, String>>> result) {
-//                Map<String, Map<String, Map<String, String>>> configInfoMap = result;
-//                boolean showParameterMapDialog = new JGSParameterMapDialog().showSectional("Config", configInfoMap, false);
-//                if (showParameterMapDialog) {
-//                    saveConfigInfo(configInfoMap, refresh);
-//                } else {
-//                    refresh.finish();
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Exception ex) {
-//                ex.printStackTrace();
-//                showErrorDialog("updateConfigCallback", "getConfigInfo ERROR:\n" + ex.getMessage());
-//                refresh.finish();
-//            }
-//        };
-//        return callback;
-//    }
-//    private void saveConfigInfo(Map<String, Map<String, Map<String, String>>> configInfoMap, IJGScallbackRefresh refresh) {
-//        showProgressBar("saveConfigInfo");
-//        bc.saveConfigInfo(configInfoMap, configInfoSavedCallback(refresh));
-//    }
-    private IJGScallbackString configInfoSavedCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackString callback = new IJGScallbackString() {
-            @Override
-            public void onSuccess(String result) {
-                showInfoDialog("onConfigPanelClickedEditConfig", "saveConfigInfo SUCCESS");
-                updateConfigTree(refresh);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("onConfigPanelClickedEditConfig", "saveConfigInfo ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
-
-    }
-
-    private void updateConfigTree(IJGScallbackRefresh refresh) {
+    private void updateConfigTree() {
         logger.getLogger().fine("updateConfigTree");
         //        bc.getConfigInfo(updateConfigCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
-                showProgressBar("getConfigInfo", 0);
-                Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
-                showProgressBar("getConfigInfo", 100);
                 showProgressBar("updateConfigTree", 0);
-                panel.updateConfigTree(configInfoMap, endOfChainCallback(refresh));
-                showProgressBar("updateConfigTree", 100);
+                Map<String, Map<String, Map<String, String>>> configInfoMap = jGSrepositoryModel.getConfigInfo();
+                showProgressBar("updateConfigTree", 25);
+                DefaultTreeModel dtm = uiUtils.buildTreeModelConfig(configInfoMap);
+                SwingUtilities.invokeLater(() -> {
+                    showProgressBar("updateConfigTree", 50);
+                    panel.updateConfigTree(dtm);
+                    showProgressBar("updateConfigTree", 100);
+                });
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateConfigTree", ex);
-
-                refresh.finish();
             }
-        }).start();
-    }
-
-    private IJGScallbackDirConfigInfoMap updateConfigCallback(IJGScallbackRefresh refresh) {
-        IJGScallbackDirConfigInfoMap callback = new IJGScallbackDirConfigInfoMap() {
-            @Override
-            public void onSuccess(Map<String, Map<String, Map<String, String>>> result) {
-                Map<String, Map<String, Map<String, String>>> configInfoMap = result;
-                panel.updateConfigTree(configInfoMap, endOfChainCallback(refresh));
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-                showErrorDialog("updateConfigCallback", "getConfigInfo ERROR:\n" + ex.getMessage());
-                refresh.finish();
-            }
-        };
-        return callback;
+        });
     }
 
     @Override

@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.stagingtree;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
@@ -65,7 +66,7 @@ public final class JGSstagingTreeController extends JGScommonController implemen
 
     @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 //chain only independent methods here
                 Status status = jGSrepositoryModel.getStatus();
@@ -78,7 +79,7 @@ public final class JGSstagingTreeController extends JGScommonController implemen
             }
             refresh.finish();
 
-        }).start();
+        });
     }
 
     @Override
@@ -304,7 +305,7 @@ public final class JGSstagingTreeController extends JGScommonController implemen
         }
     }
 
-    private void updateCurrentDiffFile(String path, IJGScallbackRefresh refresh) {
+    private void updateCurrentDiffFile(String path) {
         try {
             String currentDiffFile = "";
             if (path != null && !path.isEmpty()) {
@@ -334,9 +335,9 @@ public final class JGSstagingTreeController extends JGScommonController implemen
         }
         if (selectionList != null && !selectionList.isEmpty()) {
             String path = selectionList.get(0);
-            updateCurrentDiffFile(path, refreshCallback());
+            updateCurrentDiffFile(path);
         } else {
-            updateCurrentDiffFile(null, refreshCallback());
+            updateCurrentDiffFile(null);
         }
 
     }

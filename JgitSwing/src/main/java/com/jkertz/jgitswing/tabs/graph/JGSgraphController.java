@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.graph;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tabs.common.IJGScommonController;
@@ -55,7 +56,7 @@ public final class JGSgraphController extends JGScommonController implements IJG
 
     private void updateGraphTable(Integer amount) {
         // jGSrepositoryModel async thread
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 String branchName = jGSrepositoryModel.getBranchName();
                 if (branchName != null && !branchName.isEmpty()) {
@@ -71,7 +72,7 @@ public final class JGSgraphController extends JGScommonController implements IJG
                 logger.getLogger().log(Level.SEVERE, "updateGraphTable", ex);
 //                showErrorDialog("updateWidgets", "updateWidgets ERROR:\n" + ex.getMessage());
             }
-        }).start();
+        });
     }
 
     private void fillGraphPane(PlotWalk plotWalk, Integer amount) throws Exception {

@@ -16,18 +16,14 @@
  */
 package com.jkertz.jgitswing.tabs.branches;
 
-import java.awt.BorderLayout;
-import java.util.List;
-import java.util.Map;
-import javax.swing.tree.TreePath;
-import com.jkertz.jgitswing.callback.IJGScallbackChain;
 import com.jkertz.jgitswing.tabs.common.JGScommonPanel;
 import com.jkertz.jgitswing.toolbars.branches.IJGSbranchesToolbar;
 import com.jkertz.jgitswing.toolbars.branches.JGSbranchesToolbar;
 import com.jkertz.jgitswing.widgets.branches.IJGSbranchesWidget;
 import com.jkertz.jgitswing.widgets.branches.JGSbranchesWidget;
-import org.eclipse.jgit.lib.BranchTrackingStatus;
-import org.eclipse.jgit.lib.Ref;
+import java.awt.BorderLayout;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -56,8 +52,8 @@ public class JGSbranchesPanel extends JGScommonPanel implements IJGSbranchesTool
 
     }
 
-    public void updateBranchTree(Map<Ref, BranchTrackingStatus> mapLocalBranches, List<Ref> listRemoteBranches, String currentBranch, IJGScallbackChain callback) {
-        jGSbranchesWidget.updateBranchTree(mapLocalBranches, listRemoteBranches, currentBranch, callback);
+    public void updateBranchTree(DefaultTreeModel dtm) {
+        jGSbranchesWidget.updateBranchTree(dtm);
     }
 
     protected void enableBranchButtos() {

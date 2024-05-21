@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.currentdiff;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tablemodels.ListDiffEntryTableModel;
@@ -56,7 +57,7 @@ public final class JGScurrentDiffController extends JGScommonController implemen
 
     private void updateCurrentDiff(IJGScallbackRefresh refresh) {
         // jGSrepositoryModel async thread
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("updateCurrentDiff", 0);
                 List<DiffEntry> currentDiff = jGSrepositoryModel.getCurrentDiff();
@@ -77,12 +78,12 @@ public final class JGScurrentDiffController extends JGScommonController implemen
                 logger.getLogger().log(Level.SEVERE, "updateCurrentDiff", ex);
                 refresh.finish();
             }
-        }).start();
+        });
     }
 
     private void updateCurrentDiffFile(String path, IJGScallbackRefresh refresh) {
         // jGSrepositoryModel async thread
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("updateCurrentDiffFile", 0);
                 String currentDiffFile = jGSrepositoryModel.getCurrentDiffFile(path);
@@ -96,7 +97,7 @@ public final class JGScurrentDiffController extends JGScommonController implemen
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateCurrentDiffFile", ex);
             }
-        }).start();
+        });
     }
 
     @Override

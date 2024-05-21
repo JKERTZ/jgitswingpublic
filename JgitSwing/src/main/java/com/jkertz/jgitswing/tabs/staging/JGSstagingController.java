@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.staging;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tablemodels.StatusStagedTableModel;
@@ -58,7 +59,7 @@ public final class JGSstagingController extends JGScommonController implements I
 
     @Override
     public void updateWidgets(IJGScallbackRefresh refresh) {
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 //chain only independent methods here
                 showProgressBar("updateWidgets", 0);
@@ -78,7 +79,7 @@ public final class JGSstagingController extends JGScommonController implements I
             }
             refresh.finish();
 
-        }).start();
+        });
     }
 
     @Override
@@ -291,7 +292,7 @@ public final class JGSstagingController extends JGScommonController implements I
     }
 
     private void updateTables() {
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 //chain only independent methods here
                 showProgressBar("updateTables", 0);
@@ -309,7 +310,7 @@ public final class JGSstagingController extends JGScommonController implements I
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "updateTables", ex);
             }
-        }).start();
+        });
     }
 
     @Override

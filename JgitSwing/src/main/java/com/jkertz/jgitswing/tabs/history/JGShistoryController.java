@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.history;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.callback.IJGScallbackString;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
@@ -121,7 +122,7 @@ public final class JGShistoryController extends JGScommonController implements I
         String commitId = _commitId + "^{tree}";
         String previousCommitId = _commitId + "~1^{tree}";
 //        bc.getDiffFile(previousCommitId, commitId, path, updateDiffFileCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("getDiffFile", 0);
                 String diffFile = jGSrepositoryModel.getDiffFile(previousCommitId, commitId, path);
@@ -134,7 +135,7 @@ public final class JGShistoryController extends JGScommonController implements I
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "getDiffFile", ex);
             }
-        }).start();
+        });
 
     }
 
@@ -165,7 +166,7 @@ public final class JGShistoryController extends JGScommonController implements I
 
     private void getDiff(String previousCommitId, String commitId) {
         //        bc.getDiff(previousCommitId, commitId, updateFileTableCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("getDiff", 0);
                 List<DiffEntry> diff = jGSrepositoryModel.getDiff(previousCommitId, commitId);
@@ -182,7 +183,7 @@ public final class JGShistoryController extends JGScommonController implements I
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, null, ex);
             }
-        }).start();
+        });
     }
 
     private void updateHistoryTable(Integer amount) {
@@ -191,7 +192,7 @@ public final class JGShistoryController extends JGScommonController implements I
         if (amount == null) {
             showErrorDialog("updateHistoryTable", "getAllCommits ERROR:\n");
         } else {
-            new Thread(() -> {
+            JGSworker.runOnWorkerThread(() -> {
                 try {
                     showProgressBar("updateHistoryTable " + amount, 0);
                     Iterable<RevCommit> commits = jGSrepositoryModel.getCommits(amount);
@@ -212,14 +213,14 @@ public final class JGShistoryController extends JGScommonController implements I
                 } catch (Exception ex) {
                     logger.getLogger().severe(ex.getMessage());
                 }
-            }).start();
+            });
         }
     }
 
     private void updateHistoryTableAll(IJGScallbackRefresh refresh) {
         logger.getLogger().fine("updateHistoryTableAll");
         //        bc.getAllCommits(updateHistoryTableCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("updateHistoryTableAll", 0);
                 Iterable<RevCommit> allCommits = jGSrepositoryModel.getAllCommits();
@@ -237,13 +238,13 @@ public final class JGShistoryController extends JGScommonController implements I
             } catch (Exception ex) {
                 logger.getLogger().severe(ex.getMessage());
             }
-        }).start();
+        });
     }
 
     private void filterHistory(Integer amount, String text) {
         logger.getLogger().fine("filterHistory: " + text);
 
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("filterHistory " + text, 0);
                 Iterable<RevCommit> commits = jGSrepositoryModel.getCommits(amount, text);
@@ -264,13 +265,13 @@ public final class JGShistoryController extends JGScommonController implements I
                 logger.getLogger().severe(ex.getMessage());
             }
 
-        }).start();
+        });
     }
 
     private void checkout(String _commitId) {
         logger.getLogger().fine("checkout: " + _commitId);
 
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 Git git = jGSrepositoryModel.getGit();
                 showProgressBar("checkout " + _commitId, 0);
@@ -279,7 +280,7 @@ public final class JGShistoryController extends JGScommonController implements I
             } catch (Exception ex) {
                 logger.getLogger().severe(ex.getMessage());
             }
-        }).start();
+        });
     }
 
     @Override

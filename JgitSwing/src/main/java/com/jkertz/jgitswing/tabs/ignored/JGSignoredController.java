@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.ignored;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
 import com.jkertz.jgitswing.model.JGSrepositoryModel;
 import com.jkertz.jgitswing.tablemodels.StatusIgnoredTableModel;
@@ -60,7 +61,7 @@ public final class JGSignoredController extends JGScommonController implements I
 
     private void updateIgnoredTable(IJGScallbackRefresh refresh) {
 
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("updateIgnoredTable", 0);
                 Status status = jGSrepositoryModel.getStatus();
@@ -74,7 +75,7 @@ public final class JGSignoredController extends JGScommonController implements I
                 logger.getLogger().log(Level.SEVERE, "updateIgnoredTable", ex);
             }
             refresh.finish();
-        }).start();
+        });
     }
 
     @Override

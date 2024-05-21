@@ -16,6 +16,7 @@
  */
 package com.jkertz.jgitswing.tabs.tags;
 
+import com.jkertz.jgitswing.businesslogic.JGSworker;
 import com.jkertz.jgitswing.callback.IJGScallbackDirConfigInfoMap;
 import com.jkertz.jgitswing.callback.IJGScallbackRef;
 import com.jkertz.jgitswing.callback.IJGScallbackRefresh;
@@ -202,7 +203,7 @@ public final class JGStagsController extends JGScommonController implements IJGS
         logger.getLogger().fine("getCommits: " + amount);
 //        bc.getCommits(amount, limitedCommitsCallback(refresh));
 
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("getCommits " + amount, 0);
                 Iterable<RevCommit> commits = jGSrepositoryModel.getCommits(amount);
@@ -220,14 +221,14 @@ public final class JGStagsController extends JGScommonController implements IJGS
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "getCommits", ex);
             }
-        }).start();
+        });
 
     }
 
     private void getJGStags(int amount, IJGScallbackRefresh refresh) {
         logger.getLogger().fine("getJGStags: " + amount);
 //        bc.getJGStags(amount, limitedJGStagsCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 showProgressBar("getJGStags " + amount, 0);
                 List<JGStag> jgStags = jGSrepositoryModel.getJGStags(amount);
@@ -242,7 +243,7 @@ public final class JGStagsController extends JGScommonController implements IJGS
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "getJGStags", ex);
             }
-        }).start();
+        });
     }
 
     private void createTag(IJGScallbackRefresh refresh) {
@@ -264,14 +265,14 @@ public final class JGStagsController extends JGScommonController implements IJGS
         String taggerEmail = parameters.get("taggerEmail");
         String commit = _commitId;
         //        bc.tagCommit(tagName, tagMessage, taggerName, taggerEmail, commit, createTagCallback(refresh));
-        new Thread(() -> {
+        JGSworker.runOnWorkerThread(() -> {
             try {
                 Ref tagCommit = jGSrepositoryModel.tagCommit(tagName, tagMessage, taggerName, taggerEmail, commit);
                 refresh.finish();
             } catch (Exception ex) {
                 logger.getLogger().log(Level.SEVERE, "createTag", ex);
             }
-        }).start();
+        });
 
     }
 

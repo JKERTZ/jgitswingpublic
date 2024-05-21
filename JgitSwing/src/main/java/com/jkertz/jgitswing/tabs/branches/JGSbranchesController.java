@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -291,9 +292,11 @@ public final class JGSbranchesController extends JGScommonController implements 
                 String branchName = getBranchName();
                 showProgressBar("updateWidgets", 60);
                 Map<Ref, BranchTrackingStatus> mapLocalBranches = getMapLocalBranches(localBranches);
+                showProgressBar("updateWidgets", 70);
+                DefaultTreeModel dtm = uiUtils.buildTreeModelBranches(mapLocalBranches, remoteBranches, branchName);
                 SwingUtilities.invokeLater(() -> {
                     showProgressBar("updateWidgets", 80);
-                    panel.updateBranchTree(mapLocalBranches, remoteBranches, branchName, doNothingChainCallback());
+                    panel.updateBranchTree(dtm);
                     showProgressBar("updateWidgets", 100);
                 });
 

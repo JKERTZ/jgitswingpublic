@@ -51,11 +51,9 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
     //TODO: fix tags feature
     //TODO: make config like pull-result
     //TODO: remove finalize from all classes after checking memory release on close tabs
-    //TODO: running threads should be merged with global progress bar
     //TODO: merge Graph and History Panel
     //TODO: make Graph Tags reactive
     //TODO: remove hardcoded column number access
-    //TODO: user swingworker for threading
     //future
     //TODO: implement SSH remote repository
     //FIXME: progress bar in Toast flickering on Linux (only wayland)
@@ -75,7 +73,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         subControllers = new ArrayList<>();
 
         panel = new JGSmainView(this);
-        panel.getjFrame().setTitle("JGS v0.20240519");
+        panel.getjFrame().setTitle("JGS v0.20240521");
 
         jGSdialogFactory = new JGSdialogFactory(panel.getjFrame());
         progressCollector = JGSprogressCollector.getINSTANCE();
@@ -89,7 +87,7 @@ public class JGSmainController implements IJGSmainView, IJGSsettings {
         showInfoToast("JGSmainController completed");
         logger.getLogger().fine("JGSmainController completed");
         progressCollector.addProgress("Startup completed", 100, this.getClass().getName());
-        startDemoProgress();
+//        startDemoProgress();
     }
 
     public static JGSmainController getINSTANCE() {
